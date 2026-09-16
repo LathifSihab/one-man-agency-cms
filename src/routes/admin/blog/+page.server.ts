@@ -5,7 +5,7 @@ import type { Actions, PageServerLoad } from './$types';
 export const load: PageServerLoad = async () => {
 	const { data } = await adminDb()
 		.from('posts')
-		.select('slug, title, published_on, category, is_published, legacy_url')
+		.select('slug, title, published_on, category, is_published, legacy_url, image_url')
 		.order('published_on', { ascending: false });
 
 	return { posts: data ?? [] };

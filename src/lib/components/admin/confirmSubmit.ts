@@ -30,6 +30,10 @@ export async function confirmSubmit(
 	options: ConfirmOptions
 ): Promise<void> {
 	const form = event.currentTarget as HTMLFormElement;
+	/* Which button submitted matters: one form can carry both Save and a
+	   Delete that overrides the action with formaction, and resubmitting
+	   without the submitter would run the wrong one. */
+	const submitter = event.submitter;
 
 	if (form.dataset.confirmed === 'yes') {
 		delete form.dataset.confirmed;
@@ -43,6 +47,10 @@ export async function confirmSubmit(
 
 	if (await confirmer.ask(options)) {
 		form.dataset.confirmed = 'yes';
-		form.requestSubmit();
+		form.requestSubmit(
+			submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement
+				? submitter
+				: undefined
+		);
 	}
 }

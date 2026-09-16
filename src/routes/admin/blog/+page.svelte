@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import { resolveImage } from '$lib/images';
 	let { data, form } = $props();
 
 	let showNew = $state(false);
@@ -52,10 +53,17 @@
 {/if}
 
 <table class="cms-table">
-	<thead><tr><th>Titel</th><th>Datum</th><th>Categorie</th><th>Status</th><th></th></tr></thead>
+	<thead><tr><th>Beeld</th><th>Titel</th><th>Datum</th><th>Categorie</th><th>Status</th><th></th></tr></thead>
 	<tbody>
 		{#each data.posts as post (post.slug)}
 			<tr>
+				<td class="cms-thumb">
+					{#if post.image_url}
+						<img src={resolveImage(post.image_url)} alt="" />
+					{:else}
+						<span class="cms-hint">—</span>
+					{/if}
+				</td>
 				<td><a href="/admin/blog/{post.slug}">{post.title}</a></td>
 				<td class="cms-meta">{fmt(post.published_on)}</td>
 				<td class="cms-meta">{post.category ?? '—'}</td>

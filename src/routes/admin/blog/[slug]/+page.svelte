@@ -100,13 +100,6 @@
 		</p>
 	</div>
 
-	<h2>
-		<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
-		        onclick={() => (showAdvanced = !showAdvanced)}>
-			{showAdvanced ? 'Verberg' : 'Toon'} geavanceerd
-		</button>
-	</h2>
-
 	{#if showAdvanced}
 		<div class="cms-field">
 			<label for="f-legacy">Oude webadres</label>
@@ -122,26 +115,26 @@
 			<input id="f-slug" name="slug" type="text" bind:value={slug} />
 			{#if slugChanged}
 				<div class="cms-banner failed" style="margin-top:.6rem">
-					<p>
-						Je wijzigt het webadres. De oude link /blog/{post.slug} werkt daarna niet meer.
-					</p>
+					<p>Je wijzigt het webadres. De oude link /blog/{post.slug} werkt daarna niet meer.</p>
 				</div>
 			{/if}
 		</div>
 	{/if}
 
-	<div class="cms-actions" style="margin-top:1.5rem">
+	<div class="cms-actionbar">
 		<button class="cms-btn" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
 		<span class="cms-hint">Opslaan wijzigt de live site nog niet.</span>
-	</div>
-</form>
 
-<form method="POST" action="?/delete" style="margin-top:2rem"
-      onsubmit={(e) =>
-	      confirmSubmit(e, confirmer, {
-		      title: 'Dit artikel verwijderen?',
-		      body: `“${title}” wordt definitief verwijderd. Na de volgende publicatie is het adres /blog/${post.slug} niet meer bereikbaar.`,
-		      confirmLabel: 'Definitief verwijderen'
-	      })}>
-	<button class="cms-btn cms-btn-danger cms-btn-small" type="submit">Artikel verwijderen</button>
+		<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
+		        onclick={() => (showAdvanced = !showAdvanced)}>
+			{showAdvanced ? 'Verberg' : 'Toon'} geavanceerd
+		</button>
+
+		<!-- Same form, different action: a separate <form> could not sit on this
+		     row, since forms cannot be nested. -->
+		<button class="cms-btn cms-btn-danger cms-btn-small cms-actionbar-end"
+		        type="submit" formaction="?/delete" formnovalidate>
+			Artikel verwijderen
+		</button>
+	</div>
 </form>

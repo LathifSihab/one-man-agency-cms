@@ -338,3 +338,45 @@ footer.site ul a,
 		transform: none;
 	}
 }
+
+/* ── blog images ─────────────────────────────────────────────────────────── */
+
+/*
+ * A post's image is optional and was never rendered before, so these rules only
+ * ever apply to posts where an editor has chosen one. Posts without an image are
+ * untouched, which is every post that exists today.
+ */
+.postbeeld {
+	display: block;
+	width: 100%;
+	height: auto;
+	aspect-ratio: 19 / 10;
+	object-fit: cover;
+	border-radius: var(--r);
+	margin-bottom: 2rem;
+}
+
+.postlist li.met-beeld {
+	display: grid;
+	grid-template-columns: 160px 1fr;
+	gap: 1.2rem;
+	align-items: start;
+}
+
+.postthumb {
+	width: 160px;
+	height: 120px;
+	object-fit: cover;
+	border-radius: var(--r);
+}
+
+@media (max-width: 620px) {
+	.postlist li.met-beeld {
+		grid-template-columns: 1fr;
+	}
+	.postthumb {
+		width: 100%;
+		height: auto;
+		aspect-ratio: 4 / 3;
+	}
+}

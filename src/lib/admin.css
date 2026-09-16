@@ -879,3 +879,39 @@ textarea.over {
 .cms-pickable.chosen {
 	border: 2px solid var(--signal-dk);
 }
+
+/* ── the save / advanced / delete row ───────────────────────────────────── */
+.cms-actionbar {
+	display: flex;
+	align-items: center;
+	gap: 0.7rem;
+	flex-wrap: wrap;
+	margin-top: 1.6rem;
+	padding-top: 1.1rem;
+	border-top: 1px solid var(--line);
+}
+
+/* Destructive actions sit apart from the ones you reach for by default. */
+.cms-actionbar-end {
+	margin-left: auto;
+}
+
+@media (max-width: 620px) {
+	.cms-actionbar-end {
+		margin-left: 0;
+	}
+}
+
+/* ── thumbnail column in the blog list ──────────────────────────────────── */
+.cms-thumb {
+	width: 76px;
+}
+
+.cms-thumb img {
+	width: 68px;
+	height: 46px;
+	object-fit: cover;
+	border-radius: var(--r);
+	border: 1px solid var(--line);
+	display: block;
+}
