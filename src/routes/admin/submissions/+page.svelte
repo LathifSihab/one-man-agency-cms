@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
+	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
+	import { confirmSubmit } from '$lib/components/admin/confirmSubmit';
 	let { data, form } = $props();
 
 	const LABELS: Record<string, string> = {
@@ -8,9 +10,13 @@
 		gemeente: 'Gemeente', nieuwsbrief: 'Nieuwsbrief'
 	};
 
+	let confirmer: ConfirmDialog | undefined = $state();
+
 	const when = (iso: string) =>
 		new Date(iso).toLocaleString('nl-BE', { dateStyle: 'medium', timeStyle: 'short' });
 </script>
+
+<ConfirmDialog bind:this={confirmer} />
 
 <h1>Berichten</h1>
 <p class="cms-lead">
@@ -45,7 +51,12 @@
 					{/if}
 				</form>
 				<form method="POST" action="?/delete" use:enhance
-				      onsubmit={(e) => { if (!confirm('Dit bericht verwijderen?')) e.preventDefault(); }}>
+				      onsubmit={(e) =>
+					      confirmSubmit(e, confirmer, {
+						      title: 'Dit bericht verwijderen?',
+						      body: `Het bericht van ${s.payload.naam ?? 'deze afzender'} wordt definitief verwijderd.`,
+						      confirmLabel: 'Verwijderen'
+					      })}>
 					<input type="hidden" name="id" value={s.id} />
 					<button class="cms-btn cms-btn-danger cms-btn-small" type="submit">Verwijderen</button>
 				</form>

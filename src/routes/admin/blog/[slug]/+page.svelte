@@ -4,6 +4,8 @@
 	import CountedField from '$components/admin/CountedField.svelte';
 	import MarkdownEditor from '$components/admin/MarkdownEditor.svelte';
 	import { CATEGORIES } from '$lib/categories';
+	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
+	import { confirmSubmit } from '$lib/components/admin/confirmSubmit';
 
 	let { data, form } = $props();
 	// Read once on purpose: these seed the editing state below.
@@ -16,10 +18,13 @@
 	let body = $state(post.body ?? '');
 	let slug = $state(post.slug ?? '');
 	let showAdvanced = $state(false);
+	let confirmer: ConfirmDialog | undefined = $state();
 	let busy = $state(false);
 
 	const slugChanged = $derived(slug !== post.slug);
 </script>
+
+<ConfirmDialog bind:this={confirmer} />
 
 <p class="cms-meta"><a href="/admin/blog">&larr; Alle artikels</a></p>
 <h1>{title || post.slug}</h1>
@@ -129,6 +134,11 @@
 </form>
 
 <form method="POST" action="?/delete" style="margin-top:2rem"
-      onsubmit={(e) => { if (!confirm('Dit artikel definitief verwijderen?')) e.preventDefault(); }}>
+      onsubmit={(e) =>
+	      confirmSubmit(e, confirmer, {
+		      title: 'Dit artikel verwijderen?',
+		      body: `“${title}” wordt definitief verwijderd. Na de volgende publicatie is het adres /blog/${post.slug} niet meer bereikbaar.`,
+		      confirmLabel: 'Definitief verwijderen'
+	      })}>
 	<button class="cms-btn cms-btn-danger cms-btn-small" type="submit">Artikel verwijderen</button>
 </form>

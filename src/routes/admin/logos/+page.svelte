@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { enhance } from '$app/forms';
+	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
+	import { confirmSubmit } from '$lib/components/admin/confirmSubmit';
 
 	let { data, form } = $props();
 
@@ -16,6 +18,8 @@
 	let unnamedFirst = $state(true);
 	let query = $state('');
 	let busy = $state(false);
+	let confirmer: ConfirmDialog | undefined = $state();
+	let toDelete = $state('');
 
 	const unnamed = $derived(logos.filter((l) => l.name === 'Klant').length);
 
@@ -82,6 +86,8 @@
 	const firstId = $derived(logos[0]?.id);
 	const lastId = $derived(logos[logos.length - 1]?.id);
 </script>
+
+<ConfirmDialog bind:this={confirmer} />
 
 <h1>Logo's</h1>
 <p class="cms-lead">{data.logos.length} klantenlogo's.</p>
@@ -217,13 +223,16 @@
 	method="POST"
 	action="?/delete"
 	use:enhance
-	onsubmit={(e) => {
-		if (!confirm('Dit logo verwijderen?')) e.preventDefault();
-	}}
+	onsubmit={(e) =>
+		confirmSubmit(e, confirmer, {
+			title: 'Dit logo verwijderen?',
+			body: `${logos.find((l) => l.id === toDelete)?.name ?? 'Het logo'} verdwijnt van de referentiepagina en uit de logostrook op de startpagina.`,
+			confirmLabel: 'Verwijderen'
+		})}
 >
 	<div class="cms-field" style="max-width:420px">
 		<label for="del">Kies een logo</label>
-		<select id="del" name="id">
+		<select id="del" name="id" bind:value={toDelete}>
 			{#each logos as l (l.id)}<option value={l.id}>{l.name} — {l.file_path}</option>{/each}
 		</select>
 	</div>

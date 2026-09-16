@@ -1,0 +1,45 @@
+export interface ConfirmOptions {
+	title: string;
+	body?: string;
+	confirmLabel?: string;
+	danger?: boolean;
+}
+
+/** Anything that can answer a question — in practice ConfirmDialog.svelte. */
+export interface Confirmer {
+	ask(options: ConfirmOptions): Promise<boolean>;
+}
+
+/**
+ * Ask before a form submits, using the CMS's own dialog instead of the
+ * browser's.
+ *
+ * The submit is stopped, the question asked, and the same form submitted again
+ * once answered. A marker on the form element lets that second pass through to
+ * use:enhance rather than asking a second time, which is what makes this work
+ * with progressively enhanced form actions instead of fetch calls.
+ *
+ *     <form use:enhance onsubmit={(e) => confirmSubmit(e, confirmer, { … })}>
+ */
+export async function confirmSubmit(
+	event: SubmitEvent,
+	confirmer: Confirmer | undefined,
+	options: ConfirmOptions
+): Promise<void> {
+	const form = event.currentTarget as HTMLFormElement;
+
+	if (form.dataset.confirmed === 'yes') {
+		delete form.dataset.confirmed;
+		return;
+	}
+
+	event.preventDefault();
+
+	// Without a dialog mounted, refuse rather than silently deleting.
+	if (!confirmer) return;
+
+	if (await confirmer.ask(options)) {
+		form.dataset.confirmed = 'yes';
+		form.requestSubmit();
+	}
+}

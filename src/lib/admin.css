@@ -777,3 +777,30 @@ textarea.over {
 	text-decoration: underline;
 	cursor: pointer;
 }
+
+/* ── our own confirmation ───────────────────────────────────────────────── */
+/* A native <dialog>, so the focus trap, Escape and the inert background come
+   from the platform while the panel itself is the CMS's own card. */
+.cms-confirm {
+	border: 1px solid var(--line);
+	border-radius: var(--r);
+	background: var(--paper);
+	color: var(--ink);
+	padding: 1.3rem 1.4rem;
+	max-width: min(30rem, calc(100vw - 2rem));
+	box-shadow: 0 24px 60px rgba(20, 24, 31, 0.22);
+}
+
+.cms-confirm::backdrop {
+	background: rgba(20, 24, 31, 0.45);
+}
+
+.cms-confirm h2 {
+	margin: 0;
+	font-size: 1.05rem;
+	line-height: 1.35;
+}
+
+.cms-confirm .cms-hint {
+	margin-top: 0.45rem;
+}
