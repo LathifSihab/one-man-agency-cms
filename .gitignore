@@ -35,3 +35,7 @@ desktop.ini
 # scratch browser probes
 .e2e.mjs
 .dbg.mjs
+
+# fetched from Supabase Storage at build time
+static/assets/media/
+.flow.mjs

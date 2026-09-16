@@ -11,13 +11,15 @@
  * Only referenced objects are fetched, not the whole bucket — an image deleted
  * from a page should stop being published.
  *
- * Runs after the build, alongside tools/redirects.mjs.
+ * Runs BEFORE the build, writing into static/ so the files are part of the build
+ * input. Fetching afterwards is too late: prerendering follows the links on each
+ * page and fails on a missing image, which is how this ordering bug was found.
  */
 import { createClient } from '@supabase/supabase-js';
-import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs';
+import { mkdirSync, writeFileSync, readFileSync, existsSync, rmSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-const STATIC = '.vercel/output/static';
+const STATIC = 'static';
 const OUT_DIR = 'assets/media';
 const BUCKET = 'media';
 const PREFIXES = ['site', 'logos', 'blog'];
@@ -64,6 +66,9 @@ if (url && key) {
 }
 
 const wanted = referencedImages(content);
+
+/* Start clean so an image removed from the site stops being published. */
+rmSync(join(STATIC, OUT_DIR), { recursive: true, force: true });
 
 if (!wanted.length) {
 	console.log('[media] No Storage-hosted images referenced; all images ship with the repo.');
