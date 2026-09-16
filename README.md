@@ -30,6 +30,7 @@ and `npm run build` work before the database exists.
 | `npm run check` | TypeScript and Svelte diagnostics |
 | `npm run verify` | Acceptance checks against the build output |
 | `npm run parity` | Diff the build against the original site (`dist-original/`) |
+| `npm run seed:account` | Create or reset the single CMS account |
 
 ## Layout
 
@@ -60,10 +61,26 @@ dist-original/           The original build. Immutable reference — do not edit
 ## Setting up Supabase
 
 1. Create a project, then run `supabase/schema.sql` in the SQL editor.
-2. **Disable public sign-up** under Authentication → Providers → Email.
-   There is one account; an open sign-up endpoint is the obvious way in.
-3. Create Niels's account manually, with email and password.
-4. Fill in `.env`.
+2. **Disable public sign-up** under Authentication → Providers → Email, but leave
+   **Enable Sign In with Email** on. There is one account; an open sign-up
+   endpoint is the obvious way in.
+3. Fill in `.env`.
+4. Create the CMS account:
+
+```bash
+python tools/seed_account.py --email niels@onemanagency.be
+```
+
+   Sign-up is disabled, so the account cannot be made through the application.
+   The script uses the service role key instead. With no `--password` it
+   generates one and prints it once. Re-running it on an existing address resets
+   the password rather than failing, which is also the way out of a lockout:
+
+```bash
+npm run seed:account -- --list                 # show accounts
+npm run seed:account -- --email x@y.be         # create, or reset the password
+npm run seed:account -- --delete old@y.be      # remove an account
+```
 5. Load the content:
 
 ```bash

@@ -10,7 +10,8 @@
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "verify": "python tools/verify.py --candidate .vercel/output/static --skip-diff",
     "parity": "python tools/parity.py",
-    "postinstall": "svelte-kit sync"
+    "postinstall": "svelte-kit sync",
+    "seed:account": "python tools/seed_account.py"
   },
   "devDependencies": {
     "@sveltejs/adapter-vercel": "^5.10.2",

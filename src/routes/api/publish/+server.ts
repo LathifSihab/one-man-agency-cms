@@ -23,6 +23,18 @@ export const POST: RequestHandler = async ({ locals }) => {
 	const hook = env.DEPLOY_HOOK_URL;
 	if (!hook) throw error(500, 'DEPLOY_HOOK_URL is niet ingesteld.');
 
+	// A deploy hook is an api.vercel.com integration URL. Pointing this at, say,
+	// a deployment URL would answer 200 and we would report a build that never
+	// runs — the one thing the publish flow must never do. Check the shape.
+	if (!/^https:\/\/api\.vercel\.com\/v1\/integrations\/deploy\//.test(hook)) {
+		throw error(
+			500,
+			'DEPLOY_HOOK_URL is geen geldige Vercel deploy hook. Verwacht een adres dat ' +
+				'begint met https://api.vercel.com/v1/integrations/deploy/ — maak er een aan ' +
+				'bij Settings > Git > Deploy Hooks.'
+		);
+	}
+
 	const db = adminDb();
 
 	// Five clicks should trigger one build, not five.
