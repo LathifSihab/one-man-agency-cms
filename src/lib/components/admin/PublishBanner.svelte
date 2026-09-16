@@ -96,6 +96,23 @@
 
 	const changeCount = $derived(publishState.pendingChanges);
 	const changeWord = $derived(changeCount === 1 ? 'wijziging' : 'wijzigingen');
+
+	/** Long lists are collapsed: saving the logo screen can touch many rows. */
+	const COLLAPSED = 5;
+	let expanded = $state(false);
+
+	const showList = $derived(
+		!building && publishState.pending.length > 0 &&
+			(publishState.status === 'pending' || publishState.status === 'failed')
+	);
+	const visible = $derived(
+		expanded ? publishState.pending : publishState.pending.slice(0, COLLAPSED)
+	);
+	const hidden = $derived(publishState.pending.length - visible.length);
+
+	function clock(iso: string): string {
+		return new Date(iso).toLocaleString('nl-BE', { dateStyle: 'short', timeStyle: 'short' });
+	}
 </script>
 
 <div class="cms-banner {TONE[publishState.status]}">
@@ -111,8 +128,8 @@
 					? ` (${publishState.lastBuild.detail})`
 					: ''}. Je wijzigingen staan nog klaar.
 			{:else if publishState.status === 'pending'}
-				{changeCount || 'Enkele'}
-				{changeWord} staan nog niet op de live site.
+				{changeCount}
+				{changeWord} sinds de laatste publicatie
 			{:else}
 				Nog niet gepubliceerd sinds deze omgeving is opgezet.
 			{/if}
@@ -132,6 +149,33 @@
 			<p class="cms-progress-note">
 				{elapsed}s bezig{overdue ? ' — langer dan gewoonlijk' : ', meestal ongeveer een minuut'}.
 				De site wordt opnieuw opgebouwd; je kan dit venster gerust sluiten.
+			</p>
+		{/if}
+
+		{#if showList}
+			<ul class="cms-changes">
+				{#each visible as change (change.kind + change.label + change.updatedAt)}
+					<li>
+						<span class="cms-badge draft">{change.kind}</span>
+						{#if change.href}
+							<a href={change.href}>{change.label}</a>
+						{:else}
+							<span>{change.label}</span>
+						{/if}
+						<time datetime={change.updatedAt}>{clock(change.updatedAt)}</time>
+					</li>
+				{/each}
+			</ul>
+
+			{#if hidden > 0}
+				<button type="button" class="cms-link-btn" onclick={() => (expanded = !expanded)}>
+					{expanded ? 'Toon minder' : `En ${hidden} ${hidden === 1 ? 'andere' : 'andere'}…`}
+				</button>
+			{/if}
+
+			<p class="cms-progress-note">
+				{changeCount === 1 ? 'Deze wijziging staat' : 'Deze wijzigingen staan'} nog niet op de
+				live site. Publiceren duurt ongeveer een minuut.
 			</p>
 		{/if}
 	</div>

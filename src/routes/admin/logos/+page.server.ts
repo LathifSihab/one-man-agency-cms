@@ -21,15 +21,27 @@ export const actions: Actions = {
 		}
 
 		const db = adminDb();
+		const { data: current } = await db.from('logos').select('id, name, sort_order');
+		const before = new Map((current ?? []).map((l) => [l.id, l]));
+
+		// Only write rows that actually differ. Updating all 53 every time would
+		// bump their updated_at and flood the dashboard's pending-changes list
+		// with logos nobody touched.
+		let changed = 0;
 		for (const row of rows) {
+			const name = row.name.trim() || 'Klant';
+			const was = before.get(row.id);
+			if (was && was.name === name && was.sort_order === row.sort_order) continue;
+
 			const { error } = await db
 				.from('logos')
-				.update({ name: row.name.trim() || 'Klant', sort_order: row.sort_order })
+				.update({ name, sort_order: row.sort_order })
 				.eq('id', row.id);
 			if (error) return fail(500, { message: `Opslaan mislukt: ${error.message}` });
+			changed++;
 		}
 
-		return { saved: true };
+		return { saved: true, changed };
 	},
 
 	delete: async ({ request }) => {

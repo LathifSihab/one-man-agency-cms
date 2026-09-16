@@ -16,9 +16,19 @@ export interface Outstanding {
 	detail: string;
 }
 
+/** One edited item waiting to be published. */
+export interface PendingChange {
+	kind: string;
+	label: string;
+	href: string | null;
+	updatedAt: string;
+}
+
 export interface PublishState {
 	status: 'live' | 'pending' | 'building' | 'failed' | 'unknown';
 	pendingChanges: number;
+	/** What actually changed, newest first, so the editor can see it before publishing. */
+	pending: PendingChange[];
 	lastEditedAt: string | null;
 	lastBuild: {
 		status: string;
@@ -118,17 +128,64 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 		status = 'live';
 	}
 
-	// Count the rows edited since the last successful build.
-	let pendingChanges = 0;
+	// List what changed since the last successful build. A bare count does not
+	// tell the editor what they are about to put live.
+	let pending: PendingChange[] = [];
 	if (status === 'pending' || status === 'failed') {
-		const since = lastBuild?.finished_at ?? '1970-01-01';
-		const counts = await Promise.all([
-			db.from('pages').select('id', { count: 'exact', head: true }).gt('updated_at', since),
-			db.from('posts').select('id', { count: 'exact', head: true }).gt('updated_at', since),
-			db.from('logos').select('id', { count: 'exact', head: true }).gt('updated_at', since)
-		]);
-		pendingChanges = counts.reduce((n, c) => n + (c.count ?? 0), 0);
+		pending = await getPendingChanges(db, lastBuild?.finished_at ?? '1970-01-01');
 	}
 
-	return { status, pendingChanges, lastEditedAt, lastBuild };
+	return { status, pendingChanges: pending.length, pending, lastEditedAt, lastBuild };
+}
+
+const PAGE_KIND: Record<string, string> = {
+	page: 'Pagina',
+	service: 'Dienst',
+	sector: 'Sector',
+	region: 'Regio'
+};
+
+export async function getPendingChanges(
+	db: SupabaseClient,
+	since: string
+): Promise<PendingChange[]> {
+	const [pages, posts, logos, settings] = await Promise.all([
+		db.from('pages').select('type, slug, title, updated_at').gt('updated_at', since),
+		db.from('posts').select('slug, title, updated_at').gt('updated_at', since),
+		db.from('logos').select('name, updated_at').gt('updated_at', since),
+		db.from('settings').select('updated_at').gt('updated_at', since).maybeSingle()
+	]);
+
+	const items: PendingChange[] = [
+		...(pages.data ?? []).map((p) => ({
+			kind: PAGE_KIND[p.type] ?? 'Pagina',
+			label: p.title,
+			href: `/admin/pages/${p.type}/${p.slug}`,
+			updatedAt: p.updated_at
+		})),
+		...(posts.data ?? []).map((p) => ({
+			kind: 'Blog',
+			label: p.title,
+			href: `/admin/blog/${p.slug}`,
+			updatedAt: p.updated_at
+		})),
+		...(logos.data ?? []).map((l) => ({
+			kind: 'Logo',
+			label: l.name === 'Klant' ? 'Logo zonder naam' : l.name,
+			href: '/admin/logos',
+			updatedAt: l.updated_at
+		})),
+		...(settings.data
+			? [
+					{
+						kind: 'Instellingen',
+						label: 'Bedrijfsgegevens, navigatie of socials',
+						href: '/admin/settings',
+						updatedAt: settings.data.updated_at
+					}
+				]
+			: [])
+	];
+
+	return items.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 }

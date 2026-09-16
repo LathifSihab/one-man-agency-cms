@@ -87,7 +87,16 @@
 <p class="cms-lead">{data.logos.length} klantenlogo's.</p>
 
 {#if form?.message}<div class="cms-error">{form.message}</div>{/if}
-{#if form?.saved}<div class="cms-ok">Opgeslagen. Publiceer om het live te zetten.</div>{/if}
+{#if form?.saved}
+	<div class="cms-ok">
+		{#if form.changed === 0}
+			Niets gewijzigd.
+		{:else}
+			{form.changed}
+			{form.changed === 1 ? 'logo' : "logo's"} opgeslagen. Publiceer om het live te zetten.
+		{/if}
+	</div>
+{/if}
 
 {#if unnamed}
 	<div class="cms-banner pending">
