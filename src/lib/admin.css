@@ -701,3 +701,27 @@ textarea.over {
 		transition: none;
 	}
 }
+
+/* ── search box ─────────────────────────────────────────────────────────── */
+.cms-search {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	max-width: 480px;
+}
+
+.cms-search input[type='search'] {
+	width: 100%;
+	padding: 0.5rem 0.65rem;
+	border: 1px solid var(--line-dark);
+	border-radius: var(--r);
+	font: inherit;
+	color: var(--ink);
+	background: var(--paper);
+}
+
+.cms-search input[type='search']:focus {
+	outline: 2px solid var(--signal);
+	outline-offset: 1px;
+	border-color: var(--signal);
+}

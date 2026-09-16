@@ -16,6 +16,13 @@
  */
 import { createClient } from '@supabase/supabase-js';
 
+// Only a real deployment publishes anything. A local `npm run build` with
+// credentials in the shell must never tell the CMS the site went live.
+if (!process.env.VERCEL) {
+	console.log('[builds] Not a Vercel build — leaving build records untouched.');
+	process.exit(0);
+}
+
 const url = process.env.PUBLIC_SUPABASE_URL;
 const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
