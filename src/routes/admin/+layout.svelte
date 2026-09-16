@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { page } from '$app/state';
+	import AccountMenu from '$components/admin/AccountMenu.svelte';
 	import '$lib/admin.css';
 
 	let { data, children } = $props();
@@ -48,11 +49,8 @@
 				</ul>
 			</nav>
 			<div class="cms-user">
-				{#if data.user}<p>{data.user.email}</p>{/if}
-				<form method="POST" action="/admin/login?/logout">
-					<button class="cms-btn cms-btn-ghost" type="submit">Afmelden</button>
-				</form>
 				<p class="cms-meta"><a href="/" target="_blank" rel="noopener">Bekijk de site ↗</a></p>
+				<AccountMenu email={data.user?.email ?? null} />
 			</div>
 		</aside>
 		<main class="cms-main">{@render children()}</main>

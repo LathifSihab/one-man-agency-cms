@@ -164,7 +164,10 @@ Whitespace and attribute order are ignored, as the handover allows; anything els
 priorities, the AI-crawler allowances, 16 redirects, and the JSON-LD counts
 (`Service` on 20 pages, `FAQPage` on 13, `BlogPosting` on 7).
 
-Both currently pass with zero differences.
+`npm run parity` is a **migration-time gate**: it proves the port did not change
+anything. Once the client starts editing content it will legitimately report the edits
+as differences — the first was renaming a logo from "Klant" to "Gazoil". Read it as
+"what has changed since the original build", not as a test that must always be green.
 
 ---
 

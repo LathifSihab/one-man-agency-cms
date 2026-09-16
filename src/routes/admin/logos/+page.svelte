@@ -3,30 +3,48 @@
 	import { enhance } from '$app/forms';
 	let { data, form } = $props();
 
-	// The 22 logos still called "Klant" come first with a warning: it is a real
-	// SEO defect (empty alt text) and the CMS should make it impossible to miss.
+	/**
+	 * Logos are held in their real display order, never in the order they happen
+	 * to be shown in. Grouping the unnamed ones first is a *view*: if it were
+	 * allowed to define sort_order on save, opening this screen and pressing Save
+	 * would silently reshuffle the logo wall on the live site.
+	 */
 	let logos = $state(
-		untrack(() => [...data.logos]).sort((a, b) => {
-			const aBad = a.name === 'Klant' ? 0 : 1;
-			const bBad = b.name === 'Klant' ? 0 : 1;
-			return aBad - bBad || a.sort_order - b.sort_order;
-		})
+		untrack(() => [...data.logos]).sort((a, b) => a.sort_order - b.sort_order)
 	);
 
+	// Default to the view that surfaces the SEO defect, per the CMS spec.
+	let unnamedFirst = $state(true);
 	let busy = $state(false);
+
 	const unnamed = $derived(logos.filter((l) => l.name === 'Klant').length);
 
-	function move(i: number, by: number) {
+	/** What is rendered. Reordering is only offered in the true-order view. */
+	const shown = $derived(
+		unnamedFirst
+			? [...logos].sort((a, b) => {
+					const rank = (n: string) => (n === 'Klant' ? 0 : 1);
+					return rank(a.name) - rank(b.name) || a.sort_order - b.sort_order;
+				})
+			: logos
+	);
+
+	function move(id: string, by: number) {
+		const i = logos.findIndex((l) => l.id === id);
 		const to = i + by;
-		if (to < 0 || to >= logos.length) return;
+		if (i < 0 || to < 0 || to >= logos.length) return;
 		const next = [...logos];
 		[next[i], next[to]] = [next[to], next[i]];
 		logos = next.map((l, k) => ({ ...l, sort_order: k }));
 	}
 
+	// Always derived from the true order, never from `shown`.
 	const payload = $derived(
 		JSON.stringify(logos.map((l, i) => ({ id: l.id, name: l.name, sort_order: i })))
 	);
+
+	const firstId = $derived(logos[0]?.id);
+	const lastId = $derived(logos[logos.length - 1]?.id);
 </script>
 
 <h1>Logo's</h1>
@@ -53,23 +71,35 @@
 		<button class="cms-btn" type="submit" disabled={busy}>
 			{busy ? 'Bezig…' : 'Namen en volgorde opslaan'}
 		</button>
+		<label style="font-weight:500;display:flex;align-items:center;gap:.4rem">
+			<input type="checkbox" bind:checked={unnamedFirst} style="width:auto" />
+			Toon logo&rsquo;s zonder naam eerst
+		</label>
 	</div>
+	<p class="cms-hint" style="margin:-.4rem 0 1rem">
+		{unnamedFirst
+			? 'Dit is enkel een weergave; de volgorde op de site verandert er niet door. Zet dit uit om te herschikken.'
+			: 'Dit is de volgorde zoals ze op de site staat. Gebruik de pijlen om te herschikken.'}
+	</p>
 
 	<div class="cms-logos">
-		{#each logos as logo, i (logo.id)}
+		{#each shown as logo (logo.id)}
 			<div class="cms-logo" class:needs-name={logo.name === 'Klant'}>
 				<img src={logo.file_path} alt={logo.name === 'Klant' ? 'Klantlogo' : `Logo van ${logo.name}`} />
 				<input type="text" bind:value={logo.name} aria-label="Naam van de klant" />
 				{#if logo.name === 'Klant'}
 					<p class="cms-hint" style="margin:.3rem 0 0">Naam ontbreekt</p>
 				{/if}
-				<div class="cms-actions" style="justify-content:center;margin-top:.4rem">
-					<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
-					        onclick={() => move(i, -1)} disabled={i === 0} aria-label="Eerder">↑</button>
-					<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
-					        onclick={() => move(i, 1)} disabled={i === logos.length - 1}
-					        aria-label="Later">↓</button>
-				</div>
+				{#if !unnamedFirst}
+					<div class="cms-actions" style="justify-content:center;margin-top:.4rem">
+						<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
+						        onclick={() => move(logo.id, -1)} disabled={logo.id === firstId}
+						        aria-label="Eerder">↑</button>
+						<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
+						        onclick={() => move(logo.id, 1)} disabled={logo.id === lastId}
+						        aria-label="Later">↓</button>
+					</div>
+				{/if}
 			</div>
 		{/each}
 	</div>

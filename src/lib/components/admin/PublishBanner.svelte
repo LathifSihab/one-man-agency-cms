@@ -6,11 +6,23 @@
 	 * Saving is never called publishing. A save writes to the database; only a
 	 * rebuild changes the live site. This banner states which of those is true
 	 * right now, and never shows a green state it has not verified.
+	 *
+	 * While a build runs it polls the server rather than guessing: the progress
+	 * bar is a time estimate, clearly labelled as one, but the status it settles
+	 * on comes from the build record.
 	 */
 	let { publish: publishState }: { publish: PublishState } = $props();
 
+	/** A build normally takes about this long; used only for the progress bar. */
+	const EXPECTED_SECONDS = 60;
+	const POLL_MS = 4000;
+	const GIVE_UP_SECONDS = 360;
+
 	let busy = $state(false);
 	let message = $state('');
+	let elapsed = $state(0);
+
+	const building = $derived(publishState.status === 'building');
 
 	const TONE: Record<string, string> = {
 		live: 'live',
@@ -20,10 +32,46 @@
 		unknown: 'pending'
 	};
 
+	/** Capped just below full: it only reaches 100% when the server says so. */
+	const progress = $derived(Math.min(95, Math.round((elapsed / EXPECTED_SECONDS) * 100)));
+	const overdue = $derived(elapsed > EXPECTED_SECONDS * 2);
+
 	function when(iso: string | null): string {
 		if (!iso) return 'onbekend';
 		return new Date(iso).toLocaleString('nl-BE', { dateStyle: 'medium', timeStyle: 'short' });
 	}
+
+	// Tick and poll only while a build is actually running.
+	$effect(() => {
+		if (!building) {
+			elapsed = 0;
+			return;
+		}
+
+		const started = publishState.lastBuild?.triggered_at
+			? new Date(publishState.lastBuild.triggered_at).getTime()
+			: Date.now();
+
+		const tick = setInterval(() => {
+			elapsed = Math.round((Date.now() - started) / 1000);
+		}, 1000);
+
+		const poll = setInterval(() => {
+			if (elapsed > GIVE_UP_SECONDS) {
+				clearInterval(poll);
+				message =
+					'Dit duurt langer dan verwacht. Controleer de bouwstatus bij Vercel; ' +
+					'je wijzigingen blijven bewaard.';
+				return;
+			}
+			invalidateAll();
+		}, POLL_MS);
+
+		return () => {
+			clearInterval(tick);
+			clearInterval(poll);
+		};
+	});
 
 	async function triggerPublish() {
 		busy = true;
@@ -36,7 +84,7 @@
 			} else if (body.deduped) {
 				message = `Er loopt al een publicatie. Nog ongeveer ${body.wait} seconden.`;
 			} else {
-				message = 'Publiceren gestart. Dit duurt ongeveer een minuut.';
+				message = '';
 			}
 			await invalidateAll();
 		} catch {
@@ -45,32 +93,59 @@
 			busy = false;
 		}
 	}
+
+	const changeCount = $derived(publishState.pendingChanges);
+	const changeWord = $derived(changeCount === 1 ? 'wijziging' : 'wijzigingen');
 </script>
 
 <div class="cms-banner {TONE[publishState.status]}">
-	<p>
-		{#if publishState.status === 'live'}
-			De site is bijgewerkt. Laatste publicatie {when(publishState.lastBuild?.finished_at ?? null)}.
-		{:else if publishState.status === 'building'}
-			Publiceren is bezig, gestart om {when(publishState.lastBuild?.triggered_at ?? null)}.
-		{:else if publishState.status === 'failed'}
-			De laatste publicatie is mislukt{publishState.lastBuild?.detail ? ` (${publishState.lastBuild.detail})` : ''}.
-			Je wijzigingen staan nog klaar.
-		{:else if publishState.status === 'pending'}
-			{publishState.pendingChanges || 'Enkele'} wijziging{publishState.pendingChanges === 1 ? '' : 'en'} staan nog
-			niet op de live site.
-		{:else}
-			Nog niet gepubliceerd sinds deze omgeving is opgezet.
+	<div style="flex:1 1 320px">
+		<p>
+			{#if building}
+				<span class="cms-spinner" aria-hidden="true"></span>
+				Bezig met publiceren{changeCount ? ` van ${changeCount} ${changeWord}` : ''}…
+			{:else if publishState.status === 'live'}
+				De site is bijgewerkt. Laatste publicatie {when(publishState.lastBuild?.finished_at ?? null)}.
+			{:else if publishState.status === 'failed'}
+				De laatste publicatie is mislukt{publishState.lastBuild?.detail
+					? ` (${publishState.lastBuild.detail})`
+					: ''}. Je wijzigingen staan nog klaar.
+			{:else if publishState.status === 'pending'}
+				{changeCount || 'Enkele'}
+				{changeWord} staan nog niet op de live site.
+			{:else}
+				Nog niet gepubliceerd sinds deze omgeving is opgezet.
+			{/if}
+		</p>
+
+		{#if building}
+			<div
+				class="cms-progress"
+				role="progressbar"
+				aria-valuemin="0"
+				aria-valuemax="100"
+				aria-valuenow={progress}
+				aria-label="Voortgang van het publiceren"
+			>
+				<div class="cms-progress-bar" style="width:{progress}%"></div>
+			</div>
+			<p class="cms-progress-note">
+				{elapsed}s bezig{overdue ? ' — langer dan gewoonlijk' : ', meestal ongeveer een minuut'}.
+				De site wordt opnieuw opgebouwd; je kan dit venster gerust sluiten.
+			</p>
 		{/if}
-	</p>
+	</div>
+
 	<span class="cms-actions">
-		{#if publishState.status !== 'live'}
-			<button class="cms-btn" onclick={triggerPublish} disabled={busy || publishState.status === 'building'}>
-				{busy ? 'Bezig…' : 'Publiceren'}
-			</button>
-		{:else}
+		{#if building}
+			<button class="cms-btn" disabled>Bezig…</button>
+		{:else if publishState.status === 'live'}
 			<button class="cms-btn cms-btn-ghost" onclick={triggerPublish} disabled={busy}>
 				Opnieuw publiceren
+			</button>
+		{:else}
+			<button class="cms-btn" onclick={triggerPublish} disabled={busy}>
+				{busy ? 'Bezig…' : 'Publiceren'}
 			</button>
 		{/if}
 	</span>
