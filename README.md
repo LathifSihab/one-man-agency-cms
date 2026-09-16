@@ -32,6 +32,7 @@ and `npm run build` work before the database exists.
 | `npm run parity` | Diff the build against the original site (`dist-original/`) |
 | `npm run seed:account` | Create or reset the single CMS account |
 | `npm run responsive` | Measure every page in a real browser at six viewports |
+| `npm run e2e:admin` | Drive the CMS in a real browser (needs `--base <url>`) |
 
 ## Layout
 
@@ -166,6 +167,10 @@ Whitespace and attribute order are ignored, as the handover allows; anything els
 content past the viewport edge, text under 12px, tap targets under 24x24, images
 without intrinsic dimensions, and whether the nav collapses at the right width.
 Serve a build first (`npx serve -s .vercel/output/static -l 4173`).
+
+`tools/admin-e2e.mjs` signs in and exercises the CMS. It runs against a
+deployment rather than a folder, since the admin needs a session, and it uploads
+a throwaway image to act on: destructive checks must never touch real content.
 
 `tools/verify.py` checks the acceptance criteria: 41 indexable routes, the sitemap and its
 priorities, the AI-crawler allowances, 16 redirects, and the JSON-LD counts

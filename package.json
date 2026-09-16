@@ -12,7 +12,8 @@
     "parity": "python tools/parity.py",
     "postinstall": "svelte-kit sync",
     "seed:account": "python tools/seed_account.py",
-    "responsive": "node tools/responsive.mjs --all"
+    "responsive": "node tools/responsive.mjs --all",
+    "e2e:admin": "node tools/admin-e2e.mjs"
   },
   "devDependencies": {
     "@sveltejs/adapter-vercel": "^5.10.2",

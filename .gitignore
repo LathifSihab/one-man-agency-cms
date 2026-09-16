@@ -31,3 +31,7 @@ npm-debug.log*
 .DS_Store
 Thumbs.db
 desktop.ini
+
+# scratch browser probes
+.e2e.mjs
+.dbg.mjs

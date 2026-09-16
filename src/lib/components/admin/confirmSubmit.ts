@@ -16,8 +16,11 @@ export interface Confirmer {
  *
  * The submit is stopped, the question asked, and the same form submitted again
  * once answered. A marker on the form element lets that second pass through to
- * use:enhance rather than asking a second time, which is what makes this work
- * with progressively enhanced form actions instead of fetch calls.
+ * use:enhance rather than asking a second time.
+ *
+ * Doing it this way, rather than calling the action from script, keeps
+ * progressive enhancement intact: without JavaScript the form still posts, it
+ * just posts without asking first.
  *
  *     <form use:enhance onsubmit={(e) => confirmSubmit(e, confirmer, { … })}>
  */
