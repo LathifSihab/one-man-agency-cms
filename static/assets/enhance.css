@@ -297,6 +297,19 @@ footer.site ul a,
 	padding-block: 0.3rem;
 }
 
+/* ── legibility ──────────────────────────────────────────────────────────── */
+
+/*
+ * The client-name caption on the logo wall was .72rem, which computes to 11.5px.
+ * It is a caption rather than body copy, but on touch devices it is shown
+ * permanently rather than on hover, so it is read rather than glanced at.
+ * Nudged to 12px: the smallest change that clears the legibility floor, and
+ * indistinguishable from the original at a glance.
+ */
+.logonaam {
+	font-size: 0.75rem;
+}
+
 /* ── reduced motion ──────────────────────────────────────────────────────── */
 
 /*

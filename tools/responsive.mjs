@@ -14,12 +14,57 @@
  *
  *   node tools/responsive.mjs [--base http://localhost:4173] [--all]
  *
- * Defaults to the local preview server. Pass --all to sweep every page rather
- * than the representative set.
+ * With no --base it serves .vercel/output/static itself. That matters: a generic
+ * static server in SPA mode rewrites every extensionless URL to index.html, so
+ * the audit silently measures the home page once per route and reports a clean
+ * sweep. The built-in server maps /prijzen to prijzen.html the way Vercel does,
+ * and 404s anything missing so a bad route is visible.
+ *
+ * Pass --all to sweep every page rather than the representative set.
  */
+
+const TYPES = {
+	'.html': 'text/html; charset=utf-8',
+	'.css': 'text/css; charset=utf-8',
+	'.js': 'text/javascript; charset=utf-8',
+	'.svg': 'image/svg+xml',
+	'.png': 'image/png',
+	'.jpg': 'image/jpeg',
+	'.jpeg': 'image/jpeg',
+	'.webp': 'image/webp',
+	'.xml': 'application/xml',
+	'.txt': 'text/plain; charset=utf-8'
+};
+
+/** Serves the build with Vercel's clean-URL mapping. Returns [origin, close]. */
+async function serveBuild(root) {
+	const server = createServer((req, res) => {
+		const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
+		const candidates =
+			path === '/'
+				? ['index.html']
+				: [path.slice(1), `${path.slice(1)}.html`, join(path.slice(1), 'index.html')];
+
+		for (const rel of candidates) {
+			const file = join(root, rel);
+			if (existsSync(file) && statSync(file).isFile()) {
+				res.writeHead(200, { 'content-type': TYPES[extname(file)] ?? 'application/octet-stream' });
+				res.end(readFileSync(file));
+				return;
+			}
+		}
+		res.writeHead(404, { 'content-type': 'text/plain' });
+		res.end('not found');
+	});
+
+	await new Promise((resolve) => server.listen(0, resolve));
+	const { port } = server.address();
+	return [`http://127.0.0.1:${port}`, () => new Promise((r) => server.close(r))];
+}
 import { chromium } from 'playwright';
-import { readdirSync, statSync } from 'node:fs';
-import { join } from 'node:path';
+import { createServer } from 'node:http';
+import { readdirSync, statSync, readFileSync, existsSync } from 'node:fs';
+import { join, extname } from 'node:path';
 
 const args = process.argv.slice(2);
 const flag = (name, fallback) => {
@@ -27,8 +72,13 @@ const flag = (name, fallback) => {
 	return i === -1 ? fallback : args[i + 1];
 };
 
-const BASE = flag('--base', 'http://localhost:4173').replace(/\/$/, '');
+const EXPLICIT_BASE = flag('--base', null);
 const ALL = args.includes('--all');
+const ROOT = '.vercel/output/static';
+
+const [BASE, stopServer] = EXPLICIT_BASE
+	? [EXPLICIT_BASE.replace(/\/$/, ''), async () => {}]
+	: await serveBuild(ROOT);
 
 const VIEWPORTS = [
 	{ name: 'mobile-small', width: 320, height: 720 },
@@ -56,7 +106,7 @@ const SAMPLE = [
 	'/404'
 ];
 
-function everyRoute(dir = '.vercel/output/static', prefix = '') {
+function everyRoute(dir = ROOT, prefix = '') {
 	const out = [];
 	for (const entry of readdirSync(dir)) {
 		const full = join(dir, entry);
@@ -98,7 +148,27 @@ function audit() {
 
 		// Decorative layers are allowed to bleed; they carry pointer-events: none.
 		// A skip link is parked far offscreen until focused, by design.
-		const decorative = style.pointerEvents === 'none' || el.classList.contains('skip');
+		// Content inside a deliberately scrollable box — the price tables live in
+		// .tablewrap { overflow-x: auto } — is meant to exceed the viewport and is
+		// swiped, not a layout fault. Page-level horizontal scroll is checked
+		// separately and is the finding that actually matters.
+		let inScroller = false;
+		for (let p = el.parentElement; p && p !== document.body; p = p.parentElement) {
+			const ox = getComputedStyle(p).overflowX;
+			if (ox === 'auto' || ox === 'scroll') {
+				inScroller = true;
+				break;
+			}
+		}
+		// aria-hidden marks content deliberately absent from the accessibility
+		// tree — the spam honeypot on the forms is parked offscreen this way.
+		const hiddenOnPurpose = el.closest('[aria-hidden="true"]') !== null;
+
+		const decorative =
+			style.pointerEvents === 'none' ||
+			el.classList.contains('skip') ||
+			hiddenOnPurpose ||
+			inScroller;
 
 		if (!decorative && r.width > vw + 1) {
 			overflowing.push(`${describe(el)} (${Math.round(r.width)}px wide)`);
@@ -116,9 +186,22 @@ function audit() {
 		}
 
 		if (el.matches('a, button, summary, input, select, textarea') && !el.classList.contains('skip')) {
-			const label = `${describe(el)} ${Math.round(r.width)}x${Math.round(r.height)}`;
-			if (r.height > 0 && r.height < 24 && r.width < 24) smallTargets.push(label);
-			else if (r.height > 0 && r.height < 44 && r.width < 44) advisoryTargets.push(label);
+			// A label bound to a control activates it, so the real target is both.
+			let box = r;
+			if (el.id) {
+				const bound = document.querySelector(`label[for="${CSS.escape(el.id)}"]`);
+				if (bound) {
+					const lr = bound.getBoundingClientRect();
+					box = {
+						width: Math.max(r.right, lr.right) - Math.min(r.left, lr.left),
+						height: Math.max(r.bottom, lr.bottom) - Math.min(r.top, lr.top)
+					};
+				}
+			}
+			const r2 = box;
+			const label = `${describe(el)} ${Math.round(r2.width)}x${Math.round(r2.height)}`;
+			if (r2.height > 0 && r2.height < 24 && r2.width < 24) smallTargets.push(label);
+			else if (r2.height > 0 && r2.height < 44 && r2.width < 44) advisoryTargets.push(label);
 		}
 
 		if (el.tagName === 'IMG' && (!el.getAttribute('width') || !el.getAttribute('height'))) {
@@ -213,6 +296,7 @@ for (const viewport of VIEWPORTS) {
 }
 
 await browser.close();
+await stopServer();
 
 console.log(`\n${checked} page renders measured across ${VIEWPORTS.length} viewports.\n`);
 
