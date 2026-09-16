@@ -1,0 +1,334 @@
+backend:
+  name: github
+  repo: JOUW-GITHUB-GEBRUIKER/onemanagency
+  branch: main
+
+publish_mode: editorial_workflow
+media_folder: "assets/uploads"
+public_folder: "/assets/uploads"
+locale: nl
+
+collections:
+  # ------------------------------------------------------------ BLOG
+  - name: blog
+    label: "Blogberichten"
+    label_singular: "Blogbericht"
+    folder: "content/blog"
+    create: true
+    slug: "{{slug}}"
+    sortable_fields: [datum, titel]
+    summary: "{{titel}} — {{datum | date('D/M/YYYY')}}"
+    fields:
+      - { name: titel, label: "Titel", widget: string }
+      - { name: datum, label: "Datum", widget: datetime, format: "YYYY-MM-DD", time_format: false }
+      - { name: intro, label: "Intro (1 à 2 zinnen, komt bovenaan het artikel)", widget: text }
+      - { name: categorie, label: "Categorie", widget: select, required: false,
+          options: ["SEO & vindbaarheid", "Website", "Social media", "AI & automatisatie", "Branding", "Strategie", "Lokale marketing"] }
+      - { name: afbeelding, label: "Afbeelding", widget: image, required: false }
+      - { name: gepubliceerd, label: "Gepubliceerd", widget: boolean, default: true }
+      - { name: seo_titel, label: "SEO-titel (max 60 tekens)", widget: string, pattern: ['^.{0,62}$', 'Hou dit onder 62 tekens'] }
+      - { name: meta_omschrijving, label: "Meta description (max 155 tekens)", widget: text, pattern: ['^.{0,158}$', 'Hou dit onder 158 tekens'] }
+      - { name: oude_url, label: "Oude URL (voor de redirect)", widget: string, required: false }
+      - { name: body, label: "Artikel", widget: markdown }
+
+  # ------------------------------------------------------------ DIENSTEN
+  - name: diensten
+    label: "Dienstenpagina's"
+    label_singular: "Dienst"
+    folder: "content/diensten"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { name: titel, label: "Titel op de pagina", widget: string }
+      - { name: intro, label: "Intro onder de titel", widget: text }
+      - { name: seo_titel, label: "SEO-titel (max 60 tekens)", widget: string, pattern: ['^.{0,62}$', 'Hou dit onder 62 tekens'] }
+      - { name: meta_omschrijving, label: "Meta description (max 155 tekens)", widget: text, pattern: ['^.{0,158}$', 'Hou dit onder 158 tekens'] }
+      - name: prijzen
+        label: "Prijstabel"
+        widget: list
+        required: false
+        fields:
+          - { name: wat, label: "Wat", widget: string }
+          - { name: vanaf, label: "Vanaf", widget: string }
+      - name: faq
+        label: "Veelgestelde vragen"
+        widget: list
+        required: false
+        fields:
+          - { name: vraag, label: "Vraag", widget: string }
+          - { name: antwoord, label: "Antwoord", widget: text }
+      - { name: body, label: "Tekst", widget: markdown }
+
+  # ------------------------------------------------------------ SECTOREN
+  - name: sectoren
+    label: "Sectorpagina's"
+    label_singular: "Sector"
+    folder: "content/sectoren"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { name: titel, label: "Titel", widget: string }
+      - { name: intro, label: "Intro", widget: text }
+      - { name: seo_titel, label: "SEO-titel", widget: string, pattern: ['^.{0,62}$', 'Hou dit onder 62 tekens'] }
+      - { name: meta_omschrijving, label: "Meta description", widget: text, pattern: ['^.{0,158}$', 'Hou dit onder 158 tekens'] }
+      - { name: af_te_werken, label: "Interne notitie (verschijnt als grijs blok)", widget: text, required: false }
+      - { name: body, label: "Tekst", widget: markdown }
+
+  # ------------------------------------------------------------ REGIO
+  - name: regio
+    label: "Regiopagina's"
+    label_singular: "Gemeente"
+    folder: "content/regio"
+    create: true
+    slug: "{{slug}}"
+    fields:
+      - { name: titel, label: "Titel", widget: string }
+      - { name: intro, label: "Intro", widget: text }
+      - { name: seo_titel, label: "SEO-titel", widget: string, pattern: ['^.{0,62}$', 'Hou dit onder 62 tekens'] }
+      - { name: meta_omschrijving, label: "Meta description", widget: text, pattern: ['^.{0,158}$', 'Hou dit onder 158 tekens'] }
+      - { name: af_te_werken, label: "Interne notitie", widget: text, required: false }
+      - { name: body, label: "Tekst", widget: markdown }
+
+  # ------------------------------------------------------------ VASTE PAGINA'S
+  - name: paginas
+    label: "Pagina's"
+    files:
+      - name: home
+        label: "Home"
+        file: "content/paginas/home.md"
+        fields:
+          - { name: titel, label: "Titel in de groene balk", widget: string }
+          - { name: intro, label: "Zin onder de titel", widget: text }
+          - { name: knop_primair, label: "Tekst knop 1", widget: string }
+          - { name: knop_primair_link, label: "Link knop 1", widget: string }
+          - { name: knop_secundair, label: "Tekst knop 2", widget: string }
+          - { name: knop_secundair_link, label: "Link knop 2", widget: string }
+          - { name: portret, label: "Portretfoto", widget: image }
+          - { name: portret_alt, label: "Alt-tekst portret", widget: string }
+          - { name: header_afbeelding, label: "Breed headerbeeld", widget: image }
+          - { name: header_alt, label: "Alt-tekst headerbeeld", widget: string }
+          - name: cijfers
+            label: "Cijfers in de groene balk"
+            widget: list
+            fields:
+              - { name: getal, label: "Groot", widget: string }
+              - { name: label, label: "Klein", widget: string }
+          - name: citaten
+            label: "Klantencitaten"
+            widget: list
+            fields:
+              - { name: tekst, label: "Citaat", widget: text }
+              - { name: naam, label: "Naam", widget: string }
+              - { name: functie, label: "Functie en bedrijf", widget: string }
+          - { name: sectoren_lijst, label: "Sectoren", widget: list, field: { name: item, widget: string } }
+          - { name: seo_titel, label: "SEO-titel", widget: string, pattern: ['^.{0,62}$', 'Hou dit onder 62 tekens'] }
+          - { name: meta_omschrijving, label: "Meta description", widget: text, pattern: ['^.{0,158}$', 'Hou dit onder 158 tekens'] }
+          - { name: body, label: "Tekst (laat de {{blokken}} staan waar je ze wil)", widget: markdown }
+
+      - name: over_niels
+        label: "Over Niels"
+        file: "content/paginas/over-niels.md"
+        fields:
+          - { name: titel, label: "Titel", widget: string }
+          - { name: intro, label: "Intro", widget: text }
+          - { name: portret, label: "Portretfoto", widget: image }
+          - { name: portret_alt, label: "Alt-tekst", widget: string }
+          - { name: seo_titel, label: "SEO-titel", widget: string }
+          - { name: meta_omschrijving, label: "Meta description", widget: text }
+          - { name: body, label: "Tekst", widget: markdown }
+
+      - name: diensten_hub
+        label: "Diensten (overzicht)"
+        file: "content/paginas/diensten.md"
+        fields:
+          - { name: titel, widget: string, label: "Titel" }
+          - { name: intro, widget: text, label: "Intro" }
+          - { name: seo_titel, widget: string, label: "SEO-titel" }
+          - { name: meta_omschrijving, widget: text, label: "Meta description" }
+          - { name: body, widget: markdown, label: "Tekst" }
+
+      - name: referenties
+        label: "Referenties"
+        file: "content/paginas/referenties.md"
+        fields:
+          - { name: titel, widget: string, label: "Titel" }
+          - { name: intro, widget: text, label: "Intro" }
+          - { name: seo_titel, widget: string, label: "SEO-titel" }
+          - { name: meta_omschrijving, widget: text, label: "Meta description" }
+          - { name: body, widget: markdown, label: "Tekst" }
+
+      - name: prijzen
+        label: "Prijzen"
+        file: "content/paginas/prijzen.md"
+        fields:
+          - { name: titel, widget: string, label: "Titel" }
+          - { name: intro, widget: text, label: "Intro" }
+          - name: pakketten
+            label: "Maandpakketten"
+            widget: list
+            fields:
+              - { name: naam, label: "Naam", widget: string }
+              - { name: voor_wie, label: "Voor wie", widget: string }
+              - { name: prijs, label: "Prijs", widget: string }
+              - { name: periode, label: "Periode", widget: string }
+              - { name: uitgelicht, label: "Uitlichten met groene rand", widget: boolean, default: false }
+              - { name: inbegrepen, label: "Inbegrepen", widget: list, field: { name: item, widget: string } }
+          - name: projecten
+            label: "Projectprijzen"
+            widget: list
+            fields:
+              - { name: wat, label: "Project", widget: string }
+              - { name: vanaf, label: "Vanaf", widget: string }
+              - { name: link, label: "Link naar dienst", widget: string }
+          - name: faq
+            label: "Vragen over prijs"
+            widget: list
+            fields:
+              - { name: vraag, widget: string, label: "Vraag" }
+              - { name: antwoord, widget: text, label: "Antwoord" }
+          - { name: seo_titel, widget: string, label: "SEO-titel" }
+          - { name: meta_omschrijving, widget: text, label: "Meta description" }
+          - { name: body, widget: markdown, label: "Tekst" }
+
+      - name: faq
+        label: "Veelgestelde vragen"
+        file: "content/paginas/veelgestelde-vragen.md"
+        fields:
+          - { name: titel, widget: string, label: "Titel" }
+          - { name: intro, widget: text, label: "Intro" }
+          - name: faq
+            label: "Vragen"
+            widget: list
+            fields:
+              - { name: vraag, widget: string, label: "Vraag" }
+              - { name: antwoord, widget: text, label: "Antwoord" }
+          - { name: seo_titel, widget: string, label: "SEO-titel" }
+          - { name: meta_omschrijving, widget: text, label: "Meta description" }
+          - { name: body, widget: markdown, label: "Tekst" }
+
+      - name: scan
+        label: "Gratis marketingscan"
+        file: "content/paginas/gratis-marketingscan.md"
+        fields:
+          - { name: titel, widget: string, label: "Titel" }
+          - { name: intro, widget: text, label: "Intro" }
+          - { name: formulier, widget: hidden, default: "scan" }
+          - { name: seo_titel, widget: string, label: "SEO-titel" }
+          - { name: meta_omschrijving, widget: text, label: "Meta description" }
+          - { name: body, widget: markdown, label: "Tekst" }
+
+      - name: contact
+        label: "Contact"
+        file: "content/paginas/contact.md"
+        fields:
+          - { name: titel, widget: string, label: "Titel" }
+          - { name: intro, widget: text, label: "Intro" }
+          - { name: formulier, widget: hidden, default: "contact" }
+          - { name: seo_titel, widget: string, label: "SEO-titel" }
+          - { name: meta_omschrijving, widget: text, label: "Meta description" }
+          - { name: body, widget: markdown, label: "Tekst" }
+
+      - name: afspraak
+        label: "Afspraak"
+        file: "content/paginas/afspraak.md"
+        fields:
+          - { name: titel, widget: string, label: "Titel" }
+          - { name: intro, widget: text, label: "Intro" }
+          - { name: agenda_url, widget: string, label: "Link naar je Google-agenda (embed-URL)" }
+          - { name: seo_titel, widget: string, label: "SEO-titel" }
+          - { name: meta_omschrijving, widget: text, label: "Meta description" }
+          - { name: body, widget: markdown, label: "Tekst" }
+
+      - name: blog_index
+        label: "Blog (overzichtspagina)"
+        file: "content/paginas/blog.md"
+        fields:
+          - { name: titel, widget: string, label: "Titel" }
+          - { name: intro, widget: text, label: "Intro" }
+          - { name: seo_titel, widget: string, label: "SEO-titel" }
+          - { name: meta_omschrijving, widget: text, label: "Meta description" }
+          - { name: body, widget: markdown, label: "Tekst" }
+
+      - name: privacy
+        label: "Privacybeleid"
+        file: "content/paginas/privacybeleid.md"
+        fields:
+          - { name: titel, widget: string, label: "Titel" }
+          - { name: intro, widget: text, label: "Intro" }
+          - { name: seo_titel, widget: string, label: "SEO-titel" }
+          - { name: meta_omschrijving, widget: text, label: "Meta description" }
+          - { name: body, widget: markdown, label: "Tekst" }
+
+      - name: cookies
+        label: "Cookiebeleid"
+        file: "content/paginas/cookiebeleid.md"
+        fields:
+          - { name: titel, widget: string, label: "Titel" }
+          - { name: intro, widget: text, label: "Intro" }
+          - { name: seo_titel, widget: string, label: "SEO-titel" }
+          - { name: meta_omschrijving, widget: text, label: "Meta description" }
+          - { name: body, widget: markdown, label: "Tekst" }
+
+      - name: voorwaarden
+        label: "Algemene voorwaarden"
+        file: "content/paginas/algemene-voorwaarden.md"
+        fields:
+          - { name: titel, widget: string, label: "Titel" }
+          - { name: intro, widget: text, label: "Intro" }
+          - { name: seo_titel, widget: string, label: "SEO-titel" }
+          - { name: meta_omschrijving, widget: text, label: "Meta description" }
+          - { name: body, widget: markdown, label: "Tekst" }
+
+  # ------------------------------------------------------------ INSTELLINGEN
+  - name: instellingen
+    label: "Instellingen"
+    files:
+      - name: algemeen
+        label: "Bedrijf, menu en knoppen"
+        file: "content/settings.yml"
+        fields:
+          - name: bedrijf
+            label: "Bedrijfsgegevens"
+            widget: object
+            fields:
+              - { name: naam, widget: string, label: "Naam" }
+              - { name: juridisch, widget: string, label: "Juridische naam" }
+              - { name: straat, widget: string, label: "Straat en nummer" }
+              - { name: postcode, widget: string, label: "Postcode" }
+              - { name: stad, widget: string, label: "Gemeente" }
+              - { name: btw, widget: string, label: "Btw-nummer" }
+              - { name: telefoon, widget: string, label: "Telefoon (weergave)" }
+              - { name: telefoon_link, widget: string, label: "Telefoon (kliknummer)" }
+              - { name: email, widget: string, label: "E-mail" }
+              - { name: slogan, widget: string, label: "Slogan" }
+          - name: navigatie
+            label: "Menu"
+            widget: list
+            fields:
+              - { name: label, widget: string, label: "Tekst" }
+              - { name: link, widget: string, label: "Link" }
+          - name: knop
+            label: "Knop rechts in het menu"
+            widget: object
+            fields:
+              - { name: label, widget: string, label: "Tekst" }
+              - { name: link, widget: string, label: "Link" }
+          - { name: formspree_id, widget: string, label: "Formspree-ID" }
+          - name: socials
+            label: "Sociale kanalen"
+            widget: list
+            fields:
+              - { name: naam, widget: string, label: "Naam" }
+              - { name: url, widget: string, label: "URL" }
+
+      - name: logos
+        label: "Klantlogo's"
+        file: "content/logos.yml"
+        fields:
+          - name: logos
+            label: "Logo's"
+            widget: list
+            fields:
+              - { name: naam, label: "Klantnaam (wordt de alt-tekst)", widget: string }
+              - { name: bestand, label: "Bestandsnaam", widget: string }
+              - { name: url, label: "Externe URL (tijdelijk)", widget: string, required: false }

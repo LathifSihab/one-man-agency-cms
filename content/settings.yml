@@ -1,0 +1,37 @@
+bedrijf:
+  naam: One Man Agency
+  juridisch: One Man Agency BV
+  straat: Denderbellestraat 156
+  postcode: 9200
+  stad: Dendermonde
+  btw: BE 0831.834.485
+  telefoon: 0495 62 66 11
+  telefoon_link: '+32495626611'
+  email: info@onemanagency.be
+  slogan: A One Man Agency is all you need.
+navigatie:
+- label: Over Niels
+  link: /over-niels
+- label: Diensten
+  link: /diensten
+- label: Referenties
+  link: /referenties
+- label: Prijzen
+  link: /prijzen
+- label: Blog
+  link: /blog
+- label: Contact
+  link: /contact
+knop:
+  label: Maak een afspraak
+  link: /afspraak
+formspree_id: JOUW-FORMSPREE-ID
+socials:
+- naam: LinkedIn
+  url: https://www.linkedin.com/company/one-man-agency/
+- naam: Facebook
+  url: https://www.facebook.com/onemanagency
+- naam: Instagram
+  url: https://www.instagram.com/onemanagency_dendermonde
+- naam: YouTube
+  url: https://www.youtube.com/@onemanagencydendermonde

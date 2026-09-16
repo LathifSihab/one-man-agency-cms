@@ -1,0 +1,26 @@
+# Remote project configuration, pushed with `supabase config push`.
+project_id = "etcmfxrcukgukssqaias"
+
+[auth]
+site_url = "http://localhost:5173"
+additional_redirect_urls = [
+  "http://localhost:5173/admin/login",
+  "https://www.onemanagency.be/admin/login",
+]
+
+[auth.email]
+# Signups are closed: the CMS has exactly one account (decision D5), created
+# manually. Sign-IN must stay possible, and the provider's on/off switch is NOT
+# managed here — `config push` ignores an `enabled` key. It lives in the
+# dashboard under Authentication > Sign In / Providers > Email.
+#
+# Note: setting `enable_signup` under [auth] (rather than [auth.email]) is a
+# GLOBAL flag and also switches the email provider off, locking everyone out.
+# Keep it scoped to [auth.email], as below.
+enable_signup = false
+double_confirm_changes = true
+enable_confirmations = false
+secure_password_change = true
+max_frequency = "1m0s"
+otp_length = 8
+otp_expiry = 3600

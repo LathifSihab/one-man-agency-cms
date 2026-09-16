@@ -1,0 +1,537 @@
+/*
+ * Admin styling.
+ *
+ * Reuses the site's design tokens so the CMS feels like part of the same
+ * product, but it is a separate stylesheet: the public site must not carry a
+ * single byte of admin CSS.
+ */
+
+:root {
+	--ink: #0a0a0a;
+	--ink-soft: #3b3b3b;
+	--muted: #6e6e6e;
+	--paper: #ffffff;
+	--paper-2: #f4f9f8;
+	--line: #e3e9e8;
+	--line-dark: #c9d5d3;
+	--signal: #49c2ab;
+	--signal-dk: #2e9c87;
+	--signal-lt: #eaf8f5;
+	--warn: #b4541f;
+	--warn-lt: #fdf1e8;
+	--font: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+	--r: 4px;
+}
+
+* {
+	box-sizing: border-box;
+}
+
+body {
+	margin: 0;
+	font-family: var(--font);
+	color: var(--ink);
+	background: var(--paper-2);
+	font-size: 15px;
+	line-height: 1.55;
+}
+
+/* ── shell ──────────────────────────────────────────────────────────────── */
+.cms {
+	display: grid;
+	grid-template-columns: 232px 1fr;
+	min-height: 100vh;
+}
+
+.cms-side {
+	background: var(--paper);
+	border-right: 1px solid var(--line);
+	padding: 1.4rem 1rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.2rem;
+	position: sticky;
+	top: 0;
+	height: 100vh;
+}
+
+.cms-brand img {
+	width: 116px;
+	height: auto;
+	display: block;
+}
+
+.cms-side nav ul {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+}
+
+.cms-side nav a {
+	display: block;
+	padding: 0.5rem 0.7rem;
+	border-radius: var(--r);
+	color: var(--ink-soft);
+	text-decoration: none;
+	font-weight: 500;
+}
+
+.cms-side nav a:hover {
+	background: var(--paper-2);
+	color: var(--ink);
+}
+
+.cms-side nav a[aria-current='page'] {
+	background: var(--signal-lt);
+	color: var(--signal-dk);
+}
+
+.cms-user {
+	margin-top: auto;
+	font-size: 13px;
+	color: var(--muted);
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+.cms-user p {
+	margin: 0;
+	word-break: break-all;
+}
+
+.cms-main {
+	padding: 1.8rem 2rem 4rem;
+	max-width: 1100px;
+}
+
+@media (max-width: 860px) {
+	.cms {
+		grid-template-columns: 1fr;
+	}
+	.cms-side {
+		position: static;
+		height: auto;
+	}
+	.cms-main {
+		padding: 1.2rem;
+	}
+}
+
+/* ── typography ─────────────────────────────────────────────────────────── */
+h1 {
+	font-size: 1.6rem;
+	margin: 0 0 0.3rem;
+}
+h2 {
+	font-size: 1.15rem;
+	margin: 2rem 0 0.8rem;
+}
+h3 {
+	font-size: 1rem;
+	margin: 0 0 0.4rem;
+}
+
+.cms-lead {
+	color: var(--muted);
+	margin: 0 0 1.6rem;
+}
+
+.cms-meta {
+	font-size: 13px;
+	color: var(--muted);
+}
+
+/* ── cards and panels ───────────────────────────────────────────────────── */
+.cms-card {
+	background: var(--paper);
+	border: 1px solid var(--line);
+	border-radius: var(--r);
+	padding: 1.1rem 1.2rem;
+}
+
+.cms-grid {
+	display: grid;
+	gap: 1rem;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+}
+
+/* ── publish banner ─────────────────────────────────────────────────────── */
+.cms-banner {
+	border-radius: var(--r);
+	padding: 0.9rem 1.1rem;
+	margin-bottom: 1.4rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 1rem;
+	flex-wrap: wrap;
+	border: 1px solid;
+}
+
+.cms-banner.pending {
+	background: var(--warn-lt);
+	border-color: #eccfb8;
+	color: var(--warn);
+}
+.cms-banner.live {
+	background: var(--signal-lt);
+	border-color: #bfe8de;
+	color: var(--signal-dk);
+}
+.cms-banner.failed {
+	background: #fdecec;
+	border-color: #f0c4c4;
+	color: #a32222;
+}
+.cms-banner p {
+	margin: 0;
+	font-weight: 500;
+}
+
+/* ── buttons ────────────────────────────────────────────────────────────── */
+.cms-btn {
+	display: inline-block;
+	background: var(--signal-dk);
+	color: #fff;
+	border: 1px solid var(--signal-dk);
+	border-radius: var(--r);
+	padding: 0.5rem 1rem;
+	font: inherit;
+	font-weight: 600;
+	cursor: pointer;
+	text-decoration: none;
+	line-height: 1.4;
+}
+
+.cms-btn:hover {
+	background: #27856f;
+}
+
+.cms-btn:disabled {
+	opacity: 0.55;
+	cursor: not-allowed;
+}
+
+.cms-btn-ghost {
+	background: transparent;
+	color: var(--ink-soft);
+	border-color: var(--line-dark);
+}
+
+.cms-btn-ghost:hover {
+	background: var(--paper-2);
+	color: var(--ink);
+}
+
+.cms-btn-danger {
+	background: transparent;
+	color: #a32222;
+	border-color: #e7bcbc;
+}
+
+.cms-btn-small {
+	padding: 0.25rem 0.6rem;
+	font-size: 13px;
+	font-weight: 500;
+}
+
+.cms-actions {
+	display: flex;
+	gap: 0.6rem;
+	flex-wrap: wrap;
+	align-items: center;
+}
+
+/* ── forms ──────────────────────────────────────────────────────────────── */
+.cms-field {
+	margin-bottom: 1.1rem;
+}
+
+.cms-field > label {
+	display: block;
+	font-weight: 600;
+	margin-bottom: 0.3rem;
+}
+
+.cms-hint {
+	font-size: 13px;
+	color: var(--muted);
+	margin: 0.25rem 0 0;
+}
+
+input[type='text'],
+input[type='email'],
+input[type='password'],
+input[type='url'],
+input[type='date'],
+select,
+textarea {
+	width: 100%;
+	padding: 0.5rem 0.65rem;
+	border: 1px solid var(--line-dark);
+	border-radius: var(--r);
+	font: inherit;
+	color: var(--ink);
+	background: var(--paper);
+}
+
+textarea {
+	min-height: 150px;
+	resize: vertical;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+	outline: 2px solid var(--signal);
+	outline-offset: 1px;
+	border-color: var(--signal);
+}
+
+/* live character counters */
+.cms-counter {
+	float: right;
+	font-weight: 500;
+	font-size: 13px;
+	color: var(--muted);
+}
+.cms-counter.over {
+	color: #a32222;
+	font-weight: 700;
+}
+
+input.over,
+textarea.over {
+	border-color: #a32222;
+}
+
+/* ── tables and lists ───────────────────────────────────────────────────── */
+.cms-table {
+	width: 100%;
+	border-collapse: collapse;
+	background: var(--paper);
+	border: 1px solid var(--line);
+	border-radius: var(--r);
+	overflow: hidden;
+}
+
+.cms-table th,
+.cms-table td {
+	text-align: left;
+	padding: 0.6rem 0.8rem;
+	border-bottom: 1px solid var(--line);
+	vertical-align: middle;
+}
+
+.cms-table th {
+	background: var(--paper-2);
+	font-size: 13px;
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+	color: var(--muted);
+}
+
+.cms-table tr:last-child td {
+	border-bottom: 0;
+}
+
+/* ── badges ─────────────────────────────────────────────────────────────── */
+.cms-badge {
+	display: inline-block;
+	font-size: 12px;
+	font-weight: 600;
+	padding: 0.1rem 0.5rem;
+	border-radius: 99px;
+	border: 1px solid;
+}
+
+.cms-badge.ok {
+	background: var(--signal-lt);
+	border-color: #bfe8de;
+	color: var(--signal-dk);
+}
+.cms-badge.warn {
+	background: var(--warn-lt);
+	border-color: #eccfb8;
+	color: var(--warn);
+}
+.cms-badge.draft {
+	background: var(--paper-2);
+	border-color: var(--line-dark);
+	color: var(--muted);
+}
+
+/* ── repeating row editors ──────────────────────────────────────────────── */
+.cms-rows {
+	display: flex;
+	flex-direction: column;
+	gap: 0.6rem;
+}
+
+.cms-row {
+	border: 1px solid var(--line);
+	border-radius: var(--r);
+	padding: 0.8rem;
+	background: var(--paper);
+	display: grid;
+	gap: 0.6rem;
+}
+
+.cms-row-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.cms-row-head strong {
+	font-size: 13px;
+	color: var(--muted);
+	text-transform: uppercase;
+	letter-spacing: 0.03em;
+}
+
+.cms-two {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.6rem;
+}
+
+@media (max-width: 620px) {
+	.cms-two {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ── editor toolbar and preview ─────────────────────────────────────────── */
+.cms-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.3rem;
+	border: 1px solid var(--line-dark);
+	border-bottom: 0;
+	border-radius: var(--r) var(--r) 0 0;
+	padding: 0.4rem;
+	background: var(--paper-2);
+}
+
+.cms-toolbar + textarea {
+	border-radius: 0 0 var(--r) var(--r);
+}
+
+.cms-preview {
+	border: 1px solid var(--line);
+	border-radius: var(--r);
+	background: var(--paper);
+	padding: 1rem 1.2rem;
+	max-height: 460px;
+	overflow: auto;
+}
+
+.cms-preview h2 {
+	margin-top: 1.2rem;
+	font-size: 1.1rem;
+}
+
+.cms-shortcode {
+	display: block;
+	background: var(--signal-lt);
+	border: 1px dashed var(--signal);
+	color: var(--signal-dk);
+	border-radius: var(--r);
+	padding: 0.7rem 0.9rem;
+	margin: 0.8rem 0;
+	font-weight: 600;
+	font-size: 13px;
+}
+
+.cms-split {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.2rem;
+	align-items: start;
+}
+
+@media (max-width: 1000px) {
+	.cms-split {
+		grid-template-columns: 1fr;
+	}
+}
+
+/* ── login ──────────────────────────────────────────────────────────────── */
+.cms-login {
+	min-height: 100vh;
+	display: grid;
+	place-items: center;
+	padding: 1.5rem;
+}
+
+.cms-login .cms-card {
+	width: 100%;
+	max-width: 380px;
+}
+
+.cms-login img {
+	width: 130px;
+	height: auto;
+	margin-bottom: 1rem;
+}
+
+.cms-error {
+	background: #fdecec;
+	border: 1px solid #f0c4c4;
+	color: #a32222;
+	border-radius: var(--r);
+	padding: 0.6rem 0.8rem;
+	margin-bottom: 1rem;
+}
+
+.cms-ok {
+	background: var(--signal-lt);
+	border: 1px solid #bfe8de;
+	color: var(--signal-dk);
+	border-radius: var(--r);
+	padding: 0.6rem 0.8rem;
+	margin-bottom: 1rem;
+}
+
+/* ── logo grid ──────────────────────────────────────────────────────────── */
+.cms-logos {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+	gap: 0.8rem;
+}
+
+.cms-logo {
+	border: 1px solid var(--line);
+	border-radius: var(--r);
+	background: var(--paper);
+	padding: 0.6rem;
+	text-align: center;
+}
+
+.cms-logo.needs-name {
+	border-color: #eccfb8;
+	background: var(--warn-lt);
+}
+
+.cms-logo img {
+	width: 100%;
+	height: 90px;
+	object-fit: contain;
+}
+
+.cms-logo input {
+	margin-top: 0.4rem;
+	font-size: 13px;
+}
+
+/* Heads a group of controls rather than one input, so it is not a <label>. */
+.cms-group-label {
+	font-weight: 600;
+	margin: 0 0 0.3rem;
+}

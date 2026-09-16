@@ -1,0 +1,70 @@
+<script lang="ts">
+	import { enhance } from '$app/forms';
+	let { data, form } = $props();
+
+	const LABELS: Record<string, string> = {
+		naam: 'Naam', bedrijf: 'Bedrijf', email: 'E-mail', telefoon: 'Telefoon',
+		onderwerp: 'Onderwerp', budget: 'Budget', vraag: 'Vraag', website: 'Website',
+		gemeente: 'Gemeente', nieuwsbrief: 'Nieuwsbrief'
+	};
+
+	const when = (iso: string) =>
+		new Date(iso).toLocaleString('nl-BE', { dateStyle: 'medium', timeStyle: 'short' });
+</script>
+
+<h1>Berichten</h1>
+<p class="cms-lead">
+	Ingevulde contact- en scanformulieren. Nieuwste eerst.
+</p>
+
+{#if form?.message}<div class="cms-error">{form.message}</div>{/if}
+
+{#if !data.submissions.length}
+	<div class="cms-card"><p style="margin:0">Nog geen berichten ontvangen.</p></div>
+{/if}
+
+{#each data.submissions as s (s.id)}
+	<div class="cms-card" style="margin-bottom:.8rem">
+		<div class="cms-row-head">
+			<strong>
+				{s.variant === 'scan' ? 'Gratis scan' : 'Contact'} &middot; {when(s.created_at)}
+				{#if !s.is_read}<span class="cms-badge warn">Nieuw</span>{/if}
+			</strong>
+			<span class="cms-actions">
+				<form method="POST" action="?/read" use:enhance>
+					<input type="hidden" name="id" value={s.id} />
+					{#if !s.is_read}
+						<button class="cms-btn cms-btn-ghost cms-btn-small" type="submit">
+							Markeer als gelezen
+						</button>
+					{:else}
+						<input type="hidden" name="unread" value="on" />
+						<button class="cms-btn cms-btn-ghost cms-btn-small" type="submit">
+							Markeer als nieuw
+						</button>
+					{/if}
+				</form>
+				<form method="POST" action="?/delete" use:enhance
+				      onsubmit={(e) => { if (!confirm('Dit bericht verwijderen?')) e.preventDefault(); }}>
+					<input type="hidden" name="id" value={s.id} />
+					<button class="cms-btn cms-btn-danger cms-btn-small" type="submit">Verwijderen</button>
+				</form>
+			</span>
+		</div>
+		<table class="cms-table" style="margin-top:.6rem;border:0">
+			<tbody>
+				{#each Object.entries(s.payload) as [key, value] (key)}
+					<tr>
+						<th style="width:150px">{LABELS[key] ?? key}</th>
+						<td>
+							{#if key === 'email'}<a href="mailto:{value}">{value}</a>
+							{:else if key === 'telefoon'}<a href="tel:{value}">{value}</a>
+							{:else if key === 'website'}<a href={String(value)} target="_blank" rel="noopener">{value}</a>
+							{:else}{value}{/if}
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
+{/each}

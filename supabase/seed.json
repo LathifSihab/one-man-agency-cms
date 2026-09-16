@@ -1,0 +1,1318 @@
+{
+  "pages": [
+    {
+      "type": "page",
+      "slug": "404",
+      "body": "\nProbeer een van deze:\n\n- [Alle diensten](/diensten)\n- [Prijzen](/prijzen)\n- [Cases](/referenties)\n- [Contact](/contact)\n\nZoek je iets specifieks? Mail me op info@onemanagency.be of bel 0495 62 66 11, dan zoek ik het voor je.\n",
+      "sort_order": 0,
+      "noindex": true,
+      "title": "Deze pagina bestaat niet (meer)",
+      "seo_title": "Pagina niet gevonden | One Man Agency",
+      "meta_description": "Deze pagina bestaat niet meer. Bekijk de diensten, prijzen of neem contact op.",
+      "intro": "Waarschijnlijk is de link verouderd of staat er een tikfout in het adres."
+    },
+    {
+      "type": "page",
+      "slug": "afspraak",
+      "body": "\n{{agenda}}\n\n## Wat je mag verwachten\n\n- Ik stel vragen over je zaak, je klanten en wat er vandaag misloopt.\n- Je krijgt meteen twee of drie dingen die je zelf kan doen, ook als we niet samenwerken.\n- Als ik niet de juiste persoon ben, zeg ik dat en verwijs ik je door.\n\n## Wat ik vooraf nodig heb\n\nEnkel je websiteadres en in één zin waarover het gaat. De rest bespreken we live.\n",
+      "sort_order": 1,
+      "noindex": false,
+      "title": "Plan een gesprek van 30 minuten",
+      "seo_title": "Plan een gratis kennismaking | One Man Agency",
+      "meta_description": "Kies zelf een moment voor een gesprek van 30 minuten. Gratis, vrijblijvend en zonder verkooppraat. Online of bij jou ter plaatse.",
+      "intro": "Gratis, vrijblijvend en zonder verkooppraat.",
+      "booking_url": "https://calendar.google.com/calendar/appointments/schedules/AcZssZ0VUgjzil1sQduTNGyMnANB-IBtl1YnFz1Tdf1a9UHUsCvFCM-S4Xafns9uddBW3mjNwymvD6pK?gv=true"
+    },
+    {
+      "type": "page",
+      "slug": "algemene-voorwaarden",
+      "body": "\nDeze voorwaarden gelden voor alle offertes, opdrachten en overeenkomsten van One Man Agency\nBV, met zetel te Denderbellestraat 156, 9200 Dendermonde, BTW BE 0831.834.485.\n\n## Offertes\n\nOffertes zijn dertig dagen geldig. Een opdracht komt tot stand na schriftelijke of elektronische\nbevestiging door de klant.\n\n## Betaling\n\nFacturen zijn betaalbaar binnen veertien dagen na factuurdatum, tenzij anders overeengekomen.\nMaandpakketten worden maandelijks gefactureerd en lopen per kwartaal.\n\n## Uitvoering\n\nOpgegeven termijnen zijn indicatief en afhankelijk van de tijdige aanlevering van materiaal en\ngoedkeuringen door de klant.\n\n## Eigendomsrechten\n\nNa volledige betaling gaan de gebruiksrechten op het opgeleverde werk over op de klant. Domeinnaam,\nhosting en bestanden staan op naam van de klant.\n\n## Aansprakelijkheid\n\nDe aansprakelijkheid is beperkt tot het bedrag van de betreffende opdracht. Het Belgisch recht is van\ntoepassing; bevoegd zijn de rechtbanken van het arrondissement Oost-Vlaanderen, afdeling Dendermonde.\n",
+      "sort_order": 2,
+      "noindex": false,
+      "title": "Algemene voorwaarden",
+      "seo_title": "Algemene voorwaarden | One Man Agency",
+      "meta_description": "De algemene voorwaarden van One Man Agency BV: offertes, betaling, levering, eigendomsrechten en aansprakelijkheid.",
+      "intro": "Laatst bijgewerkt op 14 september 2026.",
+      "todo_note": "Laat dit nakijken. Dit is een werkbare basistekst, geen juridisch advies. Leg ze voor aan je boekhouder of een jurist voor je online gaat."
+    },
+    {
+      "type": "page",
+      "slug": "blog",
+      "body": "\n{{blogindex}}\n",
+      "sort_order": 3,
+      "noindex": false,
+      "title": "Marketingtips voor ondernemers",
+      "seo_title": "Marketingtips voor KMO's | Blog One Man Agency",
+      "meta_description": "Praktische tips over lokale SEO, social media, websites en AI voor ondernemers in Vlaanderen. Elke week een artikel dat je meteen kan toepassen.",
+      "intro": "Praktische stukken over lokale SEO, social media, websites en AI. Elke week iets dat je meteen kan toepassen."
+    },
+    {
+      "type": "page",
+      "slug": "contact",
+      "body": "\n## Drie manieren\n\n**Plan meteen een gesprek.** 30 minuten, gratis, via video of bij jou ter plaatse. [Kies een moment](/afspraak)\n\n**Bel me.** 0495 62 66 11. Als ik niet opneem, zit ik bij een klant. Ik bel terug.\n\n**Mail me.** info@onemanagency.be\n\n## Werkgebied\n\nDendermonde, Lebbeke, Buggenhout, Zele, Berlare, Wichelen, Hamme, Temse, Sint-Niklaas, Aalst, Wetteren, Londerzeel, Opwijk, Merchtem en ruimer Oost-Vlaanderen. Verder weg? Dan werken we digitaal.\n",
+      "sort_order": 4,
+      "noindex": false,
+      "title": "Laten we praten",
+      "seo_title": "Contact & offerte | One Man Agency Dendermonde",
+      "meta_description": "Bel 0495 62 66 11, mail info@onemanagency.be of plan direct een gratis gesprek van 30 minuten in. Je krijgt binnen één werkdag antwoord.",
+      "intro": "Je krijgt binnen één werkdag antwoord. Meestal veel sneller.",
+      "form_variant": "contact"
+    },
+    {
+      "type": "page",
+      "slug": "cookiebeleid",
+      "body": "\nDeze website gebruikt functionele cookies die nodig zijn om de site te laten werken, en,\nenkel na je toestemming, analytische cookies om te meten hoe de site gebruikt wordt.\n\n## Functionele cookies\n\nNoodzakelijk voor de werking van de site. Hiervoor is geen toestemming vereist.\n\n## Analytische cookies\n\nGoogle Analytics 4, om bezoekersaantallen en gedrag te meten. Deze worden pas geplaatst nadat je ze\naanvaardt via de cookiebanner.\n\n## Je keuze aanpassen\n\nJe kan je toestemming op elk moment intrekken via de cookie-instellingen onderaan de pagina, of door de\ncookies in je browser te verwijderen.\n",
+      "sort_order": 5,
+      "noindex": false,
+      "title": "Cookiebeleid",
+      "seo_title": "Cookiebeleid | One Man Agency",
+      "meta_description": "Welke cookies onemanagency.be gebruikt, waarvoor ze dienen en hoe je je keuze aanpast.",
+      "intro": "Laatst bijgewerkt op 14 september 2026.",
+      "todo_note": "Laat dit nakijken. Dit is een werkbare basistekst, geen juridisch advies. Leg ze voor aan je boekhouder of een jurist voor je online gaat."
+    },
+    {
+      "type": "page",
+      "slug": "diensten",
+      "body": "\n{{diensten-volledig}}\n\n> **Niet zeker waar je moet beginnen?** Vraag de [gratis marketingscan](/gratis-marketingscan) aan. Ik kijk naar je huidige situatie en zeg je waar de grootste winst zit.\n",
+      "sort_order": 6,
+      "noindex": false,
+      "title": "Mijn diensten",
+      "seo_title": "Marketingdiensten voor KMO's | One Man Agency",
+      "meta_description": "Strategie, branding, webdesign, SEO, Google Ads, social media, e-mail, drukwerk en AI. Alles bij één aanspreekpunt. Bekijk wat ik voor je KMO kan doen.",
+      "intro": "Je kan alles bij mij afnemen, of enkel het stuk waar je vastloopt. De meeste klanten starten met één ding en breiden uit zodra ze zien dat het werkt."
+    },
+    {
+      "type": "page",
+      "slug": "gratis-marketingscan",
+      "body": "\n## Wat ik bekijk\n\n1. **Je website.** Snelheid, mobiel, structuur, teksten, en of bezoekers weten wat ze moeten doen.\n2. **Je vindbaarheid in Google.** Op welke zoektermen sta je, en waar staan je concurrenten?\n3. **Je Google Bedrijfsprofiel.** Volledigheid, foto's, reviews, actualiteit.\n4. **Je social media.** Frequentie, consistentie en betrokkenheid.\n\n## Waarom gratis?\n\nOmdat het mij ongeveer een uur kost en omdat ik liever met open kaarten start. Ongeveer een derde van de mensen die de scan aanvraagt, wordt uiteindelijk klant. De rest gaat er zelf mee aan de slag, en dat is ook goed.\n",
+      "sort_order": 7,
+      "noindex": false,
+      "title": "Gratis marketingscan",
+      "seo_title": "Gratis marketingscan voor je KMO | One Man Agency",
+      "meta_description": "Binnen 5 werkdagen een eerlijke doorlichting van je website, Google-zichtbaarheid en social media. Drie concrete verbeterpunten. Gratis en vrijblijvend.",
+      "intro": "In vijf werkdagen weet je waar je staat. Geen verkooppraat, geen automatisch rapport van vijftig pagina's.",
+      "form_variant": "scan"
+    },
+    {
+      "type": "page",
+      "slug": "home",
+      "body": "\n## Je weet dat je iets met marketing moet doen. Alleen niet wanneer.\n\nJe website is drie jaar oud. Je laatste Facebook-post dateert van mei. Ergens ligt een offerte van een bureau met vier accountmanagers en een maandelijkse strategiecall waar je niets aan hebt.\n\nOndertussen bel je klanten, stuur je facturen en los je problemen op. Marketing schuift op naar volgende week. Elke week opnieuw.\n\n## Eén man. Eén visie. Eén verantwoordelijkheid.\n\nEen KMO heeft geen marketingafdeling van twintig mensen nodig. Je hebt iemand nodig die begrijpt wat je bedrijf doet, waar je naartoe wil en welke marketing daar écht bij hoort.\n\nDat ben ik. Niels Van de Meersch. Ik neem je marketing over: van strategie en positionering tot website, SEO, social media, content, campagnes en drukwerk. Eén nummer, één mailadres, één iemand die je dossier kent.\n\n- Je belt mij. Niet een helpdesk, niet een junior die pas begonnen is.\n- Wat we afspreken staat op papier. Geen verrassingen op je factuur.\n- Ik denk mee alsof het mijn eigen zaak is. Brengt iets niets op, dan zeg ik dat.\n- Ik voer het ook uit. Adviseren alleen lost je probleem niet op.\n\n{{diensten}}\n\n{{logos-strook}}\n\n{{citaten}}\n\n{{stappen}}\n\n{{sectoren}}\n\n{{scan-blok}}\n",
+      "sort_order": 8,
+      "noindex": false,
+      "title": "Marketing voor KMO's met weinig tijd",
+      "seo_title": "Marketingbureau Dendermonde voor KMO's | One Man Agency",
+      "meta_description": "Eén aanspreekpunt voor je volledige marketing. Strategie, website, SEO en social media voor KMO's in Oost-Vlaanderen. Plan een gratis kennismaking.",
+      "intro": "Geen omwegen. Geen blabla. Eén aanspreekpunt dat je marketing begrijpt, uitvoert én opvolgt.",
+      "figures": [
+        {
+          "getal": "25 jaar",
+          "label": "in marketing en communicatie"
+        },
+        {
+          "getal": "30+",
+          "label": "KMO's in Oost-Vlaanderen"
+        },
+        {
+          "getal": "€475",
+          "label": "vanaf, per maand"
+        },
+        {
+          "getal": "1",
+          "label": "aanspreekpunt, altijd dezelfde"
+        }
+      ],
+      "testimonials": [
+        {
+          "tekst": "Vervang dit door een echt citaat van twee zinnen. Vraag het bij je volgende evaluatiegesprek en noteer het letterlijk.",
+          "naam": "Voornaam Naam",
+          "functie": "functie, bedrijf"
+        },
+        {
+          "tekst": "Een tweede citaat, bij voorkeur van een klant uit een andere sector dan de eerste.",
+          "naam": "Voornaam Naam",
+          "functie": "functie, bedrijf"
+        },
+        {
+          "tekst": "Een derde citaat. Kies er één dat over opvolging gaat: dat is waar bureaus meestal falen.",
+          "naam": "Voornaam Naam",
+          "functie": "functie, bedrijf"
+        }
+      ],
+      "sector_list": [
+        "Verzekeringsmakelaars",
+        "Garages en autobedrijven",
+        "Bouw en renovatie",
+        "Interieur en meubel",
+        "Horeca",
+        "Fitness en sportclubs",
+        "Vrije beroepen",
+        "Lokale retail"
+      ],
+      "portrait_url": "/assets/niels.jpg",
+      "portrait_alt": "Niels Van de Meersch, zaakvoerder van One Man Agency in Dendermonde",
+      "header_image_url": "/assets/header-oma.jpg",
+      "header_alt": "One Man Agency: Niels Van de Meersch steekt met zijn laptop de zebrapad over",
+      "cta_primary": {
+        "label": "Plan een gratis kennismaking",
+        "link": "/afspraak"
+      },
+      "cta_secondary": {
+        "label": "Bekijk mijn werk",
+        "link": "/referenties"
+      }
+    },
+    {
+      "type": "page",
+      "slug": "over-niels",
+      "body": "\n## Waarom One Man Agency?\n\nOmdat er tussen “het zelf doen” en “een bureau met vijftien mensen”\nniets zat. Zelf doen betekent dat het blijft liggen. Een groot bureau betekent dat je betaalt voor\noverleg, accountmanagement en een strategiedocument van veertig pagina’s dat in je lade verdwijnt.\n\nIk zit daartussen. Ik denk mee zoals een strateeg en ik voer uit zoals een uitvoerder, zonder de\ntussenlaag. Dat scheelt in kostprijs, maar vooral in snelheid.\n\n## Hoe ik werk\n\n**Ik zeg nee.** Als een campagne niet gaat renderen voor jouw budget, hoor je dat\nvoor we beginnen. Ik heb er niets aan om je iets te laten betalen dat niet werkt.\n\n**Ik werk met vaste prijzen.** Je weet vooraf wat het kost. Geen uren voor intern\noverleg, geen percentage op je advertentiebudget.\n\n**Ik kom langs.** Bij klanten in de regio zit ik regelmatig aan de keukentafel of in\nde werkplaats. Marketing maken over iets dat je nooit gezien hebt, werkt niet.\n\n**Ik blijf.** De meeste klanten werken al jaren met me. Dat is geen toeval: er is\nhier geen accountmanager die om de zes maanden wisselt.\n\n## Waar ik vandaan kom\n\nOne Man Agency is gevestigd in Dendermonde. Mijn klanten zitten grotendeels in de Denderstreek,\nhet Waasland en het Aalsterse: Dendermonde, Lebbeke, Buggenhout, Zele, Aalst, Sint-Niklaas, Temse,\nWetteren, Londerzeel en Opwijk. Ik ken de regio en de ondernemers, en dat scheelt in hoe snel we tot\niets bruikbaars komen.\n\n## Waar ik naartoe ga\n\nZoeken is in twee jaar grondig veranderd. Een deel van je klanten typt nog altijd in Google, een\ngroeiend deel vraagt het aan ChatGPT of Gemini. Daarom investeer ik zwaar in AI: niet als speeltje,\nmaar om KMO’s tijd te doen winnen op administratie en klantcommunicatie, en om ervoor te zorgen\ndat je zaak ook in AI-antwoorden opduikt.\n\nPortret van Niels\n(portret.jpg, 4:5)\n\n**One Man Agency BV**\nDenderbellestraat 156\n9200 Dendermonde\nBTW BE 0831.834.485\n\n[0495 62 66 11](tel:+32495626611)\n[info@onemanagency.be](mailto:info@onemanagency.be)\n",
+      "sort_order": 9,
+      "noindex": false,
+      "title": "Ik ben Niels. Ik ben je marketingafdeling.",
+      "seo_title": "Over Niels Van de Meersch | One Man Agency Dendermonde",
+      "meta_description": "25 jaar marketingervaring, één aanspreekpunt. Ontdek hoe ik als eenmansbureau KMO's in Oost-Vlaanderen help met strategie, website, SEO en social media.",
+      "intro": "Al meer dan 25 jaar in marketing en communicatie, en sinds jaren het vaste aanspreekpunt voor ruim dertig KMO's in Oost-Vlaanderen."
+    },
+    {
+      "type": "page",
+      "slug": "prijzen",
+      "body": "\n## Wat de prijs bepaalt\n\n- **Hoeveel je zelf doet.** Wie zelf foto's aanlevert en teksten nakijkt, betaalt minder.\n- **Hoe vaak.** Een website is eenmalig, social media is elke week.\n- **Hoeveel kanalen.** Eén kanaal goed doen is beter dan vier half.\n- **Advertentiebudget.** Dat betaal je rechtstreeks aan Google of Meta, niet aan mij.\n\n{{pakketten}}\n\n{{projecten}}\n\n> **Wat je nooit op je factuur zal vinden.** Geen uren voor intern overleg. Geen percentage op je advertentiebudget. Geen meerwerk zonder dat je het vooraf wist.\n\n{{faq}}\n",
+      "sort_order": 10,
+      "noindex": false,
+      "title": "Wat kost marketing uitbesteden?",
+      "seo_title": "Wat kost een marketingbureau? | Prijzen One Man Agency",
+      "meta_description": "Transparante marketingprijzen voor KMO's: pakketten vanaf € 475 per maand, websites vanaf € 1.450 en projecten op maat. Bekijk wat je voor je budget krijgt.",
+      "intro": "Eerlijk antwoord: dat hangt af van wat je nodig hebt. Maar daar heb jij niets aan. Daarom staat hier wat mijn klanten effectief betalen.",
+      "faq": [
+        {
+          "vraag": "Wat kost een marketingbureau in België?",
+          "antwoord": "Voor een KMO ligt een doorlopend maandbudget meestal tussen 400 en 1.500 euro exclusief btw, afhankelijk van het aantal kanalen. Eenmalige projecten zoals een website of een huisstijl starten rond 1.000 tot 2.500 euro. Bij One Man Agency starten de maandpakketten op 475 euro en websites op 1.450 euro, telkens exclusief btw."
+        },
+        {
+          "vraag": "Reken je een percentage op mijn advertentiebudget?",
+          "antwoord": "Nee. Ik werk met een vaste beheersprijs. Wat je aan Google of Meta uitgeeft, betaal je rechtstreeks aan hen."
+        },
+        {
+          "vraag": "Zijn er opstartkosten?",
+          "antwoord": "Nee."
+        },
+        {
+          "vraag": "Kan ik opzeggen?",
+          "antwoord": "De maandpakketten lopen per kwartaal en zijn daarna opzegbaar. Projecten werken met een vaste prijs en een duidelijke oplevering."
+        }
+      ],
+      "packages": [
+        {
+          "naam": "Easy to Start",
+          "voor_wie": "Voor wie net begint of een klein budget heeft",
+          "prijs": "€ 475",
+          "periode": "per maand, excl. btw",
+          "uitgelicht": false,
+          "inbegrepen": [
+            "Uitwerken contentkalender",
+            "Social media beheerplatform",
+            "1 post per week op Facebook, Instagram en LinkedIn"
+          ]
+        },
+        {
+          "naam": "Actief",
+          "voor_wie": "Voor wie zichtbaar wil zijn zonder alles zelf te doen",
+          "prijs": "€ 675",
+          "periode": "per maand, excl. btw",
+          "uitgelicht": true,
+          "inbegrepen": [
+            "Alles uit Easy to Start",
+            "2 posts per week",
+            "Social media templates",
+            "Optimalisatie van je kanalen",
+            "1 grafisch ontwerp per maand (max 2 pagina's)",
+            "Kwartaalmeeting op locatie van 1 uur"
+          ]
+        },
+        {
+          "naam": "Co Pilot",
+          "voor_wie": "De complete marketingpartner voor wie echt wil groeien",
+          "prijs": "€ 985",
+          "periode": "per maand, excl. btw",
+          "uitgelicht": false,
+          "inbegrepen": [
+            "Alles uit Actief",
+            "3 posts per week",
+            "Google Bedrijfsprofiel en reviewopvolging",
+            "Onderhoud van je blog",
+            "Advies over advertising en e-mailmarketing",
+            "2 grafische ontwerpen per maand (max 6 pagina's)",
+            "Maandelijkse meeting op locatie van 1 uur"
+          ]
+        }
+      ],
+      "projects": [
+        {
+          "wat": "Onepager website",
+          "vanaf": "€ 1.450",
+          "link": "/diensten/webdesign"
+        },
+        {
+          "wat": "Website van 5 tot 10 pagina's",
+          "vanaf": "€ 2.450",
+          "link": "/wat-kost-een-website"
+        },
+        {
+          "wat": "Webshop",
+          "vanaf": "€ 3.950",
+          "link": "/diensten/webdesign"
+        },
+        {
+          "wat": "Logo-ontwerp",
+          "vanaf": "€ 950",
+          "link": "/diensten/branding-en-huisstijl"
+        },
+        {
+          "wat": "Volledige huisstijl",
+          "vanaf": "€ 1.950",
+          "link": "/diensten/branding-en-huisstijl"
+        },
+        {
+          "wat": "Marketingstrategie",
+          "vanaf": "€ 1.250",
+          "link": "/diensten/marketingstrategie"
+        },
+        {
+          "wat": "SEO-audit met actieplan",
+          "vanaf": "€ 750",
+          "link": "/diensten/seo-en-geo"
+        },
+        {
+          "wat": "Google Ads opzet",
+          "vanaf": "€ 650",
+          "link": "/diensten/google-ads"
+        },
+        {
+          "wat": "Fotoreportage, halve dag",
+          "vanaf": "€ 650",
+          "link": "/diensten/foto-en-video"
+        },
+        {
+          "wat": "Bedrijfsvideo",
+          "vanaf": "€ 1.450",
+          "link": "/diensten/foto-en-video"
+        },
+        {
+          "wat": "AI-tijdsaudit",
+          "vanaf": "€ 450",
+          "link": "/diensten/ai-voor-kmo"
+        }
+      ]
+    },
+    {
+      "type": "page",
+      "slug": "privacybeleid",
+      "body": "\nOne Man Agency BV, Denderbellestraat 156, 9200 Dendermonde, BTW BE 0831.834.485, is\nverantwoordelijk voor de verwerking van je persoonsgegevens.\n\n## Welke gegevens\n\nGegevens die je zelf invult via het contactformulier of het scanformulier: naam, bedrijf, e-mailadres,\ntelefoonnummer, website en de inhoud van je bericht. Daarnaast geanonimiseerde websitestatistieken.\n\n## Waarom\n\nOm je vraag te beantwoorden, een offerte op te maken, de overeenkomst uit te voeren en, als je daar\nuitdrukkelijk toestemming voor gaf, om je de nieuwsbrief te sturen.\n\n## Hoelang\n\nContactgegevens van niet-klanten worden maximaal twee jaar bewaard. Klantgegevens worden bewaard zolang\nde wettelijke bewaartermijnen dat vereisen.\n\n## Je rechten\n\nJe hebt recht op inzage, verbetering, verwijdering, beperking en overdraagbaarheid van je gegevens, en\nje kan bezwaar maken tegen verwerking. Mail daarvoor naar\n[info@onemanagency.be](mailto:info@onemanagency.be). Je kan ook klacht indienen bij de\nGegevensbeschermingsautoriteit.\n",
+      "sort_order": 11,
+      "noindex": false,
+      "title": "Privacybeleid",
+      "seo_title": "Privacybeleid | One Man Agency",
+      "meta_description": "Hoe One Man Agency persoonsgegevens verwerkt: welke gegevens, waarom, hoelang en welke rechten je hebt volgens de GDPR.",
+      "intro": "Laatst bijgewerkt op 14 september 2026.",
+      "todo_note": "Laat dit nakijken. Dit is een werkbare basistekst, geen juridisch advies. Leg ze voor aan je boekhouder of een jurist voor je online gaat."
+    },
+    {
+      "type": "page",
+      "slug": "referenties",
+      "body": "\n{{logos}}\n\n## Wat een samenwerking meestal inhoudt\n\nBij de ene klant blijft het bij één opdracht: een logo, een huisstijl of een website. Bij de andere loopt het al jaren: elke week content, elk kwartaal een campagne, en tussendoor het drukwerk en de foto's.\n\nWat ze gemeen hebben: ze bellen altijd hetzelfde nummer, en er zit altijd dezelfde persoon aan de andere kant.\n\nZelf iets in gedachten? [Plan een gratis kennismaking](/afspraak) of [stuur je vraag door](/contact).\n",
+      "sort_order": 12,
+      "noindex": false,
+      "title": "Referenties",
+      "seo_title": "Referenties | Marketingbureau One Man Agency Dendermonde",
+      "meta_description": "Een greep uit de klanten van One Man Agency: van logo en huisstijl tot social media beheer en full service, in Dendermonde en heel Oost-Vlaanderen.",
+      "intro": "Een kleine greep uit enkele klanten. Soms een logo, dan weer advies, social media beheer of full service, van strategie tot realisatie."
+    },
+    {
+      "type": "page",
+      "slug": "veelgestelde-vragen",
+      "body": "\n{{faq}}\n\nStaat je vraag er niet bij? [Stel ze gerust.](/contact)\n",
+      "sort_order": 13,
+      "noindex": false,
+      "title": "Veelgestelde vragen",
+      "seo_title": "Veelgestelde vragen over marketing | One Man Agency",
+      "meta_description": "Wat kost het, hoe lang duurt het, wat als het niet werkt? De eerlijke antwoorden op de vragen die ondernemers me het vaakst stellen.",
+      "intro": "De eerlijke antwoorden op de vragen die ondernemers me het vaakst stellen.",
+      "faq": [
+        {
+          "vraag": "Ben je echt alleen?",
+          "antwoord": "Ja. Voor gespecialiseerde stukken zoals complexe development, grote videoproducties en drukwerk werk ik met vaste partners die ik al jaren ken. Jij hebt altijd één aanspreekpunt: mij."
+        },
+        {
+          "vraag": "Wat als je ziek bent of op vakantie?",
+          "antwoord": "Geplande zaken worden vooraf klaargezet. Voor dringende zaken kan je me bereiken. In al die jaren is er nog nooit een klant zonder oplossing gebleven."
+        },
+        {
+          "vraag": "Werk je met contracten?",
+          "antwoord": "Maandpakketten lopen per kwartaal en zijn daarna opzegbaar. Projecten werken met een vaste prijs en een duidelijke oplevering. Geen jaarcontracten met automatische verlenging."
+        },
+        {
+          "vraag": "Kom je langs?",
+          "antwoord": "Bij klanten in de Denderstreek en het Waasland regelmatig. Daarbuiten werken we digitaal, met één of twee bezoeken per jaar."
+        },
+        {
+          "vraag": "Wat kost een marketingbureau in België?",
+          "antwoord": "Voor een KMO ligt een doorlopend maandbudget meestal tussen 400 en 1.500 euro exclusief btw. Eenmalige projecten zoals een website of huisstijl starten rond 1.000 tot 2.500 euro. Bij One Man Agency starten maandpakketten op 475 euro en websites op 1.450 euro."
+        },
+        {
+          "vraag": "Reken je een percentage op mijn advertentiebudget?",
+          "antwoord": "Nee. Ik werk met een vaste beheersprijs. Wat je aan Google of Meta uitgeeft, betaal je rechtstreeks aan hen."
+        },
+        {
+          "vraag": "Hoe snel zie ik resultaat?",
+          "antwoord": "Google Ads: binnen dagen. Social media: enkele maanden voor het echt begint te lopen. SEO: vier tot acht weken voor lokale ingrepen, zes maanden of meer voor concurrerende zoektermen."
+        },
+        {
+          "vraag": "Wat als het niet werkt?",
+          "antwoord": "Dan zeggen we dat tegen elkaar en sturen we bij. Elke maand bespreken we de cijfers. Levert een kanaal na een eerlijke test niets op, dan stoppen we ermee."
+        },
+        {
+          "vraag": "Meet je resultaten?",
+          "antwoord": "Ja. Google Analytics, Search Console, de statistieken van je kanalen, en waar mogelijk het aantal offerteaanvragen en telefoontjes."
+        },
+        {
+          "vraag": "Ik heb al een website. Moet die weg?",
+          "antwoord": "Meestal niet. Een grondige opfrissing van structuur en teksten levert vaak meer op dan een volledig nieuwe site, aan een fractie van de kostprijs."
+        },
+        {
+          "vraag": "Doe je ook enkel advies?",
+          "antwoord": "Ja, maar zelden. De meeste ondernemers hebben genoeg aan advies en te weinig aan tijd. Daarom voer ik meestal ook uit."
+        },
+        {
+          "vraag": "Wat is GEO, en heb ik dat nodig?",
+          "antwoord": "GEO betekent dat je ervoor zorgt dat AI-assistenten zoals ChatGPT en Gemini jouw bedrijf noemen als iemand een relevante vraag stelt. Als een deel van je klanten jonger is dan vijftig: ja. Veel ervan overlapt gelukkig met gewone SEO."
+        }
+      ]
+    },
+    {
+      "type": "page",
+      "slug": "wat-kost-een-website",
+      "body": "\n## Prijsklassen\n\n- **€ 0 tot 500 — doe-het-zelf.** Zelf gebouwd in Wix of Squarespace.\n  Prima om te starten. Verwacht geen vindbaarheid in Google.\n- **€ 1.450 tot 2.500 — onepager of kleine site.** Professioneel\n  ontwerp, teksten op maat, technische SEO in orde. Geschikt voor de meeste eenmanszaken en kleine KMO’s.\n- **€ 2.500 tot 6.000 — volwaardige bedrijfssite.** Tien tot twintig\n  pagina’s, dienstenpagina’s, cases, blog, formulieren en indien nodig meertalig.\n- **€ 4.000 tot 12.000 — webshop.** Producten, betalingen, verzending\n  en koppeling met je voorraad of boekhouding.\n- **€ 12.000 en hoger — maatwerk.** Klantenportalen, ERP-koppelingen,\n  complexe functionaliteit.\n\n## Waar de prijs echt in zit\n\nNiet in het ontwerp. Het meeste werk kruipt in structuur, teksten en techniek. Een site van tien\npagina’s met goede teksten is meer werk dan een site van dertig pagina’s met gekopieerde\ntekst.\n\n## Let op deze vijf punten in elke offerte\n\n1. **Wie is eigenaar van het domein en de bestanden?** Staat dat niet op jouw naam,\n   dan zit je vast.\n2. **Zitten de teksten erin?** Bij veel bureaus niet, en dan ligt het project drie\n   maanden stil bij jou.\n3. **Kan je zelf aanpassen?** Vraag een demo voor je tekent.\n4. **Wat kost het onderhoud?** Updates, back-ups en beveiliging zijn geen luxe.\n5. **Is SEO inbegrepen of “optioneel”?** Technische SEO hoort standaard\n   in elke website te zitten.\n\n## Wat het bij mij kost\n\nOnepager vanaf € 1.450, een site van vijf tot tien pagina’s vanaf\n€ 2.450, een webshop vanaf € 3.950. Vaste prijs, vooraf afgesproken, exclusief btw.\n",
+      "sort_order": 14,
+      "noindex": false,
+      "title": "Wat kost een website in België?",
+      "seo_title": "Wat kost een website in België? | Prijzen 2026",
+      "meta_description": "Van onepager tot webshop: realistische prijzen voor een website in België, wat de prijs bepaalt en waar je op moet letten in een offerte van een webbureau.",
+      "intro": "Kort antwoord: tussen € 1.450 en € 15.000, afhankelijk van omvang en maatwerk. Hieronder wat je voor welk bedrag mag verwachten.",
+      "faq": [
+        {
+          "vraag": "Wat kost een website in België?",
+          "antwoord": "Reken op 1.450 tot 2.500 euro voor een onepager of kleine site, 2.500 tot 6.000 euro voor een volwaardige bedrijfssite en 4.000 tot 12.000 euro voor een webshop, telkens exclusief btw. Maatwerk met koppelingen aan ERP of klantenportalen loopt hoger op."
+        },
+        {
+          "vraag": "Waarom verschillen offertes zo sterk?",
+          "antwoord": "Omdat het meeste werk niet in het ontwerp zit maar in structuur, teksten en techniek. Een goedkope offerte laat die drie vaak bij jou liggen."
+        },
+        {
+          "vraag": "Wat kost het onderhoud van een website?",
+          "antwoord": "Voor een KMO-site ligt dat meestal tussen 30 en 80 euro per maand voor updates, back-ups, beveiliging en kleine aanpassingen."
+        }
+      ]
+    },
+    {
+      "type": "service",
+      "slug": "ai-voor-kmo",
+      "body": "\nHet is meestal veel saaier en veel waardevoller: de twee uur per week die je verliest aan\noffertes overtypen, mails beantwoorden of documenten zoeken.\n\n## Zo pak ik het aan\n\n1. ### Tijdsaudit\n\nWe overlopen je week. Waar gaat je tijd naartoe, en welke taken zijn repetitief\n   genoeg om te automatiseren?\n2. ### Prioriteren\n\nIk stel maximaal drie toepassingen voor, met een schatting van de tijdwinst en\n   de kostprijs.\n3. ### Bouwen\n\nIk zet het op in de tools die je al gebruikt. Geen extra abonnementen als het niet\n   moet.\n4. ### Opleiden\n\nJe team krijgt een korte, praktische sessie. Anders blijft het liggen.\n\n## Waar KMO’s vandaag het meeste winnen\n\n- Offertes en bestekken automatisch opmaken uit bestaande gegevens\n- Inkomende mails sorteren en voorbereide antwoorden klaarzetten\n- Verslagen van klantgesprekken automatisch uitschrijven\n- Productbeschrijvingen en teksten in bulk\n- Boekhoudstukken automatisch klasseren\n",
+      "sort_order": 0,
+      "noindex": false,
+      "title": "AI voor KMO’s: tijd winnen, geen hype",
+      "seo_title": "AI voor KMO's | Concreet tijd winnen, geen hype",
+      "meta_description": "Waar verliest jouw zaak tijd? Ik breng het in kaart en zet AI in op administratie, offertes en klantcommunicatie. Start met een tijdsaudit.",
+      "intro": "Iedereen praat over AI. Weinig KMO’s weten waar ze moeten beginnen. Het antwoord is bijna nooit “een chatbot op je website”.",
+      "faq": [
+        {
+          "vraag": "En de Europese AI Act?",
+          "antwoord": "Sinds augustus 2026 gelden de eerste verplichtingen. Voor de meeste KMO-toepassingen is de impact beperkt, maar bij AI in aanwerving of kredietbeoordeling ligt dat anders. Ik zeg je vooraf in welke categorie je zit."
+        },
+        {
+          "vraag": "Gaan mijn bedrijfsgegevens dan naar een AI-bedrijf?",
+          "antwoord": "Dat hangt af van de gekozen opzet. Ik werk standaard met instellingen waarbij je data niet gebruikt wordt om modellen te trainen, en voor gevoelige processen bekijken we een lokale of afgeschermde oplossing."
+        },
+        {
+          "vraag": "Moet ik hiervoor mijn software vervangen?",
+          "antwoord": "Bijna nooit. De meeste winst zit in koppelingen tussen wat je al hebt."
+        }
+      ],
+      "prices": [
+        {
+          "wat": "Tijdsaudit met rapport",
+          "vanaf": "€ 450, verrekend bij een vervolgopdracht"
+        },
+        {
+          "wat": "Implementatietraject",
+          "vanaf": "€ 1.500 tot € 5.000"
+        },
+        {
+          "wat": "Opleiding voor je team, halve dag",
+          "vanaf": "€ 750"
+        }
+      ]
+    },
+    {
+      "type": "service",
+      "slug": "branding-en-huisstijl",
+      "body": "\nHerkenbaarheid ontstaat door herhaling. Als je bestelwagen, je factuur, je Facebook-pagina\nen je etalage er alledrie anders uitzien, begint de klant elke keer van nul.\n\n## Wat ik doe\n\n- Positionering: waar sta je voor, in woorden die je zelf ook gebruikt\n- Logo-ontwerp of restyling van je bestaande logo\n- Kleuren, lettertypes en beeldstijl\n- Een huisstijlgids die je aan elke leverancier kan doorsturen\n- Toepassing op briefpapier, facturen, sjablonen, social media, belettering en drukwerk\n",
+      "sort_order": 1,
+      "noindex": false,
+      "title": "Branding & huisstijl",
+      "seo_title": "Huisstijl & branding voor KMO's | One Man Agency",
+      "meta_description": "Logo, kleuren, lettertypes en toepassingen die je zaak herkenbaar maken. Huisstijl laten maken vanaf € 950. Bekijk wat erbij hoort en wat het kost.",
+      "intro": "Een sterk merk begint niet bij een mooi logo. Het begint bij een duidelijk verhaal dat je overal op dezelfde manier vertelt.",
+      "faq": [
+        {
+          "vraag": "Moet ik mijn logo laten veranderen?",
+          "antwoord": "Meestal niet. In acht van de tien gevallen is het logo het probleem niet, wel de inconsistente toepassing ervan. Dat is een stuk goedkoper op te lossen dan een volledige rebranding."
+        },
+        {
+          "vraag": "Krijg ik de bronbestanden?",
+          "antwoord": "Ja. Je krijgt alle bestanden in vector en in web-formaat, plus een huisstijlgids. Je bent eigenaar en kan er bij eender welke leverancier mee verder."
+        }
+      ],
+      "prices": [
+        {
+          "wat": "Logo-ontwerp",
+          "vanaf": "€ 950"
+        },
+        {
+          "wat": "Volledige huisstijl inclusief toepassingen",
+          "vanaf": "€ 1.950"
+        },
+        {
+          "wat": "Restyling van een bestaand merk",
+          "vanaf": "op maat"
+        }
+      ]
+    },
+    {
+      "type": "service",
+      "slug": "e-mailmarketing",
+      "body": "\n## Wat ik doe\n\n- Opbouw en opschoning van je lijst, GDPR-conform\n- Een sjabloon in jouw huisstijl\n- Maandelijkse of tweemaandelijkse nieuwsbrief: tekst, beeld en verzending\n- Automatische reeksen: welkomstmail, opvolging na offerte, herinnering na aankoop\n- Rapportering: wie opent, wie klikt, wie koopt\n",
+      "sort_order": 2,
+      "noindex": false,
+      "title": "E-mailmarketing",
+      "seo_title": "E-mailmarketing voor KMO's | Nieuwsbrieven & automatisatie",
+      "meta_description": "Nieuwsbrieven en automatische opvolgmails die je bestaande klanten laten terugkeren. GDPR-conform opgezet, met vaste prijzen en duidelijke rapportering.",
+      "intro": "Je bestaande klanten zijn je goedkoopste omzet. Toch is de mailinglijst van de meeste KMO’s een Excel-bestand dat niemand ooit gebruikt.",
+      "faq": [
+        {
+          "vraag": "Mag ik mijn klanten zomaar mailen?",
+          "antwoord": "Bestaande klanten mag je informeren over gelijkaardige producten of diensten, met altijd een duidelijke uitschrijfmogelijkheid. Voor prospecten heb je toestemming nodig. Ik zet je lijst zo op dat je in orde bent."
+        },
+        {
+          "vraag": "Welk platform gebruik je?",
+          "antwoord": "Meestal Mailchimp, Brevo of het pakket dat je al hebt. Ik kies wat past bij je lijstgrootte en je budget, niet wat mij het beste uitkomt."
+        }
+      ],
+      "prices": [
+        {
+          "wat": "Opzet inclusief sjabloon en automatisatie",
+          "vanaf": "€ 850"
+        },
+        {
+          "wat": "Nieuwsbrief per editie",
+          "vanaf": "€ 225"
+        },
+        {
+          "wat": "Doorlopend pakket",
+          "vanaf": "€ 295 / maand"
+        }
+      ]
+    },
+    {
+      "type": "service",
+      "slug": "foto-en-video",
+      "body": "\n## Wat ik doe\n\n- Bedrijfsreportage: werkplaats, winkel, team, realisaties\n- Portretten voor website en LinkedIn\n- Productfotografie voor webshop en catalogus\n- Korte bedrijfsvideo van één tot twee minuten\n- Verticale video’s voor Reels, TikTok en LinkedIn\n\nPlan er één per jaar in. Daarmee heb je genoeg materiaal voor zes tot twaalf maanden\nsocial media.\n",
+      "sort_order": 3,
+      "noindex": false,
+      "title": "Foto & video voor je marketing",
+      "seo_title": "Bedrijfsfotografie & video voor KMO's | One Man Agency",
+      "meta_description": "Echte beelden van jouw zaak, je team en je producten. Fotoreportages en korte bedrijfsvideo's die je een half jaar aan content opleveren.",
+      "intro": "Geen enkele stockfoto verkoopt jouw zaak. Mensen kopen bij mensen, dus willen ze jouw werkplaats zien, jouw team, jouw werk.",
+      "faq": [
+        {
+          "vraag": "Mag ik de beelden overal gebruiken?",
+          "antwoord": "Ja. Je krijgt een onbeperkt gebruiksrecht voor je eigen communicatie, online en in print."
+        },
+        {
+          "vraag": "Hoeveel foto's krijg ik?",
+          "antwoord": "Na een halve dag lever ik doorgaans 30 tot 50 bewerkte beelden, geselecteerd op bruikbaarheid in plaats van op aantal."
+        }
+      ],
+      "prices": [
+        {
+          "wat": "Halve dag fotoreportage inclusief nabewerking",
+          "vanaf": "€ 650"
+        },
+        {
+          "wat": "Bedrijfsvideo",
+          "vanaf": "€ 1.450"
+        },
+        {
+          "wat": "Pakket van vijf korte verticale video’s",
+          "vanaf": "€ 950"
+        }
+      ]
+    },
+    {
+      "type": "service",
+      "slug": "google-ads",
+      "body": "\nVoor wie snel leads nodig heeft, of voor zoektermen waar je organisch nooit gaat winnen, is\nadverteren de snelste weg.\n\n## Wat ik doe\n\n- Zoekwoordenonderzoek en concurrentiecheck\n- Opzet van campagnes, advertentiegroepen en advertenties\n- Landingspagina’s die bij de advertentie passen, anders betaal je te veel per klik\n- Conversiemeting: telefoontjes, formulieren, offerteaanvragen\n- Wekelijkse bijsturing en een maandelijks rapport\n\n## Hoe ik factureer\n\nEen vaste maandprijs voor het beheer, geen percentage op je advertentiebudget. Als jij meer uitgeeft,\nverdien ik niet automatisch meer. Dat houdt het advies eerlijk.\n",
+      "sort_order": 4,
+      "noindex": false,
+      "title": "Google Ads voor KMO’s",
+      "seo_title": "Google Ads voor KMO's | Adverteren zonder verspilling",
+      "meta_description": "Google Ads-campagnes voor lokale KMO's. Opzet, beheer en opvolging tegen een vaste maandprijs, zonder percentage op je advertentiebudget.",
+      "intro": "SEO is een investering op termijn. Google Ads werkt vandaag.",
+      "faq": [
+        {
+          "vraag": "Hoeveel advertentiebudget heb ik nodig?",
+          "antwoord": "Voor een lokale KMO in één gemeente werkt 300 tot 600 euro per maand meestal goed. Onder 250 euro is er te weinig data om iets zinnigs te optimaliseren."
+        },
+        {
+          "vraag": "Kan ik stoppen wanneer ik wil?",
+          "antwoord": "Ja. Het beheer loopt per maand en is opzegbaar tegen het einde van de maand. De campagnes blijven van jou."
+        }
+      ],
+      "prices": [
+        {
+          "wat": "Opzet van je campagnes",
+          "vanaf": "€ 650 eenmalig"
+        },
+        {
+          "wat": "Beheer en opvolging",
+          "vanaf": "€ 295 / maand"
+        },
+        {
+          "wat": "Advertentiebudget",
+          "vanaf": "betaal je rechtstreeks aan Google"
+        }
+      ]
+    },
+    {
+      "type": "service",
+      "slug": "grafische-vormgeving-en-drukwerk",
+      "body": "\n## Wat ik verzorg\n\n- Visitekaartjes\n- Briefpapier en facturen\n- Flyers en folders\n- Brochures en catalogi\n- Affiches\n- Bewegwijzering en gevelreclame\n- Voertuigbelettering\n- Beursstanden en roll-ups\n- Werkkledij en textiel\n- Relatiegeschenken\n- Stickers en verpakking\n\n## Hoe het werkt\n\nJij zegt wat je nodig hebt. Ik ontwerp, jij keurt goed, ik regel de drukker en de levering.\nEén factuur, één aanspreekpunt, geen gedoe met drukklare bestanden.\n",
+      "sort_order": 5,
+      "noindex": false,
+      "title": "Grafische vormgeving & drukwerk",
+      "seo_title": "Drukwerk & grafische vormgeving | One Man Agency Dendermonde",
+      "meta_description": "Visitekaartjes, flyers, brochures, belettering, textiel en beurstoepassingen. Ontwerp en drukwerk via één contact, aan scherpe prijzen en met snelle levering.",
+      "intro": "Print is niet dood. In een straal van vijftien kilometer rond je zaak is een goed gemaakte folder nog altijd een van de goedkoopste manieren om gezien te worden.",
+      "faq": [
+        {
+          "vraag": "Werk je met mijn eigen drukker?",
+          "antwoord": "Als je er al een hebt waar je tevreden over bent: perfect, ik lever de drukklare bestanden aan. Anders regel ik het volledig."
+        },
+        {
+          "vraag": "Hoe snel kan het geleverd zijn?",
+          "antwoord": "Standaard drukwerk staat meestal binnen vijf tot zeven werkdagen bij je. Voor spoed kan het sneller, tegen meerprijs."
+        }
+      ],
+      "prices": [
+        {
+          "wat": "Ontwerp",
+          "vanaf": "€ 85 / uur"
+        },
+        {
+          "wat": "Drukwerk",
+          "vanaf": "inkoopprijs + transparante marge"
+        },
+        {
+          "wat": "Terugkerend drukwerk",
+          "vanaf": "vast tarief per oplage"
+        }
+      ]
+    },
+    {
+      "type": "service",
+      "slug": "marketingstrategie",
+      "body": "\n## Het probleem\n\nJe doet al van alles. Een post hier, een advertentie daar, een folder in de bus. Maar niemand kan je\nzeggen wat het precies opbrengt, en het voelt alsof je elke maand opnieuw begint.\n\n## Wat ik doe\n\nIk breng in kaart wat je bedrijf verkoopt, aan wie, en waarom ze bij jou kopen en niet bij de\nconcurrent twee straten verder. Daaruit volgt een plan: wie je doelgroep is, welke boodschap werkt,\nwelke drie kanalen de moeite zijn en welke je gerust mag laten vallen.\n\n## Wat je krijgt\n\n- Doelgroep- en concurrentieanalyse voor jouw regio\n- Positionering: waarom jij, in één zin die je ook effectief kan gebruiken\n- Kanaalkeuze met budgetverdeling\n- Een actieplan van twaalf maanden, per kwartaal\n- Meetpunten in mensentaal\n",
+      "sort_order": 6,
+      "noindex": false,
+      "title": "Marketingstrategie voor KMO’s",
+      "seo_title": "Marketingstrategie voor KMO's | One Man Agency",
+      "meta_description": "Een marketingplan dat past bij je budget en je agenda. Ik bepaal samen met jou doelgroep, boodschap en kanalen — en voer het daarna ook uit.",
+      "intro": "Een plan van vijf pagina’s waar je effectief iets mee doet, in plaats van veertig pagina’s die in een lade verdwijnen.",
+      "faq": [
+        {
+          "vraag": "Heb ik als kleine zaak echt een marketingstrategie nodig?",
+          "antwoord": "Als je minder dan 500 euro per maand aan marketing besteedt: hou het simpel en begin met je Google Bedrijfsprofiel en je website. Vanaf het moment dat je structureel geld uitgeeft, verdient een plan zich meestal binnen enkele maanden terug, al was het maar omdat je stopt met betalen voor kanalen die niets opleveren."
+        },
+        {
+          "vraag": "Hoe lang duurt zo'n traject?",
+          "antwoord": "Drie tot vier weken, met twee gesprekken: een intake van twee uur en een presentatie van het plan. Daartussen doe ik het onderzoek."
+        }
+      ],
+      "prices": [
+        {
+          "wat": "Strategietraject voor een KMO",
+          "vanaf": "€ 1.250"
+        },
+        {
+          "wat": "Strategie + uitvoering in een maandpakket",
+          "vanaf": "€ 675 / maand"
+        }
+      ]
+    },
+    {
+      "type": "service",
+      "slug": "seo-en-geo",
+      "body": "\n## SEO — Google\n\n- Zoekwoordenonderzoek op wat jouw klanten effectief intypen\n- Technische basis: snelheid, mobiel, indexering, interne links\n- Paginastructuur en teksten per dienst en per gemeente\n- Google Bedrijfsprofiel: volledig invullen, posts, foto’s, reviewbeleid\n- Maandelijkse rapportering in mensentaal\n\n## GEO — AI-antwoorden\n\nGEO staat voor Generative Engine Optimization: ervoor zorgen dat AI-assistenten jouw bedrijf noemen.\nDat vraagt andere ingrepen dan klassieke SEO.\n\n- Duidelijke, citeerbare zinnen over wie je bent en wat je doet\n- Structured data zodat modellen je gegevens correct lezen\n- Vraag-en-antwoordcontent in natuurlijke taal\n- Concrete cijfers en prijzen op de pagina in plaats van “prijs op aanvraag”\n- Vermeldingen op externe bronnen die AI-modellen raadplegen\n",
+      "sort_order": 7,
+      "noindex": false,
+      "title": "SEO & GEO: gevonden worden wanneer het telt",
+      "seo_title": "SEO & GEO voor KMO's | Gevonden worden in Google en AI",
+      "meta_description": "Hoger in Google en zichtbaar in AI-antwoorden. Lokale SEO, technische optimalisatie en content voor KMO's in Oost-Vlaanderen. Start met een gratis scan.",
+      "intro": "Een deel van je klanten typt nog altijd in Google. Een groeiend deel vraagt het aan ChatGPT. Je moet in beide antwoorden staan.",
+      "faq": [
+        {
+          "vraag": "Hoe lang duurt het voor ik resultaat zie?",
+          "antwoord": "Lokale ingrepen zoals je Bedrijfsprofiel, reviews en gemeentepagina's geven vaak binnen vier tot acht weken beweging. Concurrerende zoektermen vragen zes maanden of meer. Wie je iets anders vertelt, verkoopt lucht."
+        },
+        {
+          "vraag": "Wat is GEO precies en heb ik dat nodig?",
+          "antwoord": "GEO betekent dat je ervoor zorgt dat AI-assistenten zoals ChatGPT, Gemini en Perplexity jouw bedrijf noemen wanneer iemand een relevante vraag stelt. Het goede nieuws: een groot deel ervan overlapt met gewone SEO, dus je doet het meestal in één beweging."
+        },
+        {
+          "vraag": "Geef je garanties op een positie in Google?",
+          "antwoord": "Nee, en niemand kan dat eerlijk doen. Wel spreek ik met je af welke zoektermen we volgen en rapporteer ik elke maand of we vooruitgaan."
+        }
+      ],
+      "prices": [
+        {
+          "wat": "Eenmalige SEO-audit met actieplan",
+          "vanaf": "€ 750"
+        },
+        {
+          "wat": "Lokale SEO-opstart",
+          "vanaf": "€ 1.450"
+        },
+        {
+          "wat": "Doorlopende SEO-opvolging",
+          "vanaf": "€ 395 / maand"
+        }
+      ]
+    },
+    {
+      "type": "service",
+      "slug": "social-media",
+      "body": "\nSocial media is geen probleem van kunnen, het is een probleem van volhouden. Drie weken lukt\niedereen. Drie jaar niet.\n\n## Wat ik doe\n\n- Contentstrategie: welke onderwerpen, welke toon, hoe vaak\n- Een contentkalender die je vooraf ziet en goedkeurt\n- Ontwerp en tekst van elke post\n- Inplannen en publiceren op Facebook, Instagram en LinkedIn\n- Opvolging van reacties en berichten in het Co Pilot-pakket\n- Advertising: gerichte campagnes op je regio en doelgroep\n\nDe volledige vergelijking van de drie pakketten staat op de\n[prijzenpagina](/prijzen).\n",
+      "sort_order": 8,
+      "noindex": false,
+      "title": "Social media uitbesteden",
+      "seo_title": "Social media uitbesteden voor KMO's | One Man Agency",
+      "meta_description": "Contentkalender, creatie, posten en opvolging voor Facebook, Instagram en LinkedIn. Vaste pakketten vanaf € 475 per maand. Jij hoeft niets meer te bedenken.",
+      "intro": "Geen inspiratie, geen tijd, geen idee wat je moet posten. Je bent zeker niet de enige.",
+      "faq": [
+        {
+          "vraag": "Moet ik zelf nog foto's aanleveren?",
+          "antwoord": "Wat je zelf maakt met je gsm gebruiken we graag, dat is vaak het echtste materiaal. Voor de rest kom ik één à twee keer per jaar langs voor een fotoreportage die een half jaar content oplevert."
+        },
+        {
+          "vraag": "Moet ik elke post goedkeuren?",
+          "antwoord": "Je krijgt de kalender vooraf. Wie snel wil gaan, geeft één keer per maand groen licht op het geheel. Wie liever meekijkt, keurt post per post goed."
+        },
+        {
+          "vraag": "Zit ik vast aan een jaarcontract?",
+          "antwoord": "Nee. De pakketten lopen per kwartaal en zijn daarna opzegbaar. Er zijn geen opstartkosten."
+        }
+      ],
+      "prices": [
+        {
+          "wat": "Easy to Start — 1 post per week",
+          "vanaf": "€ 475 / maand"
+        },
+        {
+          "wat": "Actief — 2 posts per week",
+          "vanaf": "€ 675 / maand"
+        },
+        {
+          "wat": "Co Pilot — 3 posts per week",
+          "vanaf": "€ 985 / maand"
+        }
+      ]
+    },
+    {
+      "type": "service",
+      "slug": "webdesign",
+      "body": "\n## Waarin ik bouw\n\n- **WordPress met Bricks** — voor wie zelf wil kunnen aanpassen. De standaardkeuze\n  voor de meeste KMO’s.\n- **Wix** — snel online, beperkt in maatwerk, geschikt voor eenvoudige sites.\n- **Shopify** — voor webshops met veel producten en verzendingen.\n- **Odoo** — als je website moet samenwerken met je facturatie, voorraad of CRM.\n\n## Wat er altijd in zit\n\n- Structuur en teksten die zoekverkeer opvangen, niet achteraf ingevuld\n- Technische SEO: snelheid, mobiel, indexering en schema-markup\n- Google Analytics en Search Console correct ingesteld\n- Cookiebanner en privacybeleid volgens de GDPR\n- Een half uur uitleg zodat je zelf teksten en foto’s kan aanpassen\n\nBenieuwd hoe die prijs tot stand komt? Lees\n[wat een website in België kost](/wat-kost-een-website).\n",
+      "sort_order": 9,
+      "noindex": false,
+      "title": "Website laten maken",
+      "seo_title": "Website laten maken in Dendermonde | One Man Agency",
+      "meta_description": "Betaalbare websites en webshops op maat in WordPress, Wix, Shopify of Odoo. Vanaf € 1.450. Zelf aanpasbaar, snel online, gebouwd om klanten op te leveren.",
+      "intro": "Een website moet meer doen dan vertellen wie je bent. Ze moet vertrouwen creëren, vragen beantwoorden en bezoekers aanzetten tot actie.",
+      "faq": [
+        {
+          "vraag": "Hoe lang duurt het?",
+          "antwoord": "Een onepager staat er in twee tot drie weken. Een volwaardige website in vier tot zes weken, afhankelijk van hoe snel ik je teksten en foto's krijg."
+        },
+        {
+          "vraag": "Ben ik eigenaar van mijn website?",
+          "antwoord": "Ja. Domeinnaam, hosting en bestanden staan op jouw naam. Je bent niet vastgeketend aan mij en kan op elk moment met iemand anders verder."
+        },
+        {
+          "vraag": "Ik heb al een website. Moet die weg?",
+          "antwoord": "Meestal niet. In veel gevallen levert een grondige opfrissing van structuur en teksten meer op dan een volledig nieuwe site, aan een fractie van de kostprijs."
+        }
+      ],
+      "prices": [
+        {
+          "wat": "Onepager",
+          "vanaf": "€ 1.450"
+        },
+        {
+          "wat": "Website van 5 tot 10 pagina’s",
+          "vanaf": "€ 2.450"
+        },
+        {
+          "wat": "Webshop",
+          "vanaf": "€ 3.950"
+        },
+        {
+          "wat": "Onderhoud en updates",
+          "vanaf": "€ 45 / maand"
+        }
+      ]
+    },
+    {
+      "type": "sector",
+      "slug": "bouw-en-renovatie",
+      "body": "\n## Wat werkt in deze sector\n\n- **Realisaties met foto’s.** Voor en na, per type werk. Dit is de belangrijkste\n  content die je hebt en ze ligt al op je gsm.\n- **Duidelijk zeggen wat je niet doet.** Dat filtert de prijsvragers eruit voor ze bellen.\n- **Werkgebied benoemen.** Een lijst gemeenten op je site scheelt verplaatsingen en\n  verbetert je lokale vindbaarheid.\n- **Indicatieve prijzen.** Een vork per type project trekt betere leads aan dan\n  “prijs op aanvraag”.\n- **Snel antwoorden.** Wie als eerste terugbelt, wint het dossier vaak al.\n",
+      "sort_order": 0,
+      "noindex": false,
+      "title": "Marketing voor bouw en renovatie",
+      "seo_title": "Marketing voor bouw- en renovatiebedrijven | One Man Agency",
+      "meta_description": "Betere offerteaanvragen in plaats van meer prijsvragers. Website, realisaties en lokale SEO voor aannemers en renovatiebedrijven.",
+      "intro": "Je hebt geen probleem met te weinig aanvragen. Je hebt een probleem met de verkeerde aanvragen.",
+      "todo_note": "Nog aan te vullen: zet hier twee cases uit deze sector, met toestemming van de klant en een citaat van twee zinnen. Dat is het stuk dat het verkoopgesprek wint."
+    },
+    {
+      "type": "sector",
+      "slug": "garages-en-autobedrijven",
+      "body": "\n## Wat werkt in deze sector\n\n- **Google Bedrijfsprofiel boven alles.** “Garage in de buurt” is de zoekopdracht\n  die je klanten oplevert. Foto’s, openingsuren en reviews doen daar het werk.\n- **Reviews systematisch vragen.** Een QR-code aan de balie en een kort mailtje na elke\n  onderhoudsbeurt volstaan.\n- **Occasies tonen.** Wekelijkse posts met een nieuwe wagen zijn de eenvoudigste content\n  die er is, en ze werken.\n- **Seizoenen gebruiken.** Bandenwissel, vakantiecheck, keuringsbegeleiding, airco.\n- **Je mensen tonen.** De monteur die al vijftien jaar meedraait, is een sterker argument\n  dan eender welk logo van een merk.\n",
+      "sort_order": 1,
+      "noindex": false,
+      "title": "Marketing voor garages en autobedrijven",
+      "seo_title": "Marketing voor garages en autobedrijven | One Man Agency",
+      "meta_description": "Meer afspraken in je werkplaats en meer zichtbaarheid voor je occasies. Lokale SEO, social media en campagnes voor garages in Oost-Vlaanderen.",
+      "intro": "Je werkplaats vult zich niet met advertenties alleen. Ze vult zich met vertrouwen en vindbaarheid op het juiste moment.",
+      "todo_note": "Nog aan te vullen: zet hier twee cases uit deze sector, met toestemming van de klant en een citaat van twee zinnen. Dat is het stuk dat het verkoopgesprek wint."
+    },
+    {
+      "type": "sector",
+      "slug": "horeca-en-retail",
+      "body": "\n## Wat werkt in deze sector\n\n- **Beeld, beeld, beeld.** Eten, interieur, producten, mensen. Twee reportages per jaar\n  volstaan voor een volledige contentkalender.\n- **Je Bedrijfsprofiel actueel houden.** Verlofdagen, aangepaste uren en nieuwe foto’s\n  kosten je vijf minuten en schelen klanten voor een gesloten deur.\n- **Reviews beantwoorden.** Alle. Ook de kwade. Zeker de kwade.\n- **Lokaal adverteren.** Met een straal van tien kilometer en een klein budget bereik je\n  precies wie kan binnenkomen.\n- **Terugkeer organiseren.** Een mailinglijst of klantenkaart brengt meer op dan permanent\n  nieuwe mensen zoeken.\n",
+      "sort_order": 2,
+      "noindex": false,
+      "title": "Marketing voor horeca en retail",
+      "seo_title": "Marketing voor horeca en lokale retail | One Man Agency",
+      "meta_description": "Meer volk over de vloer: social media, Google Bedrijfsprofiel, beeldmateriaal en acties voor zaken met een etalage in Oost-Vlaanderen.",
+      "intro": "Bij een zaak met een deur telt maar één ding: gaat er vandaag iemand binnen?",
+      "todo_note": "Nog aan te vullen: zet hier twee cases uit deze sector, met toestemming van de klant en een citaat van twee zinnen. Dat is het stuk dat het verkoopgesprek wint."
+    },
+    {
+      "type": "sector",
+      "slug": "verzekeringsmakelaars",
+      "body": "\nEen makelaarskantoor concurreert met banken, met directe verzekeraars en met\nvergelijkingssites. Wat jij hebt en zij niet: iemand die opneemt als er schade is.\n\n## Wat werkt in deze sector\n\n- **Lokale zichtbaarheid.** Mensen zoeken “verzekeringsmakelaar [gemeente]”.\n  Daar moet je staan.\n- **Gezichten.** Foto’s van jou en je medewerkers doen meer dan eender welke\n  stockfoto van een gezin op een strand.\n- **Uitleg in mensentaal.** Korte posts die één begrip helder maken, bouwen\n  autoriteit op.\n- **Reviews.** In een vertrouwensberoep weegt elke review zwaar.\n- **Levensmomenten.** Verhuis, eerste woning, zelfstandig starten, gezinsuitbreiding: daar\n  zitten je aanknopingspunten.\n\n## Waar ik rekening mee hou\n\nCommunicatie over financiële producten is gereglementeerd. Ik werk met kantoren die daaraan\ngebonden zijn en hou de content bij wat je gerust mag zeggen: uitleg, dienstverlening, bereikbaarheid en\nmensen. Geen beloften over rendement of dekking.\n",
+      "sort_order": 3,
+      "noindex": false,
+      "title": "Marketing voor verzekeringsmakelaars",
+      "seo_title": "Marketing voor verzekeringsmakelaars | One Man Agency",
+      "meta_description": "Social media, website en lokale zichtbaarheid voor verzekeringskantoren in Vlaanderen. Compliance-bewust, concreet en met ervaring in de sector.",
+      "intro": "Je verkoopt vertrouwen, geen polissen. Dat moet je marketing laten zien.",
+      "todo_note": "Nog aan te vullen: zet hier twee cases uit deze sector, met toestemming van de klant en een citaat van twee zinnen. Dat is het stuk dat het verkoopgesprek wint."
+    },
+    {
+      "type": "region",
+      "slug": "marketingbureau-aalst",
+      "body": "\nAalst is groter en drukker bezet dan de omliggende gemeenten: er zitten meer bureaus en meer concurrentie op dezelfde zoektermen. Daarom werkt hier een scherpe keuze beter dan een breed verhaal. Wie duidelijk kiest voor één doelgroep en één boodschap, valt sneller op.\n\nIk werk voor ondernemers in Aalst en de deelgemeenten: Erembodegem, Hofstade, Nieuwerkerken, Moorsel en Herdersem.\n\n## Waarom een lokaal bureau?\n\nOmdat een garage in een dorpskern andere klanten heeft dan een garage in een stadscentrum. Omdat\nik langskom als er iets is. En omdat ik de lokale media, verenigingen en handelaarsbonden ken.\n\n## Wat ik doe voor ondernemers in Aalst\n\n## Zoeken jouw klanten je in Aalst?\n\nTyp eens “[jouw sector] Aalst” in Google. Sta je op de eerste pagina? Zo niet, dan\ngaan er elke dag klanten naar concurrenten die het wél in orde hebben. De\n[gratis marketingscan](/gratis-marketingscan) toont je precies waar je staat.\n",
+      "sort_order": 0,
+      "noindex": false,
+      "title": "Marketingbureau in Aalst",
+      "seo_title": "Marketingbureau Aalst | One Man Agency",
+      "meta_description": "Marketing, website en social media voor KMO's in Aalst. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring. Plan een gratis kennismaking.",
+      "intro": "Marketing, website en social media voor KMO’s in Aalst en omgeving. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring.",
+      "todo_note": "Nog aan te vullen: voeg hier drie klanten uit Aalst toe, met       logo, sector en link naar hun case. Een lokale pagina zonder lokale bewijsvoering is half werk."
+    },
+    {
+      "type": "region",
+      "slug": "marketingbureau-dendermonde",
+      "body": "\nOne Man Agency is gevestigd in Dendermonde. Dat betekent kort op de bal: ik kom langs wanneer het nodig is, ik ken de handelaarsverenigingen en de lokale media, en ik weet welke straten in deze stad passage hebben en welke niet.\n\nIk werk voor ondernemers in Dendermonde en de deelgemeenten: Sint-Gillis, Grembergen, Baasrode, Appels, Oudegem, Schoonaarde en Mespelare.\n\n## Waarom een lokaal bureau?\n\nOmdat een garage in een dorpskern andere klanten heeft dan een garage in een stadscentrum. Omdat\nik langskom als er iets is. En omdat ik de lokale media, verenigingen en handelaarsbonden ken.\n\n## Wat ik doe voor ondernemers in Dendermonde\n\n## Zoeken jouw klanten je in Dendermonde?\n\nTyp eens “[jouw sector] Dendermonde” in Google. Sta je op de eerste pagina? Zo niet, dan\ngaan er elke dag klanten naar concurrenten die het wél in orde hebben. De\n[gratis marketingscan](/gratis-marketingscan) toont je precies waar je staat.\n",
+      "sort_order": 1,
+      "noindex": false,
+      "title": "Marketingbureau in Dendermonde",
+      "seo_title": "Marketingbureau Dendermonde | One Man Agency",
+      "meta_description": "Marketing, website en social media voor KMO's in Dendermonde. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring. Plan een gratis kennismaking.",
+      "intro": "Marketing, website en social media voor KMO’s in Dendermonde en omgeving. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring.",
+      "todo_note": "Nog aan te vullen: voeg hier drie klanten uit Dendermonde toe, met       logo, sector en link naar hun case. Een lokale pagina zonder lokale bewijsvoering is half werk."
+    },
+    {
+      "type": "region",
+      "slug": "marketingbureau-lebbeke",
+      "body": "\nLebbeke is een gemeente van familiebedrijven: aannemers, garages, slagers, interieurzaken. Een groot deel van mijn klantenbestand zit hier, en veel van die samenwerkingen lopen al jaren. Mond-aan-mondreclame werkt hier nog altijd het sterkst; online zichtbaarheid versterkt dat, ze vervangt het niet.\n\nIk werk voor ondernemers in Lebbeke en de deelgemeenten: Wieze, Denderbelle en de as richting Buggenhout.\n\n## Waarom een lokaal bureau?\n\nOmdat een garage in een dorpskern andere klanten heeft dan een garage in een stadscentrum. Omdat\nik langskom als er iets is. En omdat ik de lokale media, verenigingen en handelaarsbonden ken.\n\n## Wat ik doe voor ondernemers in Lebbeke\n\n## Zoeken jouw klanten je in Lebbeke?\n\nTyp eens “[jouw sector] Lebbeke” in Google. Sta je op de eerste pagina? Zo niet, dan\ngaan er elke dag klanten naar concurrenten die het wél in orde hebben. De\n[gratis marketingscan](/gratis-marketingscan) toont je precies waar je staat.\n",
+      "sort_order": 2,
+      "noindex": false,
+      "title": "Marketingbureau in Lebbeke",
+      "seo_title": "Marketingbureau Lebbeke | One Man Agency",
+      "meta_description": "Marketing, website en social media voor KMO's in Lebbeke. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring. Plan een gratis kennismaking.",
+      "intro": "Marketing, website en social media voor KMO’s in Lebbeke en omgeving. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring.",
+      "todo_note": "Nog aan te vullen: voeg hier drie klanten uit Lebbeke toe, met       logo, sector en link naar hun case. Een lokale pagina zonder lokale bewijsvoering is half werk."
+    },
+    {
+      "type": "region",
+      "slug": "marketingbureau-sint-niklaas",
+      "body": "\nHet Waasland heeft een sterke KMO-structuur en een koopkrachtig publiek dat online vergelijkt voor het belt. Een verzorgde website en een goed ingevuld Google Bedrijfsprofiel wegen hier zwaarder door dan in een dorpskern waar iedereen je al kent.\n\nIk werk voor ondernemers in Sint-Niklaas en de deelgemeenten: Belsele, Sinaai, Nieuwkerken-Waas en het ruimere Waasland.\n\n## Waarom een lokaal bureau?\n\nOmdat een garage in een dorpskern andere klanten heeft dan een garage in een stadscentrum. Omdat\nik langskom als er iets is. En omdat ik de lokale media, verenigingen en handelaarsbonden ken.\n\n## Wat ik doe voor ondernemers in Sint-Niklaas\n\n## Zoeken jouw klanten je in Sint-Niklaas?\n\nTyp eens “[jouw sector] Sint-Niklaas” in Google. Sta je op de eerste pagina? Zo niet, dan\ngaan er elke dag klanten naar concurrenten die het wél in orde hebben. De\n[gratis marketingscan](/gratis-marketingscan) toont je precies waar je staat.\n",
+      "sort_order": 3,
+      "noindex": false,
+      "title": "Marketingbureau in Sint-Niklaas",
+      "seo_title": "Marketingbureau Sint-Niklaas | One Man Agency",
+      "meta_description": "Marketing, website en social media voor KMO's in Sint-Niklaas. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring. Plan een gratis kennismaking.",
+      "intro": "Marketing, website en social media voor KMO’s in Sint-Niklaas en omgeving. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring.",
+      "todo_note": "Nog aan te vullen: voeg hier drie klanten uit Sint-Niklaas toe, met       logo, sector en link naar hun case. Een lokale pagina zonder lokale bewijsvoering is half werk."
+    },
+    {
+      "type": "region",
+      "slug": "marketingbureau-wetteren",
+      "body": "\nWetteren ligt in de invloedssfeer van Gent, en dat merk je aan de zoekconcurrentie. Lokale zaken die hier willen opvallen, halen het meeste rendement uit hyperlokale content: de gemeente in je teksten, foto’s van herkenbare plaatsen en samenwerkingen met andere lokale ondernemers.\n\nIk werk voor ondernemers in Wetteren en de deelgemeenten: Massemen, Westrem, Kwatrecht en de as richting Wichelen.\n\n## Waarom een lokaal bureau?\n\nOmdat een garage in een dorpskern andere klanten heeft dan een garage in een stadscentrum. Omdat\nik langskom als er iets is. En omdat ik de lokale media, verenigingen en handelaarsbonden ken.\n\n## Wat ik doe voor ondernemers in Wetteren\n\n## Zoeken jouw klanten je in Wetteren?\n\nTyp eens “[jouw sector] Wetteren” in Google. Sta je op de eerste pagina? Zo niet, dan\ngaan er elke dag klanten naar concurrenten die het wél in orde hebben. De\n[gratis marketingscan](/gratis-marketingscan) toont je precies waar je staat.\n",
+      "sort_order": 4,
+      "noindex": false,
+      "title": "Marketingbureau in Wetteren",
+      "seo_title": "Marketingbureau Wetteren | One Man Agency",
+      "meta_description": "Marketing, website en social media voor KMO's in Wetteren. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring. Plan een gratis kennismaking.",
+      "intro": "Marketing, website en social media voor KMO’s in Wetteren en omgeving. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring.",
+      "todo_note": "Nog aan te vullen: voeg hier drie klanten uit Wetteren toe, met       logo, sector en link naar hun case. Een lokale pagina zonder lokale bewijsvoering is half werk."
+    },
+    {
+      "type": "region",
+      "slug": "marketingbureau-zele",
+      "body": "\nZele combineert productie- en dienstenbedrijven met een levendige dorpskern. Voor de B2B-zaken werkt LinkedIn en een sterke website; voor de winkels en horeca draait het om Facebook, beeldmateriaal en je Bedrijfsprofiel. Vaak doe ik voor dezelfde gemeente dus twee heel verschillende dingen.\n\nIk werk voor ondernemers in Zele en de deelgemeenten: Huivelde, Durmen en de bedrijvenzone richting Lokeren.\n\n## Waarom een lokaal bureau?\n\nOmdat een garage in een dorpskern andere klanten heeft dan een garage in een stadscentrum. Omdat\nik langskom als er iets is. En omdat ik de lokale media, verenigingen en handelaarsbonden ken.\n\n## Wat ik doe voor ondernemers in Zele\n\n## Zoeken jouw klanten je in Zele?\n\nTyp eens “[jouw sector] Zele” in Google. Sta je op de eerste pagina? Zo niet, dan\ngaan er elke dag klanten naar concurrenten die het wél in orde hebben. De\n[gratis marketingscan](/gratis-marketingscan) toont je precies waar je staat.\n",
+      "sort_order": 5,
+      "noindex": false,
+      "title": "Marketingbureau in Zele",
+      "seo_title": "Marketingbureau Zele | One Man Agency",
+      "meta_description": "Marketing, website en social media voor KMO's in Zele. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring. Plan een gratis kennismaking.",
+      "intro": "Marketing, website en social media voor KMO’s in Zele en omgeving. Eén aanspreekpunt, vaste prijzen, 25 jaar ervaring.",
+      "todo_note": "Nog aan te vullen: voeg hier drie klanten uit Zele toe, met       logo, sector en link naar hun case. Een lokale pagina zonder lokale bewijsvoering is half werk."
+    }
+  ],
+  "posts": [
+    {
+      "slug": "acht-tips-om-je-marketing-te-verbeteren",
+      "body": "\n1. **Focus op je huidige klanten.** Bestaande klanten zijn waardevoller dan nieuwe. Zorg dat ze tevreden blijven en moedig ze aan om terug te komen.\n2. **Bepaal je doelgroep.** Wie wil je bereiken? Maak een profiel van je ideale klant en richt je boodschap op hen.\n3. **Doe aan SEO.** Zorg dat je website vindbaar is in zoekmachines, met relevante content en een technisch gezonde site.\n4. **Maak waardevolle content.** Bied informatie die je doelgroep helpt bij hun problemen: blogartikels, video's of infographics.\n5. **Combineer push en pull.** Pushmarketing stuurt je boodschap actief naar je doelgroep, pullmarketing trekt mensen aan met waardevolle content. Gebruik beide.\n6. **Maak een marketingplan.** Zet je doelen op papier en hoe je ze wil bereiken. Dat houdt je gefocust en maakt vooruitgang meetbaar.\n7. **Deel je kennis.** Schrijf artikels, geef workshops of spreek op events. Expertise tonen verkoopt beter dan expertise claimen.\n8. **Automatiseer je marketing.** Veel taken kan je automatiseren. Dat bespaart tijd en geld.\n\n## Drie extra tips voor lokale zichtbaarheid\n\n- **Netwerk met andere KMO's.** Samenwerken vergroot je bereik.\n- **Organiseer lokale evenementen.** Een sterke manier om je naam bekend te maken.\n- **Sponsor lokale sportteams of verenigingen.** Goed voor zichtbaarheid én goodwill.\n\nHulp nodig bij het kiezen of inzetten van de juiste tools? [Neem contact op](/contact) voor een vrijblijvend gesprek.\n",
+      "is_published": true,
+      "title": "8 tips om je marketing te verbeteren",
+      "seo_title": "8 tips om je KMO-marketing te verbeteren | One Man Agency",
+      "meta_description": "Acht concrete tips om de marketing van je KMO te verbeteren, van focus op bestaande klanten tot automatisatie en lokaal netwerken.",
+      "intro": "Acht dingen die de marketing van je KMO meteen vooruithelpen, plus drie extra tips voor lokale zichtbaarheid.",
+      "published_on": "2026-03-27",
+      "category": "Strategie",
+      "legacy_url": "/8-tips-om-je-marketing-te-verbeteren"
+    },
+    {
+      "slug": "consistente-huisstijl-bouwen",
+      "body": "\nIn deze blog leer je stap voor stap hoe je als lokale onderneming een visuele identiteit opbouwt die zowel online als offline sterk staat.\n\n## 1. Begin bij je merkpersoonlijkheid\n\nStel jezelf drie vragen: wie ben ik, waar sta ik voor, en hoe wil ik dat klanten zich voelen? Schrijf kernwoorden op, bijvoorbeeld betrouwbaar, warm of innovatief. Die vormen de basis voor je kleurkeuze en typografie. Een installateur kan bijvoorbeeld kiezen voor warm oranje om vakmanschap en energie uit te stralen.\n\n## 2. Kies een beperkt kleurenpalet\n\nGebruik één basiskleur, één secundaire en één accentkleur. Te veel tinten zorgen voor chaos. Tools zoals Coolors geven je harmonieuze paletten. Test je kleurcontrasten via WebAIM zodat je voldoet aan de WCAG-richtlijnen.\n\n## 3. Selecteer typografie met karakter\n\nCombineer maximaal twee lettertypes: een display-font voor titels en een leesbare sans-serif voor bodytekst. Test de leesbaarheid op mobiel én in print. Montserrat voor titels en Open Sans voor tekst zijn gratis en betrouwbaar.\n\n## 4. Ontwikkel een flexibel logo\n\nJe logo moet leesbaar zijn op een gevel én als profielfoto. Maak daarom horizontale, verticale en icoon-varianten. Controleer het contrast op lichte en donkere achtergronden en werk met vectorbestanden voor schaalbaarheid.\n\n## 5. Definieer beeldstijl en iconografie\n\nConsistente beelden, filters, kaders en icoonsets zorgen dat je social posts meteen herkenbaar zijn. Bouw een eigen beeldbank op, of gebruik stockbeeld met dezelfde look. Een eigen illustratiestijl voor infographics en blogheaders versterkt dat nog.\n\n## 6. Documenteer alles in een huisstijlgids\n\nMaak een handboek met kleurcodes, fontregels, logo-clearspace en do's en don'ts. Zo blijft je branding consistent, ook als je met freelancers werkt. Voorzie sjablonen voor facturen, presentaties en social posts.\n\n## 7. Implementeer via templates\n\nOntwerp sjablonen voor social media, offertes en presentaties. Zo hou je de ontwerptijd laag en de merkconsistentie hoog.\n\n## Conclusie\n\nEen sterke huisstijl is de visuele belichaming van je merkbelofte. Met duidelijke richtlijnen, slimme sjablonen en consequente toepassing bouw je aan vertrouwen en herkenbaarheid. [Ik help je er graag mee](/diensten/branding-en-huisstijl).\n",
+      "is_published": true,
+      "title": "Een consistente huisstijl in zeven stappen",
+      "seo_title": "Consistente huisstijl bouwen in 7 stappen | One Man Agency",
+      "meta_description": "Consumenten beslissen in 0,05 seconde of een merk hen aanspreekt. Zo bouw je als lokale onderneming een visuele identiteit die blijft hangen.",
+      "intro": "Consumenten beslissen in 0,05 seconde of ze een merk aantrekkelijk vinden, puur op basis van visuele prikkels. Een herkenbare huisstijl is geen luxe.",
+      "published_on": "2026-03-27",
+      "category": "Branding",
+      "legacy_url": "/een-consistente-huisstijl-verhoogt-herkenbaarheid-en-vertrouwen-leer-hoe-je-met-kleuren-fonts-en-beeldtaal-een-sterk-merk-bouwt"
+    },
+    {
+      "slug": "eenvoudig-groeien-als-kmo",
+      "body": "\n1. **Je klantenbestand uitbreiden.** Dat lukt met de juiste marketing- en reclamemix, maar evengoed met uitzonderlijke klantenservice die klanten aantrekt én houdt.\n2. **Nieuwe producten of diensten ontwikkelen.** Dit diversifieert je inkomsten en trekt nieuwe klanten aan. Misschien kan je terugkerende diensten aanbieden?\n3. **Je operationele efficiëntie verbeteren.** Door processen te stroomlijnen en kosten te drukken verhoog je je winstgevendheid, en die besparing kan je investeren in groei.\n4. **Strategische partnerschappen opbouwen.** Samenwerken met andere bedrijven vergroot je bereik en geeft je toegang tot nieuwe markten of middelen.\n5. **Investeren in technologie.** Nieuwe technologie verbetert je efficiëntie, automatiseert processen en geeft je een voorsprong.\n\nElk bedrijf is uniek en de beste groeistrategie hangt af van je specifieke situatie. Belangrijk is dat je een plan én een budget hebt om je doelen te bereiken. Waar zet jij het komende jaar op in?\n",
+      "is_published": true,
+      "title": "Hoe kun je eenvoudig groeien als KMO?",
+      "seo_title": "Groeien als KMO: vijf routes | One Man Agency",
+      "meta_description": "Vijf manieren waarop je als kleiner bedrijf kan groeien: klantenbestand, nieuwe diensten, efficiëntie, partnerschappen en technologie.",
+      "intro": "Er zijn verschillende manieren waarop je als kleiner bedrijf kan groeien. Ik zet de vijf belangrijkste op een rij.",
+      "published_on": "2026-03-27",
+      "category": "Strategie",
+      "legacy_url": "/hoe-kun-je-eenvoudig-groeien-als-kmo"
+    },
+    {
+      "slug": "lokale-seo-ai-tools-google-update",
+      "body": "\nElke week krijg ik dezelfde vraag van ondernemers in en rond Dendermonde: wat moet ik nu écht doen om online gevonden te worden? Drie dingen die voor elke lokale KMO het verschil maken.\n\n## 1. Geen paniek over de nieuwe Google-update, wel actie op de basis\n\nEr circuleren deze maand weer geruchten over een grote Google-update. Begin september 2026 was er geen nieuwe grote core- of spamupdate aangekondigd; de laatste bevestigde wijziging was een spamupdate midden augustus die maar een paar dagen duurde.\n\nWat blijft tellen:\n\n- **Originele inhoud.** Teksten die alleen bestaan omdat een keyword-tool veel zoekvolume toonde, worden afgestraft. Schrijf over wat je écht weet: jouw vak, jouw regio, jouw klanten.\n- **Zichtbare expertise.** Concrete voorbeelden, eigen foto's en antwoorden op vragen die klanten je elke week stellen, wegen zwaarder dan gladde marketingtaal.\n- **Technische basis op orde.** Snel laden, perfect werken op smartphone, en je belangrijkste pagina's vlot laten indexeren.\n- **AI-resultaten volgen grotendeels vanzelf.** Goede content die scoort in klassieke resultaten, duikt ook op in AI Overviews.\n\n**Actiepunt voor deze week:** open Google Search Console en bekijk je zichtbaarheid over de voorbije maand. Zie je een daling? Ga na welke pagina's dun of verouderd zijn en herschrijf ze met echte, lokale kennis.\n\n## 2. Je Google Bedrijfsprofiel: de goedkoopste marketingzet van vandaag\n\nVoor een lokale zaak is je Bedrijfsprofiel vaak belangrijker dan je website zelf. Vier dingen die te vaak blijven liggen:\n\n- Openingsuren en foto's up-to-date houden. Een verouderd profiel kost je klanten die voor een gesloten deur staan.\n- Reageren op élke review, positief en negatief.\n- Regelmatig een update of aanbieding posten via je profiel.\n- Actief om reviews vragen bij tevreden klanten. Een kort mailtje of een QR-code aan de kassa volstaat.\n\nDit kost je hooguit twintig minuten en heeft vaak meer impact dan een dure advertentiecampagne.\n\n## 3. AI-tools die écht tijd besparen\n\n- **ChatGPT of Claude** voor eerste versies van teksten, samenvattingen van klantenfeedback of het herwerken van een mail.\n- **Canva met de AI-functies** als je zelf snel een post, flyer of advertentiebeeld wil maken.\n- **Surfer SEO of Frase** als je zelf blogartikels schrijft en wil weten waarop je concurrenten scoren.\n- **Een goed CRM** zoals HubSpot. Niet sexy, maar het voorkomt dat leads verdwijnen in je mailbox.\n\nBelangrijk: een tool vervangt geen strategie. AI helpt je sneller werken, maar de keuze welke boodschap, voor welke klant, op welk moment, blijft mensenwerk.\n\n## Kort samengevat: wat doe je deze week?\n\n1. Check je zichtbaarheid in Search Console en herschrijf minstens één verouderde pagina.\n2. Werk je Google Bedrijfsprofiel bij: foto's, uren, en reageer op reviews.\n3. Kies één AI-tool en probeer hem uit op één concrete taak.\n\nMarketing hoeft niet ingewikkeld te zijn, maar het vraagt wel dat er iemand mee blijft opvolgen. Elke week opnieuw. Vragen over jouw situatie? [Neem gerust contact op](/contact).\n",
+      "is_published": true,
+      "title": "Lokale SEO, AI-tools en de Google-update van september 2026",
+      "seo_title": "Lokale SEO, AI-tools en de Google-update | One Man Agency",
+      "meta_description": "Praktische marketingtips voor lokale ondernemers: hoe je in 2026 gevonden wordt op Google, welke AI-tools tijd besparen en wat er veranderde.",
+      "intro": "Je website staat er. Je Google Bedrijfsprofiel bestaat. En toch scrolt die ene potentiële klant voorbij naar je concurrent.",
+      "published_on": "2026-09-13",
+      "category": "SEO & vindbaarheid"
+    },
+    {
+      "slug": "lokale-seo-zonder-dure-advertenties",
+      "body": "\nLokale SEO zorgt ervoor dat mensen jouw bedrijf vinden wanneer ze zoeken naar jouw product of dienst in hun buurt. Denk aan \"loodgieter in Dendermonde\" of \"beste Italiaans restaurant in Aalst\". Hieronder vijf dingen die het meeste opleveren.\n\n## 1. Optimaliseer je Google Bedrijfsprofiel\n\nJe Bedrijfsprofiel is de belangrijkste factor in lokale SEO. Dat is het kaartje dat verschijnt wanneer iemand zoekt naar jouw zaak of sector.\n\n- Vul alle gegevens correct in: naam, adres, telefoonnummer, website.\n- Voeg foto's en video's toe van je zaak.\n- Kies de juiste categorieën en zoekwoorden.\n- Verzamel reviews en reageer op elke review.\n\nVraag tevreden klanten actief om een review. Google toont bedrijven met veel goede reviews hoger in de resultaten.\n\n## 2. Gebruik lokale zoekwoorden op je website\n\nJe website moet de woorden bevatten die klanten effectief intypen.\n\n- Gebruik zoektermen zoals \"kapper in Gent\" of \"airco-installatie in Londerzeel\" op je homepage en dienstenpagina's.\n- Schrijf blogartikels met lokale tips en cases.\n- Maak aparte pagina's voor elke gemeente die je bedient.\n\nTools zoals Ubersuggest of de Google Zoekwoordplanner helpen je de juiste termen te vinden.\n\n## 3. Zorg voor lokale backlinks en vermeldingen\n\nGoogle vertrouwt bedrijven die vaak vermeld worden op andere betrouwbare websites.\n\n- Registreer je zaak op bedrijvengidsen zoals Goudengids.be, Yelp en Trustpilot.\n- Werk samen met lokale bloggers of nieuwswebsites.\n- Vraag partners en leveranciers om naar je website te linken.\n\n## 4. Maak je website mobielvriendelijk en snel\n\nMeer dan 60% van de lokale zoekopdrachten gebeurt via smartphone. Laadt je website traag of werkt hij niet goed op mobiel, dan verlies je klanten én ranking.\n\n- Zorg voor een mobielvriendelijk ontwerp.\n- Test je snelheid via PageSpeed Insights.\n- Optimaliseer je foto's zodat ze snel laden.\n\n## 5. Wees actief op social media en je blog\n\nGoogle kijkt naar activiteit. Hoe actiever je website en kanalen, hoe relevanter je bedrijf overkomt.\n\n- Post regelmatig op Facebook, Instagram en LinkedIn.\n- Schrijf lokale blogartikels over jouw sector.\n- Gebruik video's en klantverhalen om vertrouwen op te bouwen.\n\n## Conclusie\n\nJe hebt geen groot budget nodig om lokaal beter gevonden te worden. Met slimme SEO-technieken scoor je hoger en trek je meer klanten aan. Hulp nodig bij je lokale SEO-strategie? [Neem contact op](/contact).\n",
+      "is_published": true,
+      "title": "Lokale SEO: hoe je bovenaan in Google komt zonder dure advertenties",
+      "seo_title": "Lokale SEO zonder dure advertenties | One Man Agency",
+      "meta_description": "Vijf praktische stappen om lokaal hoger in Google te scoren: je Bedrijfsprofiel, lokale zoekwoorden, backlinks, snelheid en activiteit.",
+      "intro": "Wil je dat klanten in jouw regio je bovenaan in Google vinden zonder te betalen voor advertenties? Dan moet je inzetten op lokale SEO.",
+      "published_on": "2026-03-27",
+      "category": "SEO & vindbaarheid",
+      "legacy_url": "/lokale-seo-hoe-je-bovenaan-in-google-komt-zonder-dure-advertenties"
+    },
+    {
+      "slug": "marketingbudget-de-vuistregel",
+      "body": "\n## De vuistregel die écht werkt\n\nVoor de meeste KMO's geldt al jaren dezelfde richtlijn: **5% tot 10% van je jaarlijkse omzet**. Dat is geen nattevingerwerk; dat percentage wordt wereldwijd gebruikt door gezonde, groeiende bedrijven.\n\n- **5% van je omzet.** Ideaal als je markt stabiel is, je al klanten hebt en vooral zichtbaar wil blijven.\n- **8 tot 10%.** Nodig als je wil groeien, nieuwe klanten wil aantrekken of je concurrentie voorbij wil.\n- **Meer dan 10%.** Voor starters, herpositioneringen, nieuwe markten of bedrijven die echt gas geven.\n\nZit je onder de 3%? Dan ben je geen marketing aan het doen, maar aan het hopen. En hoop is geen strategie.\n\n## Wat betekent dat concreet?\n\nStel dat je een KMO runt met een jaaromzet van 500.000 euro:\n\n- 5% → 25.000 euro per jaar, ongeveer 2.080 euro per maand\n- 8% → 40.000 euro per jaar\n- 10% → 50.000 euro per jaar\n\nBelangrijk: dit is geen advertentiebudget alleen. Het dekt alles wat met marketing te maken heeft: strategie en begeleiding, social media en e-mail, advertenties, website-optimalisatie, grafisch ontwerp, drukwerk, foto en video.\n\n## Waar gaat dat budget naartoe?\n\nVoor een typische lokale KMO ziet een slimme verdeling er zo uit:\n\n- 30 tot 40% naar online advertenties\n- 25 tot 35% naar content en creatie\n- 15 tot 20% naar strategie, analyse en optimalisatie\n- 10 tot 15% naar website, e-mailmarketing en tools\n\nBelangrijker dan de exacte percentages: alles moet samenwerken. Marketing is een systeem, geen verzameling losse acties. Een advertentie zonder goede content werkt niet. Social media zonder strategie verzuipt. Een website zonder bezoekers is een digitale folder.\n\n## De harde waarheid\n\n\"Ik wil groeien, maar mijn marketingbudget is 300 euro per maand.\" Dat hoor ik vaak, en ik snap het. Maar eerlijk is eerlijk: marketing vraagt ofwel geld, ofwel tijd. Heb je weinig budget, dan moet je zelf tijd investeren. Heb je weinig tijd, dan moet je budget voorzien.\n\nWat niet werkt: alles een beetje doen, af en toe iets posten, en hopen dat klanten je vanzelf vinden.\n\n## Wat wel werkt\n\n- Bepaal een jaarbudget, geen losse maandbedragen.\n- Vertaal dat naar een vast maandbudget.\n- Kies maximaal twee kanalen die echt bij je doelgroep passen.\n- Werk consequent, minstens zes tot twaalf maanden.\n- Meet alles wat je doet.\n\nLiever 1.500 euro per maand slim besteed dan 5.000 euro marketingchaos.\n\n## Tot slot\n\nEr bestaat geen one size fits all. Wel iets als realistisch, doordacht en haalbaar. [Stel je vraag gerust](/contact).\n",
+      "is_published": true,
+      "title": "Wat kost marketing echt? De vuistregel die werkt",
+      "seo_title": "Hoeveel marketingbudget heb je nodig als KMO? | One Man Agency",
+      "meta_description": "Hoeveel marketingbudget moet een KMO voorzien? De vuistregel, wat dat concreet betekent in euro's, en waar dat geld naartoe gaat.",
+      "intro": "Het eerlijke antwoord op de meest gestelde vraag van zaakvoerders: meer dan je denkt, minder dan je hoopt, maar perfect beheersbaar.",
+      "published_on": "2024-05-08",
+      "category": "Strategie",
+      "legacy_url": "/hoe-verdeel-ik-het-best-mijn-marketing-budget-als-kmo"
+    },
+    {
+      "slug": "marketingbudget-verdelen-als-kmo",
+      "body": "\nJe hebt een bedrijf. Je wil groeien. Maar als KMO-eigenaar is budget altijd een aandachtspunt. Hoeveel geld steek je in marketing, en hoe zorg je dat elke euro telt?\n\n## Hoeveel moet je als KMO spenderen aan marketing?\n\nEr bestaat geen magisch percentage, maar een veelgebruikte vuistregel is: investeer tussen 5 en 10% van je jaarlijkse omzet in marketing. Startende bedrijven of bedrijven die snel willen groeien, gaan soms tot 15 à 20%. Gevestigde spelers die vooral willen behouden wat ze hebben, kunnen het bij 3 à 5% houden.\n\nStel dat je een jaaromzet van 200.000 euro hebt. Dan spreek je over een marketingbudget van 10.000 tot 20.000 euro per jaar. Verspreid over het jaar en de juiste kanalen is dat heel behapbaar.\n\nHet allerbelangrijkste: bepaal je budget op basis van je doelstellingen, niet op basis van wat je overhebt.\n\n## Waar geef je dat budget aan uit?\n\n**Je website en SEO.** Je website is je digitale uitstalraam. Als mensen je niet vinden in Google, besta je online niet. Dit is een investering op lange termijn. Reken voor een goede basiswebsite op 1.500 tot 5.000 euro.\n\n**Social media.** Je hoeft niet op elk platform te zitten. Kies één of twee kanalen waar jouw doelgroep actief is. Een lokale kapper zit beter op Instagram en Facebook, een boekhouder op LinkedIn. Liever twee goede posts per week dan dagelijks iets van niks.\n\n**Google Ads en social advertising.** Betaalde advertenties zijn de snelste weg naar zichtbaarheid. Hou je budget beperkt en test wat werkt voor je opschaalt.\n\n**E-mailmarketing.** Een nieuwsbrief is een van de goedkoopste en meest effectieve tools die er bestaan. Je bereikt mensen die al interesse toonden.\n\n**Offline marketing.** Drukwerk, flyers, een advertentie in de lokale krant, sponsoring van een buurtactiviteit. Voor lokale ondernemers levert dat nog altijd veel op.\n\n## Een werkbare verdeling\n\n- 40% naar digitale kanalen: website, SEO, online advertenties\n- 30% naar content en social media: posts, video's, nieuwsbrief\n- 20% naar offline en lokale marketing: drukwerk, events, sponsoring\n- 10% voor testen en experimenteren\n\nDit is geen wet. Merk je dat klanten je vooral via mond-tot-mondreclame vinden, investeer dan in doorverwijzingen en klanttevredenheid.\n\n## Meet wat je doet en pas aan\n\nHet grootste probleem van veel KMO-budgetten: ze worden één keer vastgelegd en nooit herzien. Gebruik Google Analytics, kijk naar je social statistieken en vraag nieuwe klanten waar ze je gevonden hebben. Stel elk kwartaal de vraag: wat werkt, wat niet, waar verschuif ik budget naartoe?\n\n## Samengevat\n\n1. Bepaal je jaaromzet en zet 5 à 10% opzij voor marketing.\n2. Definieer je doelstellingen: bekendheid, leads of omzet?\n3. Kies de kanalen die bij jouw doelgroep passen.\n4. Verdeel je budget over die kanalen.\n5. Meet de resultaten en stuur bij.\n\nMarketing is geen sprint, het is een marathon. Begin vandaag, ook al is het budget klein. Niets doen kost op termijn altijd meer.\n",
+      "is_published": true,
+      "title": "Hoe verdeel ik het best mijn marketingbudget als KMO?",
+      "seo_title": "Marketingbudget verdelen als KMO | One Man Agency",
+      "meta_description": "Geen idee hoeveel je moet investeren in marketing als KMO? Ontdek hoe je je budget slim verdeelt over de juiste kanalen voor maximaal resultaat.",
+      "intro": "Te weinig investeren betekent stilstaan, maar blind geld uitsmijten is ook geen oplossing. Zo bepaal je een budget dat klopt.",
+      "published_on": "2026-04-02",
+      "category": "Strategie",
+      "legacy_url": "/hoe-verdeel-ik-het-best-mijn-marketingbudget-als-kmo"
+    }
+  ],
+  "logos": [
+    {
+      "name": "NeoKraft",
+      "file_path": "/assets/logos/neokraft_social-70LdMw6xCyBXwOZA.png",
+      "sort_order": 0
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/schermaafbeelding-2026-09-08-om-15.29.29-EUekCxFl5FJRzWgb.png",
+      "sort_order": 1
+    },
+    {
+      "name": "De Koolputten",
+      "file_path": "/assets/logos/logo-koolputten-Wh9PDa35L4b1QCdS.png",
+      "sort_order": 2
+    },
+    {
+      "name": "BBD Group",
+      "file_path": "/assets/logos/temp_social_bbdgroup-uCezCNr2SdrdrtWE.png",
+      "sort_order": 3
+    },
+    {
+      "name": "Loes Living",
+      "file_path": "/assets/logos/loesliving_logo_negatief-nI4eWdECP6IV95oN.png",
+      "sort_order": 4
+    },
+    {
+      "name": "AB Sound",
+      "file_path": "/assets/logos/absound---logo-wit-bg-jnotNN7YkNyvsnUE.jpg",
+      "sort_order": 5
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/91853d_fac8c37d120b44b5a9ee887c285de77c~mv2-ZgrESRT797PuAQKs.jpeg",
+      "sort_order": 6
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/91853d_b30cc3ae362b4169830d6680aebe8130~mv2-YA4e6DTQsiYhMxU5.jpeg",
+      "sort_order": 7
+    },
+    {
+      "name": "Dives Verzekeringen",
+      "file_path": "/assets/logos/dives_logo-4a9hsWjA7W47LGCy.png",
+      "sort_order": 8
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/91853d_a12d204cd3bd4e54998938f605404998~mv2-R6TXvrsS1ITPvwk9.jpeg",
+      "sort_order": 9
+    },
+    {
+      "name": "Energco",
+      "file_path": "/assets/logos/energco_logo-hsgs2exQKyTyirHp.png",
+      "sort_order": 10
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/91853d_f34205d42eaf4cbbbdbe861cbddab453~mv2-aHOO1WVh1zJGBi9A.jpeg",
+      "sort_order": 11
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/91853d_1dbc8688c9464a8b9ea0d35aac846e49~mv2-1Lifyro59CEyp9jI.jpeg",
+      "sort_order": 12
+    },
+    {
+      "name": "SB Moto's",
+      "file_path": "/assets/logos/sbmotos_hor_neg_black-4Mv9uO03grTaCnDp.png",
+      "sort_order": 13
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/285673473_619824873180919_798754964431601384_n-Uopp5znztoW3ivx3.png",
+      "sort_order": 14
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/0-9suBrIW0U38G61bG.png",
+      "sort_order": 15
+    },
+    {
+      "name": "De Smedt Omgevingswerken",
+      "file_path": "/assets/logos/logo_desmedt-01-gHT2uCodcUUMFfsr.png",
+      "sort_order": 16
+    },
+    {
+      "name": "DCR Group",
+      "file_path": "/assets/logos/logo_dcr-Z8zRvJkBarsDflz1.png",
+      "sort_order": 17
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/91853d_028f7f5bed614e879d342d35d3bca0fc~mv2-7oFpReuyfY4Dumqu.jpeg",
+      "sort_order": 18
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/logo2-jdpcaeHskCfwKJda.png",
+      "sort_order": 19
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/118280649_1632643220242183_8816582151623900223_n-OtjWTcjmyibnGMMD.png",
+      "sort_order": 20
+    },
+    {
+      "name": "Macoil",
+      "file_path": "/assets/logos/macoil_logo-1-K3mRGNff0ZwxKmqd.png",
+      "sort_order": 21
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/logo_socials-kNbug8tcXEGHeGhI.png",
+      "sort_order": 22
+    },
+    {
+      "name": "Umi Europe",
+      "file_path": "/assets/logos/umi-logo-social-sTLL44fSCMehHAVt.png",
+      "sort_order": 23
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/2-o05l580BUaDHKaKH.png",
+      "sort_order": 24
+    },
+    {
+      "name": "Bar Bol",
+      "file_path": "/assets/logos/logobarbol-ALFJOFEQ6qLJp2e4.png",
+      "sort_order": 25
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/ontwerp-zonder-titel-udf8S6vNk083H3hR.png",
+      "sort_order": 26
+    },
+    {
+      "name": "Brouwerij Vercauteren",
+      "file_path": "/assets/logos/fb_logo2_vercauteren-GWTp0b2anYks25mm.png",
+      "sort_order": 27
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/0-YDeVLOemySpGJ3Dz.png",
+      "sort_order": 28
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/2-lQufbmeZzj0A9lYx.png",
+      "sort_order": 29
+    },
+    {
+      "name": "Speak Speak",
+      "file_path": "/assets/logos/speakspeak_logo_navigatie-B3AkAF6pHxiQdQln.png",
+      "sort_order": 30
+    },
+    {
+      "name": "Dylanco",
+      "file_path": "/assets/logos/dylanco-6F0vPjceiju0YKYy.jpg",
+      "sort_order": 31
+    },
+    {
+      "name": "Renault DAB",
+      "file_path": "/assets/logos/logo-dab-final1-iPrl39QNrs7Xuh4e.png",
+      "sort_order": 32
+    },
+    {
+      "name": "B&F Consult",
+      "file_path": "/assets/logos/b-f-logo-negatief-WquaJUAQvFEwMuQX.jpg",
+      "sort_order": 33
+    },
+    {
+      "name": "De Ganck",
+      "file_path": "/assets/logos/logo-de-ganck-sinds-1931_1500px-4NiUYPgCCBp3BQP6.png",
+      "sort_order": 34
+    },
+    {
+      "name": "Dream House",
+      "file_path": "/assets/logos/dream_fb_profile-HS4TPng8HjyyqPUE.jpeg",
+      "sort_order": 35
+    },
+    {
+      "name": "BBD Group",
+      "file_path": "/assets/logos/temp_social_bbdgroup-1-KYj66d5MiYCrvMmm.png",
+      "sort_order": 36
+    },
+    {
+      "name": "Duwé Christoff",
+      "file_path": "/assets/logos/logo-duwe-DJgnDPTg77W55q5y.png",
+      "sort_order": 37
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/unnamed-1-2-RafKOpcoPHdOR7Y1.png",
+      "sort_order": 38
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/132050423_5369373346436209_4898648504659064255_n-faZ7xFHOHWtrTX5b.jpg",
+      "sort_order": 39
+    },
+    {
+      "name": "Grofweg",
+      "file_path": "/assets/logos/grofweg-jpg-01-01-efcr6cKxkcXe0GmB.jpg",
+      "sort_order": 40
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/schermaafbeelding-2026-09-08-om-15.20.25-rAIXDkz4inzVBij9.png",
+      "sort_order": 41
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/origineel-SPoucAH6Ptjzg0sZ.jpg",
+      "sort_order": 42
+    },
+    {
+      "name": "Viva Verzekeringen",
+      "file_path": "/assets/logos/viva_-final_verticaal---cmyk-otZuG98ai52dN4u9.jpg",
+      "sort_order": 43
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/logo-QRL28nmHz414gSoP.png",
+      "sort_order": 44
+    },
+    {
+      "name": "Klant",
+      "file_path": "/assets/logos/logo_kleur-vBDbsJFohv7QFeKk.png",
+      "sort_order": 45
+    },
+    {
+      "name": "Tegelwerken Vermassen",
+      "file_path": "/assets/logos/vermassen-recto-b4vjpVDwMCEB8yNN.png",
+      "sort_order": 46
+    },
+    {
+      "name": "Sportpodo D'haese",
+      "file_path": "/assets/logos/100222_oma_sportpodo---logo-cmyk-VK7J6B20A4X2BHYM.jpg",
+      "sort_order": 47
+    },
+    {
+      "name": "Unizo Oost-Vlaanderen",
+      "file_path": "/assets/logos/unizo_oost-vl_solidred-hKIQAeDlzYl1x7IE.jpg",
+      "sort_order": 48
+    },
+    {
+      "name": "Kwaliteitsslagerij Saerens",
+      "file_path": "/assets/logos/kssaerens-4c122941-GXrn901ui73RkE6q.webp",
+      "sort_order": 49
+    },
+    {
+      "name": "Hairdesign R&D",
+      "file_path": "/assets/logos/r-d-silver-7dUrVcbQcdUXIi2F.jpg",
+      "sort_order": 50
+    },
+    {
+      "name": "Pieters PCC",
+      "file_path": "/assets/logos/pieterspcc-logo-fYp6ebyXajOuv3qG.png",
+      "sort_order": 51
+    },
+    {
+      "name": "Metaplex",
+      "file_path": "/assets/logos/metaplex_cmyk_image-nTDO2xyIY7HD2Y3b.png",
+      "sort_order": 52
+    }
+  ],
+  "settings": {
+    "id": true,
+    "company": {
+      "naam": "One Man Agency",
+      "juridisch": "One Man Agency BV",
+      "straat": "Denderbellestraat 156",
+      "postcode": 9200,
+      "stad": "Dendermonde",
+      "btw": "BE 0831.834.485",
+      "telefoon": "0495 62 66 11",
+      "telefoon_link": "+32495626611",
+      "email": "info@onemanagency.be",
+      "slogan": "A One Man Agency is all you need."
+    },
+    "navigation": [
+      {
+        "label": "Over Niels",
+        "link": "/over-niels"
+      },
+      {
+        "label": "Diensten",
+        "link": "/diensten"
+      },
+      {
+        "label": "Referenties",
+        "link": "/referenties"
+      },
+      {
+        "label": "Prijzen",
+        "link": "/prijzen"
+      },
+      {
+        "label": "Blog",
+        "link": "/blog"
+      },
+      {
+        "label": "Contact",
+        "link": "/contact"
+      }
+    ],
+    "header_cta": {
+      "label": "Maak een afspraak",
+      "link": "/afspraak"
+    },
+    "formspree_id": "JOUW-FORMSPREE-ID",
+    "socials": [
+      {
+        "naam": "LinkedIn",
+        "url": "https://www.linkedin.com/company/one-man-agency/"
+      },
+      {
+        "naam": "Facebook",
+        "url": "https://www.facebook.com/onemanagency"
+      },
+      {
+        "naam": "Instagram",
+        "url": "https://www.instagram.com/onemanagency_dendermonde"
+      },
+      {
+        "naam": "YouTube",
+        "url": "https://www.youtube.com/@onemanagencydendermonde"
+      }
+    ]
+  }
+}
