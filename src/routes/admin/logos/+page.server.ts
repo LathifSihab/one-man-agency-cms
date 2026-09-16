@@ -2,9 +2,34 @@ import { fail } from '@sveltejs/kit';
 import { adminDb } from '$lib/server/admin';
 import type { Actions, PageServerLoad } from './$types';
 
+const MAX_BYTES = 8 * 1024 * 1024;
+const ALLOWED = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/svg+xml', 'image/avif']);
+
 export const load: PageServerLoad = async () => {
-	const { data } = await adminDb().from('logos').select('*').order('sort_order');
-	return { logos: data ?? [] };
+	const db = adminDb();
+
+	const [{ data: logos }, storage] = await Promise.all([
+		db.from('logos').select('*').order('sort_order'),
+		db.storage.from('media').list('logos', { limit: 500, sortBy: { column: 'name', order: 'asc' } })
+	]);
+
+	/*
+	 * A file uploaded to the logos folder is not yet a logo: the wall is built
+	 * from this table, not from the bucket. Anything in Storage without a row
+	 * is surfaced so it can be added, rather than silently going nowhere —
+	 * which is exactly what used to happen.
+	 */
+	const linked = new Set((logos ?? []).map((l) => l.file_path));
+	const unlinked = (storage.data ?? [])
+		.filter((f) => f.id)
+		.map((f) => ({
+			key: `logos/${f.name}`,
+			name: f.name,
+			url: db.storage.from('media').getPublicUrl(`logos/${f.name}`).data.publicUrl
+		}))
+		.filter((f) => !linked.has(f.key));
+
+	return { logos: logos ?? [], unlinked };
 };
 
 export const actions: Actions = {
@@ -42,6 +67,95 @@ export const actions: Actions = {
 		}
 
 		return { saved: true, changed };
+	},
+
+	/** Add a logo to the wall from a file already in the media library. */
+	add: async ({ request }) => {
+		const form = await request.formData();
+		const filePath = String(form.get('file_path') ?? '');
+		const name = String(form.get('name') ?? '').trim() || 'Klant';
+
+		if (!/^logos\/[^/]+$/.test(filePath)) {
+			return fail(400, { message: 'Onbekend bestand.' });
+		}
+
+		const db = adminDb();
+		const { data: existing } = await db
+			.from('logos')
+			.select('id')
+			.eq('file_path', filePath)
+			.maybeSingle();
+		if (existing) return fail(400, { message: 'Dit logo staat al op de muur.' });
+
+		// New logos go last; the editor can move them with the arrows.
+		const { data: last } = await db
+			.from('logos')
+			.select('sort_order')
+			.order('sort_order', { ascending: false })
+			.limit(1)
+			.maybeSingle();
+
+		const { error } = await db
+			.from('logos')
+			.insert({ name, file_path: filePath, sort_order: (last?.sort_order ?? -1) + 1 });
+
+		if (error) return fail(500, { message: `Toevoegen mislukt: ${error.message}` });
+		return { saved: true, added: name };
+	},
+
+	/** Upload a file and put it on the wall in one step. */
+	upload: async ({ request }) => {
+		const form = await request.formData();
+		const file = form.get('file');
+		const name = String(form.get('name') ?? '').trim() || 'Klant';
+
+		if (!(file instanceof File) || !file.size) {
+			return fail(400, { message: 'Kies eerst een bestand.' });
+		}
+		if (!ALLOWED.has(file.type)) {
+			return fail(400, { message: `Dit bestandstype kan niet: ${file.type || 'onbekend'}.` });
+		}
+		if (file.size > MAX_BYTES) {
+			return fail(400, { message: 'Het bestand is groter dan 8 MB.' });
+		}
+
+		const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
+		const filePath = `logos/${safeName}`;
+		const db = adminDb();
+
+		const { error: uploadError } = await db.storage
+			.from('media')
+			.upload(filePath, await file.arrayBuffer(), {
+				contentType: file.type,
+				upsert: true,
+				cacheControl: '31536000'
+			});
+		if (uploadError) return fail(500, { message: `Uploaden mislukt: ${uploadError.message}` });
+
+		const { data: existing } = await db
+			.from('logos')
+			.select('id')
+			.eq('file_path', filePath)
+			.maybeSingle();
+
+		if (existing) {
+			// Same filename: the image is replaced, the row stays put.
+			return { saved: true, replaced: safeName };
+		}
+
+		const { data: last } = await db
+			.from('logos')
+			.select('sort_order')
+			.order('sort_order', { ascending: false })
+			.limit(1)
+			.maybeSingle();
+
+		const { error } = await db
+			.from('logos')
+			.insert({ name, file_path: filePath, sort_order: (last?.sort_order ?? -1) + 1 });
+		if (error) return fail(500, { message: `Toevoegen mislukt: ${error.message}` });
+
+		return { saved: true, added: name };
 	},
 
 	delete: async ({ request }) => {

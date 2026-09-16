@@ -6,6 +6,7 @@
 	import { CATEGORIES } from '$lib/categories';
 	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
 	import { confirmSubmit } from '$lib/components/admin/confirmSubmit';
+	import ImageField from '$lib/components/admin/ImageField.svelte';
 
 	let { data, form } = $props();
 	// Read once on purpose: these seed the editing state below.
@@ -18,6 +19,7 @@
 	let body = $state(post.body ?? '');
 	let slug = $state(post.slug ?? '');
 	let showAdvanced = $state(false);
+	let imageUrl = $state(post.image_url ?? '');
 	let confirmer: ConfirmDialog | undefined = $state();
 	let busy = $state(false);
 
@@ -79,12 +81,13 @@
 		</div>
 	</div>
 
-	<div class="cms-field">
-		<label for="f-img">Afbeelding</label>
-		<input id="f-img" name="image_url" type="text" value={post.image_url ?? ''}
-		       placeholder="/assets/uploads/…" />
-		<p class="cms-hint">Kies een bestand bij <a href="/admin/media">Afbeeldingen</a>.</p>
-	</div>
+	<ImageField
+		label="Afbeelding bij dit artikel"
+		name="image_url"
+		bind:value={imageUrl}
+		folder="blog"
+		hint="Kies een bestaande afbeelding of upload er meteen een."
+	/>
 
 	<div class="cms-field">
 		<label style="font-weight:600">

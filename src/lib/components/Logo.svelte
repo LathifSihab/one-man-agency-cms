@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Logo } from '$lib/types';
+	import { resolveImage } from '$lib/images';
 	// 22 of 53 logos are still named "Klant". That is a content defect carried
 	// over deliberately; the alt text degrades to a generic label rather than
 	// asserting a client name we do not have.
@@ -9,6 +10,6 @@
 </script>
 
 <figure class="logo">
-	<img src={logo.file_path} {alt} loading="lazy" decoding="async" width="375" height="375">
+	<img src={resolveImage(logo.file_path)} {alt} loading="lazy" decoding="async" width="375" height="375">
 	{#if showName && known}<span class="logonaam">{logo.name}</span>{/if}
 </figure>

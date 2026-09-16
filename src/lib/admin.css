@@ -804,3 +804,78 @@ textarea.over {
 .cms-confirm .cms-hint {
 	margin-top: 0.45rem;
 }
+
+/* ── image field and picker ─────────────────────────────────────────────── */
+.cms-imagefield {
+	display: flex;
+	gap: 0.9rem;
+	align-items: flex-start;
+	border: 1px solid var(--line);
+	border-radius: var(--r);
+	background: var(--paper);
+	padding: 0.7rem;
+}
+
+.cms-imagefield-preview {
+	flex: 0 0 96px;
+	height: 96px;
+	display: grid;
+	place-items: center;
+	background: var(--paper-2);
+	border: 1px solid var(--line);
+	border-radius: var(--r);
+	overflow: hidden;
+}
+
+.cms-imagefield-preview img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+
+.cms-imagefield-body {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.cms-picker-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgb(10 10 10 / 45%);
+	display: grid;
+	place-items: center;
+	padding: 1.5rem;
+	z-index: 40;
+}
+
+.cms-picker {
+	background: var(--paper);
+	border-radius: var(--r);
+	padding: 1.2rem;
+	width: min(900px, 100%);
+	max-height: 80vh;
+    overflow: auto;
+	box-shadow: 0 20px 50px -20px rgb(10 10 10 / 55%);
+}
+
+.cms-picker-head {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 0.8rem;
+}
+
+.cms-pickable {
+	cursor: pointer;
+	font: inherit;
+	text-align: center;
+}
+
+.cms-pickable:hover {
+	border-color: var(--signal);
+	background: var(--signal-lt);
+}
+
+.cms-pickable.chosen {
+	border: 2px solid var(--signal-dk);
+}

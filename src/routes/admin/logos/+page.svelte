@@ -3,6 +3,7 @@
 	import { enhance } from '$app/forms';
 	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
 	import { confirmSubmit } from '$lib/components/admin/confirmSubmit';
+	import { resolveImage } from '$lib/images';
 
 	let { data, form } = $props();
 
@@ -20,6 +21,7 @@
 	let busy = $state(false);
 	let confirmer: ConfirmDialog | undefined = $state();
 	let toDelete = $state('');
+	let newName = $state('');
 
 	const unnamed = $derived(logos.filter((l) => l.name === 'Klant').length);
 
@@ -93,7 +95,11 @@
 <p class="cms-lead">{data.logos.length} klantenlogo's.</p>
 
 {#if form?.message}<div class="cms-error">{form.message}</div>{/if}
-{#if form?.saved}
+{#if form?.added}
+	<div class="cms-ok">{form.added} staat nu op de logomuur. Publiceer om het live te zetten.</div>
+{:else if form?.replaced}
+	<div class="cms-ok">{form.replaced} is vervangen. Publiceer om het live te zetten.</div>
+{:else if form?.saved}
 	<div class="cms-ok">
 		{#if form.changed === 0}
 			Niets gewijzigd.
@@ -118,6 +124,53 @@
 		>
 			Toon enkel deze
 		</button>
+	</div>
+{/if}
+
+<div class="cms-card" style="margin-bottom:1.4rem">
+	<h3>Logo toevoegen</h3>
+	<p class="cms-hint" style="margin-top:0">
+		Uploaden zet het logo meteen op de muur. Een bestand met dezelfde naam vervangt de
+		afbeelding en laat de naam staan.
+	</p>
+	<form method="POST" action="?/upload" enctype="multipart/form-data" use:enhance>
+		<div class="cms-two">
+			<div class="cms-field">
+				<label for="new-file">Bestand</label>
+				<input id="new-file" name="file" type="file"
+				       accept="image/png,image/jpeg,image/webp,image/svg+xml,image/avif" required />
+			</div>
+			<div class="cms-field">
+				<label for="new-name">Klantnaam</label>
+				<input id="new-name" name="name" type="text" bind:value={newName}
+				       placeholder="Bv. NeoKraft" />
+				<p class="cms-hint">Laat leeg als je de naam later invult.</p>
+			</div>
+		</div>
+		<button class="cms-btn" type="submit">Toevoegen</button>
+	</form>
+</div>
+
+{#if data.unlinked.length}
+	<div class="cms-banner pending" style="display:block">
+		<p style="margin-bottom:.6rem">
+			{data.unlinked.length}
+			{data.unlinked.length === 1 ? 'afbeelding staat' : 'afbeeldingen staan'} wel in de
+			mediabibliotheek, maar nog niet op de logomuur. Geef een naam en voeg toe.
+		</p>
+		<div class="cms-logos">
+			{#each data.unlinked as file (file.key)}
+				<form method="POST" action="?/add" use:enhance class="cms-logo">
+					<img src={file.url} alt={file.name} />
+					<p class="cms-hint" style="word-break:break-all;margin:.3rem 0">{file.name}</p>
+					<input type="hidden" name="file_path" value={file.key} />
+					<input type="text" name="name" placeholder="Klantnaam" aria-label="Klantnaam" />
+					<button class="cms-btn cms-btn-small" type="submit" style="margin-top:.4rem">
+						Toevoegen
+					</button>
+				</form>
+			{/each}
+		</div>
 	</div>
 {/if}
 
@@ -187,7 +240,7 @@
 		{#each shown as logo (logo.id)}
 			<div class="cms-logo" class:needs-name={logo.name === 'Klant'}>
 				<img
-					src={logo.file_path}
+					src={resolveImage(logo.file_path)}
 					alt={logo.name === 'Klant' ? 'Klantlogo' : `Logo van ${logo.name}`}
 				/>
 				<input type="text" bind:value={logo.name} aria-label="Naam van de klant" />

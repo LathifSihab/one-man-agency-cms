@@ -4,6 +4,7 @@
 	import CountedField from '$components/admin/CountedField.svelte';
 	import MarkdownEditor from '$components/admin/MarkdownEditor.svelte';
 	import RepeatRows from '$components/admin/RepeatRows.svelte';
+	import ImageField from '$components/admin/ImageField.svelte';
 
 	let { data, form } = $props();
 
@@ -19,6 +20,14 @@
 	let body = $state(p.body ?? '');
 	let slug = $state(p.slug ?? '');
 	let todoNote = $state(p.todo_note ?? '');
+	let portraitUrl = $state(p.portrait_url ?? '');
+	let portraitAlt = $state(p.portrait_alt ?? '');
+	let headerImageUrl = $state(p.header_image_url ?? '');
+	let headerAlt = $state(p.header_alt ?? '');
+
+	/* Only the pages that actually show an image offer the fields. */
+	const hasPortrait = $derived(Boolean(p.portrait_url) || p.slug === 'home');
+	const hasHeaderImage = $derived(Boolean(p.header_image_url) || p.slug === 'home');
 
 	let faq = $state([...(p.faq ?? [])]);
 	let prices = $state([...(p.prices ?? [])]);
@@ -224,6 +233,34 @@
 		summary={(r) => String(r.vraag ?? '')}
 	/>
 	<input type="hidden" name="faq" value={JSON.stringify(faq)} />
+
+	{#if hasPortrait || hasHeaderImage}
+		<h2>Afbeeldingen</h2>
+	{/if}
+
+	{#if hasPortrait}
+		<ImageField label="Portret" name="portrait_url" bind:value={portraitUrl} folder="site" />
+		<div class="cms-field">
+			<label for="f-portret-alt">Omschrijving van het portret</label>
+			<input id="f-portret-alt" name="portrait_alt" type="text" bind:value={portraitAlt} />
+			<p class="cms-hint">
+				Wat er op de foto te zien is. Google leest dit, en schermlezers lezen het voor.
+			</p>
+		</div>
+	{/if}
+
+	{#if hasHeaderImage}
+		<ImageField
+			label="Brede afbeelding onder de titel"
+			name="header_image_url"
+			bind:value={headerImageUrl}
+			folder="site"
+		/>
+		<div class="cms-field">
+			<label for="f-header-alt">Omschrijving van die afbeelding</label>
+			<input id="f-header-alt" name="header_alt" type="text" bind:value={headerAlt} />
+		</div>
+	{/if}
 
 	<h2>Geavanceerd</h2>
 
