@@ -280,6 +280,23 @@
 	}
 }
 
+/* ── touch targets ───────────────────────────────────────────────────────── */
+
+/*
+ * The footer link lists are the only targets on the site below the 24x24 CSS
+ * pixel minimum in WCAG 2.5.8 (AA): short place names like "Zele" render 30x21.
+ * Widening the line box lifts them clear.
+ *
+ * Applied at every width rather than only on narrow screens, because the
+ * success criterion is about pointer accuracy in general, not touch alone. It
+ * costs a few pixels of footer height and moves nothing else.
+ */
+footer.site ul a,
+.legal a {
+	display: inline-block;
+	padding-block: 0.3rem;
+}
+
 /* ── reduced motion ──────────────────────────────────────────────────────── */
 
 /*

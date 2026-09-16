@@ -31,6 +31,7 @@ and `npm run build` work before the database exists.
 | `npm run verify` | Acceptance checks against the build output |
 | `npm run parity` | Diff the build against the original site (`dist-original/`) |
 | `npm run seed:account` | Create or reset the single CMS account |
+| `npm run responsive` | Measure every page in a real browser at six viewports |
 
 ## Layout
 
@@ -159,6 +160,12 @@ npm run verify     # acceptance criteria
 `tools/parity.py` compares, for all 42 pages: the head SEO set, the JSON-LD graph as parsed
 objects, every heading, every link, every image, and the visible text of `<main>`.
 Whitespace and attribute order are ignored, as the handover allows; anything else is a bug.
+
+`tools/responsive.mjs` loads every page in headless Chromium at 320, 375, 430, 768,
+1024 and 1440px and reports horizontal overflow, elements wider than the viewport,
+content past the viewport edge, text under 12px, tap targets under 24x24, images
+without intrinsic dimensions, and whether the nav collapses at the right width.
+Serve a build first (`npx serve -s .vercel/output/static -l 4173`).
 
 `tools/verify.py` checks the acceptance criteria: 41 indexable routes, the sitemap and its
 priorities, the AI-crawler allowances, 16 redirects, and the JSON-LD counts
