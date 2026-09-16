@@ -37,6 +37,18 @@
 	 */
 	let displayIds = $state<string[]>([]);
 
+	/*
+	 * Pull the list back from the server after an action that changed it.
+	 *
+	 * The local copy is seeded once with untrack so a card cannot move while a
+	 * name is being typed. The cost is that it does not notice an add or a
+	 * delete on its own, so those say so explicitly.
+	 */
+	function reseed() {
+		logos = [...data.logos].sort((a, b) => a.sort_order - b.sort_order);
+		snapshotOrder();
+	}
+
 	function snapshotOrder() {
 		const byPosition = [...logos].sort((a, b) => a.sort_order - b.sort_order);
 		const rank = (name: string) => (name === 'Klant' ? 0 : 1);
@@ -133,7 +145,12 @@
 		Uploaden zet het logo meteen op de muur. Een bestand met dezelfde naam vervangt de
 		afbeelding en laat de naam staan.
 	</p>
-	<form method="POST" action="?/upload" enctype="multipart/form-data" use:enhance>
+	<form method="POST" action="?/upload" enctype="multipart/form-data"
+	      use:enhance={() => async ({ update }) => {
+		      await update();
+		      reseed();
+		      newName = '';
+	      }}>
 		<div class="cms-two">
 			<div class="cms-field">
 				<label for="new-file">Bestand</label>
@@ -160,7 +177,11 @@
 		</p>
 		<div class="cms-logos">
 			{#each data.unlinked as file (file.key)}
-				<form method="POST" action="?/add" use:enhance class="cms-logo">
+				<form method="POST" action="?/add" class="cms-logo"
+					      use:enhance={() => async ({ update }) => {
+						      await update();
+						      reseed();
+					      }}>
 					<img src={file.url} alt={file.name} />
 					<p class="cms-hint" style="word-break:break-all;margin:.3rem 0">{file.name}</p>
 					<input type="hidden" name="file_path" value={file.key} />
@@ -275,7 +296,10 @@
 <form
 	method="POST"
 	action="?/delete"
-	use:enhance
+	use:enhance={() => async ({ update }) => {
+		await update();
+		reseed();
+	}}
 	onsubmit={(e) =>
 		confirmSubmit(e, confirmer, {
 			title: 'Dit logo verwijderen?',
