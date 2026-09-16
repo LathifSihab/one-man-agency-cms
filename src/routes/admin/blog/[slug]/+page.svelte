@@ -42,7 +42,7 @@
 	</div>
 {/if}
 
-<form method="POST" action="?/save" use:enhance={() => {
+<form id="post-editor" method="POST" action="?/save" use:enhance={() => {
 	busy = true;
 	return async ({ update }) => { await update({ reset: false }); busy = false; };
 }}>
@@ -121,20 +121,44 @@
 		</div>
 	{/if}
 
-	<div class="cms-actionbar">
-		<button class="cms-btn" type="submit" disabled={busy}>{busy ? 'Bezig…' : 'Opslaan'}</button>
-		<span class="cms-hint">Opslaan wijzigt de live site nog niet.</span>
-
-		<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
-		        onclick={() => (showAdvanced = !showAdvanced)}>
-			{showAdvanced ? 'Verberg' : 'Toon'} geavanceerd
-		</button>
-
-		<!-- Same form, different action: a separate <form> could not sit on this
-		     row, since forms cannot be nested. -->
-		<button class="cms-btn cms-btn-danger cms-btn-small cms-actionbar-end"
-		        type="submit" formaction="?/delete" formnovalidate>
-			Artikel verwijderen
-		</button>
-	</div>
 </form>
+
+<!--
+  Delete is its own form: a form cannot be nested inside another. The buttons sit
+  outside both and are tied to the right one with the form attribute, which is
+  what lets them share a row.
+
+  An earlier attempt put delete inside the editor form with formaction and chose
+  in onsubmit which question to ask. use:enhance handled the submit before that
+  handler could stop it, so the confirmation was skipped and the post was deleted
+  on the first click.
+-->
+<form
+	id="post-delete"
+	method="POST"
+	action="?/delete"
+	use:enhance
+	onsubmit={(e) =>
+		confirmSubmit(e, confirmer, {
+			title: 'Dit artikel verwijderen?',
+			body: `“${title}” wordt definitief verwijderd. Na de volgende publicatie is het adres /blog/${post.slug} niet meer bereikbaar.`,
+			confirmLabel: 'Definitief verwijderen'
+		})}
+></form>
+
+<div class="cms-actionbar">
+	<button class="cms-btn" type="submit" form="post-editor" disabled={busy}>
+		{busy ? 'Bezig…' : 'Opslaan'}
+	</button>
+	<span class="cms-hint">Opslaan wijzigt de live site nog niet.</span>
+
+	<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
+	        onclick={() => (showAdvanced = !showAdvanced)}>
+		{showAdvanced ? 'Verberg' : 'Toon'} geavanceerd
+	</button>
+
+	<button class="cms-btn cms-btn-danger cms-btn-small cms-actionbar-end"
+	        type="submit" form="post-delete">
+		Artikel verwijderen
+	</button>
+</div>
