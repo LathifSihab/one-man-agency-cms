@@ -17,7 +17,10 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 const config = {
 	preprocess: vitePreprocess(),
 	kit: {
-		adapter: adapter({ runtime: 'nodejs22.x', split: true }),
+		// One bundled function for every dynamic route, not one per route:
+		// splitting would exceed the 12-function limit on Vercel's Hobby plan.
+		// (Windows symlink trouble during bundling is handled in tools/build.mjs.)
+		adapter: adapter({ runtime: 'nodejs22.x', split: false }),
 		prerender: {
 			// A missing page must fail the build, not ship a 30-page site.
 			handleHttpError: 'fail',
