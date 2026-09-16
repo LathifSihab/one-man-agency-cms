@@ -18,6 +18,19 @@ export const handle: Handle = async ({ event, resolve }) => {
 	const needsAuth =
 		event.url.pathname.startsWith('/admin') || event.url.pathname.startsWith('/api/');
 
+	if (needsAuth && !(url && anonKey)) {
+		// Names only, never values. Without this, a misconfigured environment is
+		// indistinguishable from a broken login.
+		const missing = [
+			!url && 'PUBLIC_SUPABASE_URL',
+			!anonKey && 'PUBLIC_SUPABASE_ANON_KEY'
+		].filter(Boolean);
+		console.error(
+			`[auth] Supabase client not created; missing: ${missing.join(', ')}. ` +
+				`Seen PUBLIC_* keys: ${Object.keys(publicEnv).join(', ') || '(none)'}`
+		);
+	}
+
 	if (needsAuth && url && anonKey) {
 		event.locals.supabase = createServerClient(url, anonKey, {
 			cookies: {
