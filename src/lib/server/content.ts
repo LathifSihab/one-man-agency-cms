@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { building } from '$app/environment';
 import type { Logo, Page, Post, Settings, SiteContent } from '$lib/types';
 
 /**
@@ -12,14 +13,26 @@ import type { Logo, Page, Post, Settings, SiteContent } from '$lib/types';
  * with the service role key and server-side only. The published output contains
  * no Supabase URL and makes no runtime request to the database (decision D4).
  *
- * When no credentials are configured the loader falls back to supabase/seed.json
- * — the same payload tools/migrate.py uploads. That keeps `npm run build` and the
- * parity check runnable before the Supabase project exists, and in CI.
+ * During a build, if no credentials are configured, the loader falls back to
+ * supabase/seed.json — the same payload tools/migrate.py uploads — so `npm run
+ * build` and the parity check stay runnable before the Supabase project exists,
+ * and in CI. That fallback is build-time only; see fromSeed().
  */
 
 let cache: SiteContent | null = null;
 
 function fromSeed(): SiteContent {
+	// The seed file lives in the repo, not in a deployed function bundle. Falling
+	// back to it at request time would fail with a confusing ENOENT, so refuse
+	// clearly instead: at runtime, missing credentials are a misconfiguration.
+	if (!building) {
+		throw new Error(
+			'Supabase is not configured. PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY ' +
+				'must be set for this environment. The supabase/seed.json fallback is ' +
+				'build-time only and is not deployed.'
+		);
+	}
+
 	const path = resolve('supabase/seed.json');
 	const seed = JSON.parse(readFileSync(path, 'utf8'));
 	console.warn(
