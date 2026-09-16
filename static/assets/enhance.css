@@ -203,6 +203,83 @@
 	transition: color 0.15s ease;
 }
 
+/* ── inner-page headers ──────────────────────────────────────────────────── */
+
+/*
+ * Every page that is not the home page opens with .pagehead — breadcrumb,
+ * heading, lead — on the pale mint background. It gets the same choreography as
+ * the hero and the same arc motif, drawn in the house green rather than ink so
+ * it reads against the lighter panel.
+ *
+ * The heading is the LCP element on these pages (there is no hero image), so it
+ * animates with transform only, exactly as .sign h1 does.
+ */
+
+.pagehead {
+	position: relative;
+	overflow: hidden;
+}
+
+.pagehead > .wrap {
+	position: relative;
+	z-index: 2;
+}
+
+.pagehead::before {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 0;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 420 420'%3E%3Cg fill='none' stroke='%2349C2AB' stroke-opacity='0.45' stroke-width='1.5'%3E%3Ccircle cx='420' cy='0' r='90'/%3E%3Ccircle cx='420' cy='0' r='155'/%3E%3Ccircle cx='420' cy='0' r='220'/%3E%3Ccircle cx='420' cy='0' r='285'/%3E%3C/g%3E%3C/svg%3E");
+	background-repeat: no-repeat;
+	background-position: top right;
+	background-size: min(34rem, 70%) auto;
+	pointer-events: none;
+}
+
+.pagehead::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	background-image: radial-gradient(rgba(73, 194, 171, 0.42) 1px, transparent 1px);
+	background-size: 20px 20px;
+	-webkit-mask-image: linear-gradient(105deg, rgba(0, 0, 0, 0.85) 0%, transparent 55%);
+	mask-image: linear-gradient(105deg, rgba(0, 0, 0, 0.85) 0%, transparent 55%);
+	pointer-events: none;
+}
+
+.pagehead .crumbs {
+	animation: oma-rise 0.45s cubic-bezier(0.22, 0.68, 0.24, 1) both;
+}
+
+.pagehead h1 {
+	animation: oma-lift 0.5s cubic-bezier(0.22, 0.68, 0.24, 1) both;
+}
+
+.pagehead .lead {
+	animation: oma-rise 0.5s cubic-bezier(0.22, 0.68, 0.24, 1) 0.1s both;
+}
+
+/* The date and author line on a blog post sits after the lead. */
+.pagehead .lead ~ .crumbs {
+	animation-delay: 0.18s;
+}
+
+/* The full-bleed band under the home hero arrives with the content above it. */
+.bandbeeld {
+	animation: oma-fade 0.7s ease 0.2s both;
+}
+
+@keyframes oma-fade {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
 /* ── reduced motion ──────────────────────────────────────────────────────── */
 
 /*
@@ -215,7 +292,11 @@
 	.sign .hero .lead,
 	.sign .hero .btns,
 	.sign .facts > div,
-	.heroportret {
+	.heroportret,
+	.pagehead .crumbs,
+	.pagehead h1,
+	.pagehead .lead,
+	.bandbeeld {
 		animation: none;
 		opacity: 1;
 		transform: none;
