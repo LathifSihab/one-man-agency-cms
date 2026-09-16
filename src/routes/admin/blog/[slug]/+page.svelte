@@ -150,7 +150,6 @@
 	<button class="cms-btn" type="submit" form="post-editor" disabled={busy}>
 		{busy ? 'Bezig…' : 'Opslaan'}
 	</button>
-	<span class="cms-hint">Opslaan wijzigt de live site nog niet.</span>
 
 	<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
 	        onclick={() => (showAdvanced = !showAdvanced)}>
@@ -162,3 +161,7 @@
 		Artikel verwijderen
 	</button>
 </div>
+
+<!-- Below the row rather than in it: it explains, it is not a control, and in
+     the row it pushed the buttons onto a second line. -->
+<p class="cms-hint" style="margin-top:.6rem">Opslaan wijzigt de live site nog niet.</p>
