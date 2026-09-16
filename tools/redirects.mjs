@@ -66,17 +66,24 @@ if (!existsSync(CONFIG)) {
 }
 const config = JSON.parse(readFileSync(CONFIG, 'utf8'));
 
-const routes = rules.map(([from, to]) => ({
+// A rule pointing at its own path is a no-op on Cloudflare, which is where these
+// came from, but on Vercel it is an infinite redirect loop. `/referenties` is
+// one of them. Drop them from the routes; they stay in the _redirects record so
+// it still matches the reference file.
+const routable = rules.filter(([from, to]) => from !== to);
+
+// No marker property is added here: the Build Output API validates route objects
+// against a strict schema and rejects unknown fields at deploy time, after a
+// successful build. The adapter rewrites config.json on every build anyway, so
+// there is nothing to de-duplicate against.
+const routes = routable.map(([from, to]) => ({
 	// `/post/*` is a prefix match; everything else is exact.
 	src: from.endsWith('/*') ? `^${from.slice(0, -2)}/.*$` : `^${from}$`,
 	status: 301,
 	headers: { Location: to }
 }));
 
-// Drop any previously injected rules so repeated runs stay idempotent.
-const existing = (config.routes ?? []).filter((r) => !r.__redirect);
-for (const r of routes) r.__redirect = true;
-config.routes = [...routes, ...existing];
+config.routes = [...routes, ...(config.routes ?? [])];
 
 writeFileSync(CONFIG, JSON.stringify(config, null, 1), 'utf8');
 
@@ -84,4 +91,10 @@ writeFileSync(CONFIG, JSON.stringify(config, null, 1), 'utf8');
 const text = rules.map(([from, to]) => `${from.padEnd(70)} ${to}  301`).join('\n') + '\n';
 writeFileSync(`${STATIC}/_redirects`, text, 'utf8');
 
-console.log(`Injected ${rules.length} redirects (${STATIC_RULES.length} static, ${rules.length - STATIC_RULES.length} legacy post URLs).`);
+const skipped = rules.length - routable.length;
+console.log(
+	`Injected ${routes.length} redirect routes ` +
+		`(${STATIC_RULES.length} static, ${rules.length - STATIC_RULES.length} legacy post URLs` +
+		(skipped ? `, ${skipped} self-referencing rule skipped` : '') +
+		`); wrote ${rules.length} rules to _redirects.`
+);
