@@ -15,5 +15,24 @@
 </head>
 <body data-sveltekit-preload-data="off">
 <div style="display: contents">%sveltekit.body%</div>
+<!--
+  The mobile nav toggle.
+
+  It lives here rather than in a Svelte component for two reasons. The public
+  site sets csr = false, so a hydrated component would mean shipping the Svelte
+  runtime to power one button. And Svelte's SSR wraps component output in empty
+  HTML comment markers, which inside a script element are not comments at all:
+  JavaScript treats an HTML open-comment sequence as a line comment and silently
+  swallowed the first line, leaving n and b undeclared.
+-->
+<script>
+(function(){var n=document.getElementById('nav');if(!n)return;
+var b=n.querySelector('.nav-toggle');if(!b)return;
+function zet(o){n.classList.toggle('open',o);b.setAttribute('aria-expanded',o?'true':'false');}
+b.addEventListener('click',function(){zet(!n.classList.contains('open'));});
+n.addEventListener('click',function(e){if(e.target.closest('a'))zet(false);});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&n.classList.contains('open')){zet(false);b.focus();}});
+window.addEventListener('resize',function(){if(window.innerWidth>920)zet(false);});})();
+</script>
 </body>
 </html>

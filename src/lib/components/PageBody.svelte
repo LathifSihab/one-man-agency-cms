@@ -34,36 +34,62 @@
 	let { page, logos, posts, settings }: Props = $props();
 
 	const parts = $derived(splitBody(page.body));
+
+	/**
+	 * Blocks that bring their own <section><div class="wrap"> wrapper.
+	 *
+	 * The rest emit bare markup, because build.py used them inside a prose
+	 * section — but it closed that section before emitting them, so on /blog,
+	 * /prijzen, /veelgestelde-vragen and /afspraak they ended up as direct
+	 * children of <main>, with no .wrap and therefore no page gutter: the text
+	 * ran into the right edge of the viewport. Those get wrapped here.
+	 */
+	const SELF_WRAPPING = new Set([
+		'{{diensten}}',
+		'{{diensten-volledig}}',
+		'{{citaten}}',
+		'{{stappen}}',
+		'{{sectoren}}',
+		'{{scan-blok}}',
+		'{{logos}}',
+		'{{logos-strook}}'
+	]);
 </script>
 
 {#each parts as part, i (i)}
 	{#if part.kind === 'prose'}
 		<section><div class="wrap"><div class="prose">{@html renderMarkdown(part.value)}</div></div></section>
-	{:else if part.value === '{{diensten}}'}
-		<ServicesGrid />
-	{:else if part.value === '{{diensten-volledig}}'}
-		<ServicesGrouped />
-	{:else if part.value === '{{citaten}}'}
-		<Testimonials items={page.testimonials} />
-	{:else if part.value === '{{stappen}}'}
-		<Steps />
-	{:else if part.value === '{{sectoren}}'}
-		<SectorList items={page.sector_list} />
-	{:else if part.value === '{{scan-blok}}'}
-		<ScanCta />
-	{:else if part.value === '{{logos}}'}
-		<LogoWall {logos} />
-	{:else if part.value === '{{logos-strook}}'}
-		<LogoStrip {logos} />
-	{:else if part.value === '{{pakketten}}'}
-		<PackageCards packages={page.packages} />
-	{:else if part.value === '{{projecten}}'}
-		<ProjectPrices projects={page.projects} />
-	{:else if part.value === '{{faq}}'}
-		<Faq faq={page.faq} heading={false} />
-	{:else if part.value === '{{agenda}}'}
-		<BookingEmbed url={page.booking_url} company={settings.company} />
-	{:else if part.value === '{{blogindex}}'}
-		<BlogIndex {posts} />
+	{:else if SELF_WRAPPING.has(part.value)}
+		{#if part.value === '{{diensten}}'}
+			<ServicesGrid />
+		{:else if part.value === '{{diensten-volledig}}'}
+			<ServicesGrouped />
+		{:else if part.value === '{{citaten}}'}
+			<Testimonials items={page.testimonials} />
+		{:else if part.value === '{{stappen}}'}
+			<Steps />
+		{:else if part.value === '{{sectoren}}'}
+			<SectorList items={page.sector_list} />
+		{:else if part.value === '{{scan-blok}}'}
+			<ScanCta />
+		{:else if part.value === '{{logos}}'}
+			<LogoWall {logos} />
+		{:else if part.value === '{{logos-strook}}'}
+			<LogoStrip {logos} />
+		{/if}
+	{:else}
+		<section><div class="wrap">
+			{#if part.value === '{{pakketten}}'}
+				<PackageCards packages={page.packages} />
+			{:else if part.value === '{{projecten}}'}
+				<ProjectPrices projects={page.projects} />
+			{:else if part.value === '{{faq}}'}
+				<Faq faq={page.faq} heading={false} />
+			{:else if part.value === '{{agenda}}'}
+				<BookingEmbed url={page.booking_url} company={settings.company} />
+			{:else if part.value === '{{blogindex}}'}
+				<BlogIndex {posts} />
+			{/if}
+		</div></section>
 	{/if}
 {/each}

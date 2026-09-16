@@ -127,6 +127,28 @@ def seo_artefacts(candidate):
     check('noindex pages excluded from the sitemap', len(noindexed) >= 1,
           f'{len(noindexed)} noindex: ' + ', '.join(sorted(os.path.basename(p) for p in noindexed)))
 
+    # Every block must sit inside a .wrap, which supplies the page gutter.
+    # build.py emitted some shortcode blocks as bare children of <main>, so their
+    # text ran into the right edge of the viewport on four pages.
+    from bs4 import BeautifulSoup
+    unwrapped = []
+    for path in pages:
+        html_text = open(path, encoding='utf-8').read()
+        if '<main id="main">' not in html_text:
+            continue
+        inner = html_text.split('<main id="main">')[1].rsplit('</main>')[0]
+        for child in BeautifulSoup(inner, 'html.parser').children:
+            if getattr(child, 'name', None) is None:
+                continue
+            classes = child.get('class', [])
+            # <img class="bandbeeld"> is a deliberate full-bleed band on the home page.
+            if child.name in ('section', 'header') or 'bandbeeld' in classes:
+                continue
+            unwrapped.append(f'{os.path.basename(path)}:<{child.name}>')
+
+    check('no blocks outside a .wrap container', not unwrapped,
+          ', '.join(unwrapped[:6]))
+
     org = faq = service = blogposting = 0
     for path in pages:
         text = open(path, encoding='utf-8').read()
