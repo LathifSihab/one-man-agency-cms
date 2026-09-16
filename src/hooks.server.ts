@@ -25,9 +25,15 @@ export const handle: Handle = async ({ event, resolve }) => {
 			!url && 'PUBLIC_SUPABASE_URL',
 			!anonKey && 'PUBLIC_SUPABASE_ANON_KEY'
 		].filter(Boolean);
+		const len = (v: string | undefined) => (v === undefined ? 'undefined' : String(v.length));
 		console.error(
 			`[auth] Supabase client not created; missing: ${missing.join(', ')}. ` +
-				`Seen PUBLIC_* keys: ${Object.keys(publicEnv).join(', ') || '(none)'}`
+				`Seen PUBLIC_* keys: ${Object.keys(publicEnv).join(', ') || '(none)'}. ` +
+				`lengths dynamic/public url=${len(publicEnv.PUBLIC_SUPABASE_URL)} ` +
+				`anon=${len(publicEnv.PUBLIC_SUPABASE_ANON_KEY)}; ` +
+				`process.env url=${len(process.env.PUBLIC_SUPABASE_URL)} ` +
+				`anon=${len(process.env.PUBLIC_SUPABASE_ANON_KEY)} ` +
+				`service=${len(process.env.SUPABASE_SERVICE_ROLE_KEY)}`
 		);
 	}
 
