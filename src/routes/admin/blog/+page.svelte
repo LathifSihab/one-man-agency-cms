@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { resolveImage } from '$lib/images';
+	import { previewImage } from '$lib/images';
+	import { env } from '$env/dynamic/public';
 	let { data, form } = $props();
 
 	let showNew = $state(false);
@@ -59,7 +60,7 @@
 			<tr>
 				<td class="cms-thumb">
 					{#if post.image_url}
-						<img src={resolveImage(post.image_url)} alt="" />
+						<img src={previewImage(post.image_url, env.PUBLIC_SUPABASE_URL)} alt="" />
 					{:else}
 						<span class="cms-hint">—</span>
 					{/if}

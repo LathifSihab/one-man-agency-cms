@@ -39,9 +39,21 @@ export const actions: Actions = {
 			published_on: String(form.get('published_on') ?? ''),
 			category: String(form.get('category') ?? '') || null,
 			image_url: String(form.get('image_url') ?? '') || null,
-			is_published: form.get('is_published') === 'on',
-			legacy_url: String(form.get('legacy_url') ?? '') || null
+			is_published: form.get('is_published') === 'on'
 		};
+
+		/*
+		 * Only write fields the form actually submitted.
+		 *
+		 * legacy_url lives behind the "Geavanceerd" toggle, so when that panel is
+		 * collapsed the input is not in the DOM and reading it gives nothing.
+		 * Writing that back set the column to null and silently destroyed a 301
+		 * redirect — on the one field the handover says must not be dropped.
+		 * A control that is not on screen must never erase what it holds.
+		 */
+		if (form.has('legacy_url')) {
+			patch.legacy_url = String(form.get('legacy_url') ?? '') || null;
+		}
 
 		const newSlug = String(form.get('slug') ?? '').trim();
 		if (newSlug && newSlug !== params.slug) {

@@ -3,7 +3,8 @@
 	import { enhance } from '$app/forms';
 	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
 	import { confirmSubmit } from '$lib/components/admin/confirmSubmit';
-	import { resolveImage } from '$lib/images';
+	import { previewImage } from '$lib/images';
+	import { env } from '$env/dynamic/public';
 
 	let { data, form } = $props();
 
@@ -261,7 +262,7 @@
 		{#each shown as logo (logo.id)}
 			<div class="cms-logo" class:needs-name={logo.name === 'Klant'}>
 				<img
-					src={resolveImage(logo.file_path)}
+					src={previewImage(logo.file_path, env.PUBLIC_SUPABASE_URL)}
 					alt={logo.name === 'Klant' ? 'Klantlogo' : `Logo van ${logo.name}`}
 				/>
 				<input type="text" bind:value={logo.name} aria-label="Naam van de klant" />

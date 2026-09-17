@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { resolveImage, isStorageKey } from '$lib/images';
+	import { previewImage, isStorageKey } from '$lib/images';
+	import { env } from '$env/dynamic/public';
 
 	/**
 	 * An image field that points at the media library instead of asking for a
@@ -41,8 +42,9 @@
 	let folders = $state<{ prefix: string; files: MediaFile[] }[]>([]);
 	let fileInput = $state<HTMLInputElement>();
 
-	/* Cache-bust on the file's own stamp: a replaced image keeps its path. */
-	const preview = $derived(value ? resolveImage(value) : '');
+	/* Straight from Storage: the baked /assets/media path only exists after a
+	   publish, so it would be broken here right after an upload. */
+	const preview = $derived(previewImage(value, env.PUBLIC_SUPABASE_URL));
 
 	async function load() {
 		loading = true;

@@ -35,6 +35,27 @@ export function resolveImage(value: string | null | undefined): string {
 	return value;
 }
 
+/**
+ * The src to preview inside the CMS.
+ *
+ * Not the same as resolveImage. The published site serves Storage images from
+ * /assets/media/, but those files are written during a build — so between
+ * uploading an image and publishing, that path does not exist and the preview
+ * would be a broken thumbnail on exactly the screens where you want to see it.
+ * The admin therefore reads from Storage directly.
+ */
+export function previewImage(
+	value: string | null | undefined,
+	supabaseUrl: string | undefined,
+	version?: number
+): string {
+	if (!value) return '';
+	if (!isStorageKey(value) || !supabaseUrl) return value;
+	const base = `${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/public/media/${value}`;
+	// A replaced image keeps its path and is cached for a year.
+	return version ? `${base}?v=${version}` : base;
+}
+
 /** Every image value referenced anywhere in the content, de-duplicated. */
 export function collectImageValues(content: {
 	pages: Array<Record<string, unknown>>;
