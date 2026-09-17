@@ -5,7 +5,7 @@
 	import MarkdownEditor from '$components/admin/MarkdownEditor.svelte';
 	import { CATEGORIES } from '$lib/categories';
 	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
-	import { confirmSubmit } from '$lib/components/admin/confirmSubmit';
+	import { confirmSubmit, reportTo } from '$lib/components/admin/confirmSubmit';
 	import ImageField from '$lib/components/admin/ImageField.svelte';
 
 	let { data, form } = $props();
@@ -137,12 +137,16 @@
 	id="post-delete"
 	method="POST"
 	action="?/delete"
-	use:enhance
+	use:enhance={reportTo(confirmer, {
+		success: 'Het artikel is verwijderd.',
+		failure: 'Verwijderen is niet gelukt.'
+	})}
 	onsubmit={(e) =>
 		confirmSubmit(e, confirmer, {
 			title: 'Dit artikel verwijderen?',
 			body: `“${title}” wordt definitief verwijderd. Na de volgende publicatie is het adres /blog/${post.slug} niet meer bereikbaar.`,
-			confirmLabel: 'Definitief verwijderen'
+			confirmLabel: 'Definitief verwijderen',
+			workingLabel: 'Bezig met verwijderen…'
 		})}
 ></form>
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
-	import { confirmSubmit } from '$lib/components/admin/confirmSubmit';
+	import { confirmSubmit, reportTo } from '$lib/components/admin/confirmSubmit';
 	let { data, form } = $props();
 
 	const LABEL: Record<string, string> = {
@@ -15,7 +15,7 @@
 			: `${Math.max(1, Math.round(bytes / 1024))} kB`;
 	}
 
-	let confirmer: ConfirmDialog;
+	let confirmer: ConfirmDialog | undefined = $state();
 
 	/* The replace button is not the file input: it opens the hidden input that
 	   sits in the same form, so the card keeps one control instead of a file
@@ -32,20 +32,26 @@
 		const input = e.currentTarget as HTMLInputElement;
 		const el = input.closest('form');
 		if (!el || !input.files?.length) return;
-		const ok = await confirmer.ask({
+		const ok = await confirmer?.ask({
 			title: `${name} vervangen?`,
 			body: `De nieuwe afbeelding komt op hetzelfde pad te staan als ${name}. Overal waar deze afbeelding al gebruikt wordt, verschijnt vanaf de volgende publicatie de nieuwe versie. De oude is daarna weg.`,
 			confirmLabel: 'Vervangen',
+			workingLabel: 'Bezig met vervangen…',
 			danger: false
 		});
-		if (ok) el.requestSubmit();
-		else input.value = '';
+		if (ok) {
+			confirmer?.working('Bezig met vervangen…');
+			el.requestSubmit();
+		} else {
+			input.value = '';
+		}
 	}
 
 	const deleteQuestion = (name: string) => ({
 		title: `${name} verwijderen?`,
 		body: 'De afbeelding verdwijnt uit de mediabibliotheek. Pagina’s die er nog naar verwijzen, tonen daarna niets.',
-		confirmLabel: 'Verwijderen'
+		confirmLabel: 'Verwijderen',
+		workingLabel: 'Bezig met verwijderen…'
 	});
 </script>
 
@@ -97,7 +103,11 @@
 					<p class="cms-hint" style="word-break:break-all;margin:.3rem 0">{file.name}</p>
 					<p class="cms-meta">{kb(file.size)}</p>
 					<div class="cms-actions" style="justify-content:center">
-						<form method="POST" action="?/replace" enctype="multipart/form-data" use:enhance>
+						<form method="POST" action="?/replace" enctype="multipart/form-data"
+						      use:enhance={reportTo(confirmer, {
+							      success: 'De afbeelding is vervangen.',
+							      failure: 'Vervangen is niet gelukt.'
+						      })}>
 							<input type="hidden" name="path" value={file.path} />
 							<input type="file" name="file" accept={ACCEPT} style="display:none"
 							       onchange={(e) => chosen(e, file.name)} />
@@ -105,7 +115,11 @@
 								Vervangen
 							</button>
 						</form>
-						<form method="POST" action="?/delete" use:enhance
+						<form method="POST" action="?/delete"
+						      use:enhance={reportTo(confirmer, {
+							      success: 'De afbeelding is verwijderd.',
+							      failure: 'Verwijderen is niet gelukt.'
+						      })}
 						      onsubmit={(e) => confirmSubmit(e, confirmer, deleteQuestion(file.name))}>
 							<input type="hidden" name="path" value={file.path} />
 							<button class="cms-btn cms-btn-danger cms-btn-small" type="submit">Wis</button>

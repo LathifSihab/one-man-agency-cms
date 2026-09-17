@@ -91,8 +91,37 @@ export async function getOutstanding(db: SupabaseClient): Promise<Outstanding[]>
 	return items;
 }
 
+/**
+ * The newest change in the media bucket.
+ *
+ * Images are content too: replacing one changes the published site, but it
+ * touches no table, so without this the dashboard reported everything up to
+ * date and never offered to publish. Replacing an image then looked like
+ * nothing had happened at all.
+ */
+async function newestMediaChange(
+	db: SupabaseClient
+): Promise<{ at: string | null; files: { key: string; at: string }[] }> {
+	const folders = await Promise.all(
+		['site', 'logos', 'blog'].map(async (prefix) => {
+			const { data } = await db.storage.from('media').list(prefix, { limit: 500 });
+			return (data ?? [])
+				.filter((f) => f.id)
+				.map((f) => ({
+					key: `${prefix}/${f.name}`,
+					at: f.updated_at ?? f.created_at ?? ''
+				}))
+				.filter((f) => f.at);
+		})
+	);
+
+	const files = folders.flat();
+	const at = files.length ? files.map((f) => f.at).sort().at(-1)! : null;
+	return { at, files };
+}
+
 export async function getPublishState(db: SupabaseClient): Promise<PublishState> {
-	const [pages, posts, logos, settings, build] = await Promise.all([
+	const [pages, posts, logos, settings, build, media] = await Promise.all([
 		db.from('pages').select('updated_at').order('updated_at', { ascending: false }).limit(1),
 		db.from('posts').select('updated_at').order('updated_at', { ascending: false }).limit(1),
 		db.from('logos').select('updated_at').order('updated_at', { ascending: false }).limit(1),
@@ -102,14 +131,16 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 			.select('*')
 			.order('triggered_at', { ascending: false })
 			.limit(1)
-			.maybeSingle()
+			.maybeSingle(),
+		newestMediaChange(db)
 	]);
 
 	const stamps = [
 		pages.data?.[0]?.updated_at,
 		posts.data?.[0]?.updated_at,
 		logos.data?.[0]?.updated_at,
-		settings.data?.updated_at
+		settings.data?.updated_at,
+		media.at
 	].filter(Boolean) as string[];
 
 	const lastEditedAt = stamps.length ? stamps.sort().at(-1)! : null;
@@ -132,7 +163,18 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 	// tell the editor what they are about to put live.
 	let pending: PendingChange[] = [];
 	if (status === 'pending' || status === 'failed') {
-		pending = await getPendingChanges(db, lastBuild?.finished_at ?? '1970-01-01');
+		const since = lastBuild?.finished_at ?? '1970-01-01';
+		pending = await getPendingChanges(db, since);
+
+		for (const file of media.files.filter((f) => f.at > since)) {
+			pending.push({
+				kind: 'Afbeelding',
+				label: file.key.split('/').pop() ?? file.key,
+				href: '/admin/media',
+				updatedAt: file.at
+			});
+		}
+		pending.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 	}
 
 	return { status, pendingChanges: pending.length, pending, lastEditedAt, lastBuild };

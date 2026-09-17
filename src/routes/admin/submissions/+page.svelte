@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
-	import { confirmSubmit } from '$lib/components/admin/confirmSubmit';
+	import { confirmSubmit, reportTo } from '$lib/components/admin/confirmSubmit';
 	let { data, form } = $props();
 
 	const LABELS: Record<string, string> = {
@@ -50,12 +50,17 @@
 						</button>
 					{/if}
 				</form>
-				<form method="POST" action="?/delete" use:enhance
+				<form method="POST" action="?/delete"
+				      use:enhance={reportTo(confirmer, {
+					      success: 'Het bericht is verwijderd.',
+					      failure: 'Verwijderen is niet gelukt.'
+				      })}
 				      onsubmit={(e) =>
 					      confirmSubmit(e, confirmer, {
 						      title: 'Dit bericht verwijderen?',
 						      body: `Het bericht van ${s.payload.naam ?? 'deze afzender'} wordt definitief verwijderd.`,
-						      confirmLabel: 'Verwijderen'
+						      confirmLabel: 'Verwijderen',
+						      workingLabel: 'Bezig met verwijderen…'
 					      })}>
 					<input type="hidden" name="id" value={s.id} />
 					<button class="cms-btn cms-btn-danger cms-btn-small" type="submit">Verwijderen</button>

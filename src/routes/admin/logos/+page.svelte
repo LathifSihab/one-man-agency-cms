@@ -2,7 +2,7 @@
 	import { untrack } from 'svelte';
 	import { enhance } from '$app/forms';
 	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
-	import { confirmSubmit } from '$lib/components/admin/confirmSubmit';
+	import { confirmSubmit, reportTo } from '$lib/components/admin/confirmSubmit';
 	import { previewImage } from '$lib/images';
 	import { env } from '$env/dynamic/public';
 
@@ -297,15 +297,18 @@
 <form
 	method="POST"
 	action="?/delete"
-	use:enhance={() => async ({ update }) => {
+	use:enhance={() => async ({ result, update }) => {
 		await update();
 		reseed();
+		const okay = result.type === 'success' || result.type === 'redirect';
+		confirmer?.finish(okay, okay ? 'Het logo is verwijderd.' : 'Verwijderen is niet gelukt.');
 	}}
 	onsubmit={(e) =>
 		confirmSubmit(e, confirmer, {
 			title: 'Dit logo verwijderen?',
 			body: `${logos.find((l) => l.id === toDelete)?.name ?? 'Het logo'} verdwijnt van de referentiepagina en uit de logostrook op de startpagina.`,
-			confirmLabel: 'Verwijderen'
+			confirmLabel: 'Verwijderen',
+			workingLabel: 'Bezig met verwijderen…'
 		})}
 >
 	<div class="cms-field" style="max-width:420px">
