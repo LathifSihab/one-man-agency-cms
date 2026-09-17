@@ -33,6 +33,7 @@ and `npm run build` work before the database exists.
 | `npm run seed:account` | Create or reset the single CMS account |
 | `npm run responsive` | Measure every page in a real browser at six viewports |
 | `npm run e2e:admin` | Drive the CMS in a real browser (needs `--base <url>`) |
+| `npm run invite` | Email access as a one-time link (`-- --check` first) |
 
 ## Layout
 
@@ -127,6 +128,9 @@ Niels edits in /admin
 Saving is never called publishing. The CMS shows a banner stating how many changes are not
 yet live, and reports build state as building / live / failed — never a green state it has
 not verified.
+
+See [DELIVERY.md](DELIVERY.md) for the full report: what was built, the decisions
+taken, the defects found, and what is still open.
 
 ---
 
