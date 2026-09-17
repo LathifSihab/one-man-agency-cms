@@ -62,7 +62,7 @@
 		return new Promise((resolve) => (settle = resolve));
 	}
 
-	/** The answer was yes and the work has started. */
+	/** Update the label while the work runs. Answering yes already showed it. */
 	export function working(label?: string) {
 		if (label) workingLabel = label;
 		phase = 'working';
@@ -81,6 +81,19 @@
 		} else {
 			queueMicrotask(() => closeBtn?.focus());
 		}
+	}
+
+	/*
+	 * Yes keeps the dialog open and goes straight to the spinner. Closing it here
+	 * and reopening from working() flashed the backdrop and raced the caller,
+	 * which could leave the question on screen while the work was already
+	 * running.
+	 */
+	function accept() {
+		const respond = settle;
+		settle = null;
+		phase = 'working';
+		respond?.(true);
 	}
 
 	function close(answer: boolean) {
@@ -139,7 +152,7 @@
 			<button
 				type="button"
 				class="cms-btn {danger ? 'cms-btn-danger' : ''}"
-				onclick={() => close(true)}
+				onclick={accept}
 			>
 				{confirmLabel}
 			</button>
