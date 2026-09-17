@@ -231,3 +231,88 @@ export async function getPendingChanges(
 
 	return items.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 }
+
+// ── visitor statistics ───────────────────────────────────────────────────────
+
+export interface Analytics {
+	available: boolean;
+	days: number;
+	daily: { day: string; views: number; entries: number }[];
+	totalViews: number;
+	totalEntries: number;
+	previousViews: number;
+	topPaths: { path: string; views: number }[];
+	topReferrers: { referrer_host: string; views: number }[];
+	devices: { device: string; views: number }[];
+	countries: { country: string; views: number }[];
+}
+
+const EMPTY: Analytics = {
+	available: false,
+	days: 30,
+	daily: [],
+	totalViews: 0,
+	totalEntries: 0,
+	previousViews: 0,
+	topPaths: [],
+	topReferrers: [],
+	devices: [],
+	countries: []
+};
+
+/**
+ * Visitor numbers for the dashboard.
+ *
+ * Counting happens in the database: a busy month is tens of thousands of rows
+ * and the dashboard only ever shows totals. If the analytics migration has not
+ * been applied the RPCs are missing, and the dashboard says so rather than
+ * failing — the rest of it is more important than a chart.
+ */
+export async function getAnalytics(db: SupabaseClient, days = 30): Promise<Analytics> {
+	const [daily, paths, referrers, breakdown, previous] = await Promise.all([
+		db.rpc('analytics_daily', { days }),
+		db.rpc('analytics_top_paths', { days, lim: 10 }),
+		db.rpc('analytics_top_referrers', { days, lim: 8 }),
+		db.rpc('analytics_breakdown', { days }),
+		// The window before this one, for the trend.
+		db.rpc('analytics_daily', { days: days * 2 })
+	]);
+
+	if (daily.error) return { ...EMPTY, days };
+
+	const rows = (daily.data ?? []) as Analytics['daily'];
+	const earlier = ((previous.data ?? []) as Analytics['daily']).slice(0, days);
+
+	const sum = (list: { views: number }[]) => list.reduce((n, r) => n + Number(r.views), 0);
+
+	const tally = new Map<string, number>();
+	const byCountry = new Map<string, number>();
+	for (const row of (breakdown.data ?? []) as { device: string; country: string; views: number }[]) {
+		if (row.device) tally.set(row.device, (tally.get(row.device) ?? 0) + Number(row.views));
+		if (row.country) byCountry.set(row.country, (byCountry.get(row.country) ?? 0) + Number(row.views));
+	}
+
+	const rank = (m: Map<string, number>, key: 'device' | 'country') =>
+		[...m.entries()]
+			.sort((a, b) => b[1] - a[1])
+			.map(([name, views]) => ({ [key]: name, views }) as never);
+
+	return {
+		available: true,
+		days,
+		daily: rows.map((r) => ({ ...r, views: Number(r.views), entries: Number(r.entries) })),
+		totalViews: sum(rows),
+		totalEntries: rows.reduce((n, r) => n + Number(r.entries), 0),
+		previousViews: sum(earlier),
+		topPaths: ((paths.data ?? []) as Analytics['topPaths']).map((r) => ({
+			...r,
+			views: Number(r.views)
+		})),
+		topReferrers: ((referrers.data ?? []) as Analytics['topReferrers']).map((r) => ({
+			...r,
+			views: Number(r.views)
+		})),
+		devices: rank(tally, 'device'),
+		countries: rank(byCountry, 'country').slice(0, 6)
+	};
+}

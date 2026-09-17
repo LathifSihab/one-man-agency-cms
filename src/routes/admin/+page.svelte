@@ -1,5 +1,6 @@
 <script lang="ts">
 	import PublishBanner from '$components/admin/PublishBanner.svelte';
+	import Analytics from '$components/admin/Analytics.svelte';
 
 	let { data } = $props();
 
@@ -44,6 +45,8 @@
 		<a class="cms-btn cms-btn-ghost cms-btn-small" href="/admin/submissions">Bekijken</a>
 	</div>
 </div>
+
+<Analytics analytics={data.analytics} />
 
 <h2>Nog af te werken</h2>
 {#if data.outstanding.length}

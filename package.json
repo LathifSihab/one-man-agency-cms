@@ -13,7 +13,8 @@
     "postinstall": "svelte-kit sync",
     "seed:account": "python tools/seed_account.py",
     "responsive": "node tools/responsive.mjs --all",
-    "e2e:admin": "node tools/admin-e2e.mjs"
+    "e2e:admin": "node tools/admin-e2e.mjs",
+    "invite": "python tools/send_invite.py"
   },
   "devDependencies": {
     "@sveltejs/adapter-vercel": "^5.10.2",

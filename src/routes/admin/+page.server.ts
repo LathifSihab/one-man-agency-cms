@@ -1,13 +1,14 @@
 import { adminDb } from '$lib/server/admin';
-import { getOutstanding, getPublishState } from '$lib/server/dashboard';
+import { getAnalytics, getOutstanding, getPublishState } from '$lib/server/dashboard';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
 	const db = adminDb();
 
-	const [outstanding, publish, recent, counts, submissions] = await Promise.all([
+	const [outstanding, publish, analytics, recent, counts, submissions] = await Promise.all([
 		getOutstanding(db),
 		getPublishState(db),
+		getAnalytics(db, 30),
 		db
 			.from('pages')
 			.select('slug, type, title, updated_at')
@@ -24,6 +25,7 @@ export const load: PageServerLoad = async () => {
 	return {
 		outstanding,
 		publish,
+		analytics,
 		recent: recent.data ?? [],
 		counts: {
 			pages: counts[0].count ?? 0,
