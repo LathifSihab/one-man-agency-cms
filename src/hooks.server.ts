@@ -2,6 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { redirect, type Handle } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
+import { gateAdmin } from '$lib/server/gate';
 
 /**
  * Admin session handling and route guarding.
@@ -11,6 +12,14 @@ import { env as publicEnv } from '$env/dynamic/public';
  * admin; there is no roles table to consult.
  */
 export const handle: Handle = async ({ event, resolve }) => {
+	/*
+	 * The Basic gate runs before anything else, including the Supabase client.
+	 * An anonymous request to /admin must cost nothing and must never receive
+	 * HTML — see $lib/server/gate.ts for why Google flagged the login page.
+	 */
+	const gated = gateAdmin(event.request, event.url);
+	if (gated) return gated;
+
 	const url = publicEnv.PUBLIC_SUPABASE_URL;
 	const anonKey = publicEnv.PUBLIC_SUPABASE_ANON_KEY;
 

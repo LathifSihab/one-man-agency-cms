@@ -8,9 +8,8 @@
 
 <div class="cms-login">
 	<div class="cms-card">
-		<img src="/assets/logo-oma.png" alt="One Man Agency" />
 		<h1>Aanmelden</h1>
-		<p class="cms-lead">Beheer van onemanagency.be</p>
+		<p class="cms-lead">Beheer</p>
 
 		{#if data.configError}
 			<div class="cms-error">Supabase is nog niet geconfigureerd op deze omgeving.</div>
