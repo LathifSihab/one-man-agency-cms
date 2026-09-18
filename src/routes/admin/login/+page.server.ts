@@ -16,7 +16,8 @@ export const actions: Actions = {
 	/** Email + password only. There is no sign-up action: the account is created
 	 *  manually in the Supabase dashboard and public sign-up is disabled.
 	 *  Named rather than `default`, because this file also exposes `logout` and
-	 *  `reset`, and SvelteKit forbids mixing a default action with named ones. */
+	 *  `logout`, and SvelteKit forbids mixing a default action with named ones.
+	 *  Forgotten passwords are handled at /admin/herstel. */
 	login: async ({ request, locals, url }) => {
 		const form = await request.formData();
 		const email = String(form.get('email') ?? '').trim();
@@ -40,18 +41,5 @@ export const actions: Actions = {
 	logout: async ({ locals }) => {
 		await locals.supabase?.auth.signOut();
 		throw redirect(303, '/admin/login');
-	},
-
-	/** One account means a lockout is a real outage, so reset must work. */
-	reset: async ({ request, locals, url }) => {
-		const form = await request.formData();
-		const email = String(form.get('email') ?? '').trim();
-		if (!email) return fail(400, { email, message: 'Vul eerst je e-mailadres in.' });
-
-		await locals.supabase?.auth.resetPasswordForEmail(email, {
-			redirectTo: `${url.origin}/admin/login`
-		});
-		// Always report success: never reveal whether an address exists.
-		return { sent: true, email };
 	}
 };

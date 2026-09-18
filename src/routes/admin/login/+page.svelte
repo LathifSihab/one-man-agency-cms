@@ -17,9 +17,6 @@
 		{#if form?.message}
 			<div class="cms-error">{form.message}</div>
 		{/if}
-		{#if form?.sent}
-			<div class="cms-ok">Als dit adres bestaat, is er een herstelmail verstuurd.</div>
-		{/if}
 
 		<form method="POST" action="?/login" use:enhance={() => {
 			busy = true;
@@ -39,8 +36,9 @@
 				<button class="cms-btn" type="submit" disabled={busy}>
 					{busy ? 'Bezig…' : 'Aanmelden'}
 				</button>
-				<button class="cms-btn cms-btn-ghost cms-btn-small" type="submit"
-				        formaction="?/reset" formnovalidate>Wachtwoord vergeten</button>
+				<a class="cms-btn cms-btn-ghost cms-btn-small" href="/admin/herstel">
+					Wachtwoord vergeten
+				</a>
 			</div>
 		</form>
 	</div>

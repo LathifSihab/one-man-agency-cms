@@ -75,7 +75,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 	 * to the login page meant the cookie was never set, and the redirect then
 	 * hit the gate and 404'd — the link appeared to do nothing at all.
 	 */
-	const WAY_IN = ['/admin/login', '/admin/unlock'];
+	const WAY_IN = ['/admin/login', '/admin/unlock', '/admin/herstel'];
 	const needsSession = !WAY_IN.some((path) => event.url.pathname.startsWith(path));
 
 	if (event.url.pathname.startsWith('/admin') && needsSession) {

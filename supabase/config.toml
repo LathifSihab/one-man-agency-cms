@@ -24,3 +24,9 @@ secure_password_change = true
 max_frequency = "1m0s"
 otp_length = 8
 otp_expiry = 3600
+
+# The recovery mail carries a one-time code instead of a link, so the reset can
+# be completed on the screen where it was started. Pushed with `config push`.
+[auth.email.template.recovery]
+subject = "Je code om een nieuw wachtwoord in te stellen"
+content_path = "./supabase/templates/recovery.html"
