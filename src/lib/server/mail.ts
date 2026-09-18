@@ -3,22 +3,26 @@ import { env } from '$env/dynamic/private';
 /**
  * Sending mail from the CMS.
  *
- * Over Brevo's HTTP API rather than SMTP. A serverless function is a poor place
- * to open an SMTP conversation — connections cannot be reused between
- * invocations and outbound ports are not always open — while an HTTPS request
- * is the one thing the platform is certain to allow.
+ * Composed and sent here rather than by Supabase. On the free tier Supabase
+ * refuses to let its recovery template be changed while the default provider is
+ * in use, so its mail always carries a link and a one-time code can never reach
+ * anyone. It is also capped near two messages an hour, which breaks the second
+ * press of "send me another code". Supabase still mints and validates the token;
+ * only the delivery moved.
  *
- * Doing it here rather than through Supabase's mailer is deliberate. On the free
- * tier Supabase refuses to let the recovery template be changed while the
- * default provider is in use, so its mail always carries a link and a one-time
- * code can never reach anyone. It is also capped near two messages an hour,
- * which breaks the second press of "send me another code". Composing the message
- * ourselves sidesteps both, and means the wording is in the same Dutch as the
- * rest of the CMS.
+ * Two transports, chosen by what is configured:
  *
- * The address it is sent FROM has to be one Brevo has verified. The address it
- * is sent TO is unrestricted — the two are commonly confused, and only the
- * sender ever needs proving.
+ *   SMTP_HOST set        SMTP, via nodemailer
+ *   BREVO_API_KEY set     Brevo's HTTP API
+ *
+ * SMTP is the portable one: swapping provider is configuration rather than code,
+ * which is why it wins when both are present. The HTTP API needs no dependency
+ * and is one request rather than a handshake of half a dozen round trips, which
+ * matters in a function that starts cold — so it stays as the lighter option.
+ *
+ * The address mail is sent FROM has to be one the provider has verified, and
+ * must be one we control. The address it is sent TO is unrestricted. The two are
+ * easily confused, and only the sender ever needs proving.
  */
 
 export interface MailResult {
@@ -27,8 +31,53 @@ export interface MailResult {
 	detail?: string;
 }
 
+/** Which transport a send would use, or null if none is usable. */
+export function mailTransport(): 'smtp' | 'api' | null {
+	if (!env.MAIL_FROM) return null;
+	if (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS) return 'smtp';
+	if (env.BREVO_API_KEY) return 'api';
+	return null;
+}
+
 export function mailConfigured(): boolean {
-	return Boolean(env.BREVO_API_KEY && env.MAIL_FROM);
+	return mailTransport() !== null;
+}
+
+async function sendViaSmtp(options: {
+	to: string;
+	subject: string;
+	text: string;
+	html: string;
+}): Promise<MailResult> {
+	try {
+		// Imported here rather than at module scope so the public build never
+		// pulls a mail client into a bundle that has no use for one.
+		const nodemailer = (await import('nodemailer')).default;
+
+		const port = Number(env.SMTP_PORT || 587);
+		const transporter = nodemailer.createTransport({
+			host: env.SMTP_HOST,
+			port,
+			// 465 is TLS from the first byte; 587 upgrades with STARTTLS.
+			secure: port === 465,
+			auth: { user: env.SMTP_USER, pass: env.SMTP_PASS },
+			connectionTimeout: 15_000,
+			greetingTimeout: 10_000,
+			socketTimeout: 20_000
+		});
+
+		await transporter.sendMail({
+			from: { address: env.MAIL_FROM!, name: env.MAIL_FROM_NAME || 'One Man Agency' },
+			to: options.to,
+			subject: options.subject,
+			text: options.text,
+			html: options.html
+		});
+
+		return { ok: true };
+	} catch (error) {
+		return { ok: false, detail: String(error).slice(0, 200) };
+	}
 }
 
 export async function sendMail(options: {
@@ -37,12 +86,14 @@ export async function sendMail(options: {
 	text: string;
 	html: string;
 }): Promise<MailResult> {
-	const key = env.BREVO_API_KEY;
-	const from = env.MAIL_FROM;
-
-	if (!key || !from) {
-		return { ok: false, detail: 'BREVO_API_KEY or MAIL_FROM is not set' };
+	const transport = mailTransport();
+	if (!transport) {
+		return { ok: false, detail: 'MAIL_FROM with either SMTP_HOST or BREVO_API_KEY is required' };
 	}
+	if (transport === 'smtp') return sendViaSmtp(options);
+
+	const key = env.BREVO_API_KEY!;
+	const from = env.MAIL_FROM!;
 
 	try {
 		const response = await fetch('https://api.brevo.com/v3/smtp/email', {
