@@ -5,15 +5,21 @@
 	import ContactForm from '$components/ContactForm.svelte';
 	import TodoNotice from '$components/TodoNotice.svelte';
 	import { renderMarkdown } from '$lib/markdown';
-	import { faqSchema } from '$lib/schema';
+	import { faqSchema, blogSchema, webPageSchema } from '$lib/schema';
 
 	let { data } = $props();
 	const p = $derived(data.page);
-	const schemas = $derived(p.faq?.length ? [faqSchema(p.faq)] : []);
+	const schemas = $derived([
+		webPageSchema(p, `/${p.slug}`),
+		...(p.faq?.length ? [faqSchema(p.faq)] : []),
+		// The blog index describes a Blog, and names the posts it lists.
+		...(p.slug === 'blog' ? [blogSchema(data.posts)] : [])
+	]);
 </script>
 
 <Seo seoTitle={p.seo_title} metaDescription={p.meta_description} path="/{p.slug}"
-     noindex={p.noindex} {schemas} />
+     noindex={p.noindex} {schemas} image={p.header_image_url}
+     crumbs={[{ name: 'Home', path: '/' }, { name: p.title, path: `/${p.slug}` }]} />
 
 <PageHead title={p.title} intro={p.intro} />
 

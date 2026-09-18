@@ -9,7 +9,10 @@ export const prerender = true;
  */
 export const GET: RequestHandler = async () => {
 	const body =
-		'User-agent: *\nAllow: /\n\n' +
+		'User-agent: *\nAllow: /\n' +
+		// The admin and the API are not content: they sit behind a login and
+		// return no indexable HTML, so crawling them only spends crawl budget.
+		'Disallow: /admin\nDisallow: /api/\n\n' +
 		'# AI-crawlers zijn welkom: dat is het punt van GEO.\n' +
 		'User-agent: GPTBot\nAllow: /\n' +
 		'User-agent: PerplexityBot\nAllow: /\n' +

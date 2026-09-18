@@ -15,7 +15,7 @@
     "responsive": "node tools/responsive.mjs --all",
     "e2e:admin": "node tools/admin-e2e.mjs",
     "invite": "python tools/send_invite.py",
-    "check:smtp": "python tools/check_smtp.py"
+    "check:mail": "python tools/check_mail.py"
   },
   "devDependencies": {
     "@sveltejs/adapter-vercel": "^5.10.2",

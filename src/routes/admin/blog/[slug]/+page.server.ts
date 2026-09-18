@@ -1,5 +1,6 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { adminDb } from '$lib/server/admin';
+import { requireConfirmation } from '$lib/server/confirm';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -72,7 +73,12 @@ export const actions: Actions = {
 		return { saved: true };
 	},
 
-	delete: async ({ params }) => {
+	delete: async ({ request, params }) => {
+		// Deleting a post is irreversible and the content only exists here, so the
+		// confirmation is checked on this side of the wire, not just in the dialog.
+		const stop = requireConfirmation(await request.formData());
+		if (stop) return stop;
+
 		const { error: dbError } = await adminDb().from('posts').delete().eq('slug', params.slug);
 		if (dbError) return fail(500, { message: `Verwijderen mislukt: ${dbError.message}` });
 		throw redirect(303, '/admin/blog');

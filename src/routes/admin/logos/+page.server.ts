@@ -1,5 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import { adminDb } from '$lib/server/admin';
+import { requireConfirmation } from '$lib/server/confirm';
 import type { Actions, PageServerLoad } from './$types';
 
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -160,6 +161,9 @@ export const actions: Actions = {
 
 	delete: async ({ request }) => {
 		const form = await request.formData();
+		const stop = requireConfirmation(form);
+		if (stop) return stop;
+
 		const id = String(form.get('id') ?? '');
 		const { error } = await adminDb().from('logos').delete().eq('id', id);
 		if (error) return fail(500, { message: `Verwijderen mislukt: ${error.message}` });

@@ -5,6 +5,8 @@
 	import MarkdownEditor from '$components/admin/MarkdownEditor.svelte';
 	import RepeatRows from '$components/admin/RepeatRows.svelte';
 	import ImageField from '$components/admin/ImageField.svelte';
+	import SeoPanel from '$components/admin/SeoPanel.svelte';
+	import type { Subject } from '$lib/seo';
 
 	let { data, form } = $props();
 
@@ -59,6 +61,19 @@
 	const liveUrl = $derived(
 		p.type === 'page' ? (slug === 'home' ? '/' : `/${slug}`) : `${prefix[p.type]}/${slug}`
 	);
+
+	/* The SEO panel reads the bound state, so its verdict follows the typing.
+	   The home page's path is / rather than /home. */
+	const seoSubject: Subject = $derived({
+		kind: 'page',
+		title,
+		seoTitle,
+		metaDescription,
+		intro,
+		body,
+		path: liveUrl,
+		imageUrl: headerImageUrl
+	});
 
 	/** Blocks whose backing data is empty — the editor warns before they vanish silently. */
 	const emptyBlocks = $derived(
@@ -286,6 +301,8 @@
 			</div>
 		{/if}
 	</div>
+
+	<SeoPanel subject={seoSubject} noindex={p.noindex} />
 
 	<div class="cms-actions" style="margin-top:1.5rem">
 		<button class="cms-btn" type="submit" disabled={busy}>

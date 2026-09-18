@@ -1,4 +1,6 @@
 import { fail, redirect } from '@sveltejs/kit';
+import { adminDb } from '$lib/server/admin';
+import { mailConfigured, recoveryMail, sendMail } from '$lib/server/mail';
 import type { Actions, PageServerLoad } from './$types';
 
 /**
@@ -71,17 +73,59 @@ export const actions: Actions = {
 			return fail(500, { step: 'email', message: 'Aanmelden is niet geconfigureerd.' });
 		}
 
-		const { error } = await locals.supabase.auth.resetPasswordForEmail(email);
+		if (!mailConfigured()) {
+			return fail(500, {
+				step: 'email',
+				email,
+				message: 'Er kan nog geen e-mail verstuurd worden. Neem contact op met je beheerder.'
+			});
+		}
 
-		// Never say whether the address exists: that turns this form into a way
-		// of finding out who has an account. A rate-limit is worth reporting,
-		// because otherwise the silence looks like the mail simply not arriving.
-		if (error && /rate|limit|too many/i.test(error.message)) {
+		if (tooManyAttempts(`send:${email}`)) {
 			return fail(429, {
 				step: 'email',
 				email,
-				message: 'Er is net al een code gevraagd. Wacht een minuut en probeer opnieuw.'
+				message: 'Er zijn net al codes gevraagd. Wacht een kwartier en probeer opnieuw.'
 			});
+		}
+
+		/*
+		 * Mint the code with the admin API and send it ourselves.
+		 *
+		 * Supabase would happily mail this, but on the free tier it refuses to let
+		 * the template be changed while its own provider is in use, so its message
+		 * always carries a link and the code never reaches anyone.
+		 *
+		 * generateLink also invalidates any earlier code for this address, which is
+		 * what makes "send me a new one" mean what it says.
+		 */
+		let code: string | undefined;
+		try {
+			const { data, error } = await adminDb().auth.admin.generateLink({
+				type: 'recovery',
+				email
+			});
+			if (error) throw error;
+			code = data?.properties?.email_otp;
+		} catch (error) {
+			// Almost always "user not found". Saying so would turn this form into a
+			// way of discovering who has an account, so it looks like success.
+			console.warn('[herstel] no code minted:', String(error).slice(0, 120));
+		}
+
+		if (code) {
+			const sent = await sendMail({ to: email, ...recoveryMail(code) });
+			if (!sent.ok) {
+				// The visitor cannot act on the cause, but it must not vanish: a
+				// code that was never delivered is indistinguishable from a wrong
+				// address unless someone reads the log.
+				console.error('[herstel] sending failed:', sent.detail);
+				return fail(502, {
+					step: 'email',
+					email,
+					message: 'De code kon niet verstuurd worden. Probeer het straks opnieuw.'
+				});
+			}
 		}
 
 		return { step: 'code', email, sent: true };

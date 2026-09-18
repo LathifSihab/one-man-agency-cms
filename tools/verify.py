@@ -111,8 +111,15 @@ def seo_artefacts(candidate):
         rules = [l for l in open(redirects, encoding='utf-8').read().splitlines() if l.strip()]
         check('16 redirect rules', len(rules) == 16, f'got {len(rules)}')
 
+    # googleXXXX.html is the Search Console ownership token: a bare text file
+    # that happens to carry an .html extension, with no head and nothing to
+    # index. It is not a page and must not be counted as one. The pattern is
+    # anchored on the digits on purpose — a first attempt matched "google*" and
+    # quietly dropped diensten/google-ads.html from every count below it.
+    token = re.compile(r'^google[0-9a-f]+\.html$')
     pages = [p for p in glob.glob(os.path.join(candidate, '**', '*.html'), recursive=True)
-             if 'admin' not in os.path.relpath(p, candidate).split(os.sep)]
+             if 'admin' not in os.path.relpath(p, candidate).split(os.sep)
+             and not token.match(os.path.basename(p))]
 
     # The count that matters is indexable pages. The reference had one noindex
     # page (/404); moving the forms to Supabase added /bedankt and

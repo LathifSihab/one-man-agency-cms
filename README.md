@@ -236,6 +236,105 @@ These were migrated as-is rather than invented, and are surfaced on the CMS dash
 - `formspree_id` is still the placeholder. It no longer matters — forms post to Supabase —
   and the field is kept only as a fallback.
 
+## Search Console and on-page SEO
+
+**Ownership.** `static/google1943806656245000.html` is the Search Console HTML
+token for the property. It is served at
+`https://www.onemanagency.be/google1943806656245000.html` and must survive every
+deploy: deleting it un-verifies the property and the account loses access to the
+performance data. It is not a page — `tools/verify.py` skips it by name so it is
+never counted among the 41 indexable pages.
+
+Add the property in Search Console as a **URL prefix** on
+`https://www.onemanagency.be/`, choose the HTML file method, and submit
+`https://www.onemanagency.be/sitemap.xml` under *Sitemaps* afterwards.
+
+**What every page emits** (`src/lib/components/Seo.svelte`, `src/lib/schema.ts`):
+
+| Element | Note |
+| --- | --- |
+| `title`, `description`, canonical | As before; canonical is always absolute |
+| `robots` | `max-image-preview:large` — without it Google shows a thumbnail, not a card |
+| `og:*` + `twitter:*` | Per-page image; posts fall back to the site card |
+| `og:type` / `article:*` | `article` with publication and modification dates on posts |
+| ProfessionalService, Person | One node each, site-wide, cross-referenced by `@id` |
+| WebSite, WebPage | The domain, and the page as a thing, per page |
+| BreadcrumbList | Every page below the root; mirrors the visible trail |
+| Service / FAQPage / BlogPosting / Blog | As before, with BlogPosting enriched |
+
+`/sitemap.xml` carries a real `lastmod` per URL, taken from `updated_at`. Stamping
+all 41 URLs with the build date is how a sitemap trains a crawler to ignore its
+own dates.
+
+**In the CMS.** `src/lib/seo.ts` holds the rules — title and description length,
+whether the subject of the SEO title appears in the text, the description and a
+subheading, word count, internal links, intro, image, URL length. There is no
+keyword field on purpose: an unfilled one grades everything as perfect, so the
+subject is read from the SEO title, which the editor writes anyway.
+
+The same function runs in three places:
+
+- under the blog editor and the page editor, as a search-result preview plus a
+  checklist that updates while typing (`SeoPanel.svelte`);
+- over every page and post on the dashboard, as an average and the weakest
+  items, each linking to the editor that fixes it (`src/lib/server/seo-health.ts`).
+
+None of it can block a save. The two hard limits (62 and 158) are still enforced
+by the database and by the save actions; the panel only warns earlier.
+
+## The admin sits behind an HTTP Basic gate
+
+Google Safe Browsing flagged `one-man-agency-impact-5d90.vercel.app` for
+"phishing on user login". The cause is structural, not a bug: the CMS login is a
+branded credential form — company name, company logo, email and password fields
+— served from a generic `*.vercel.app` subdomain with no established
+relationship to that brand. That is indistinguishable from a phishing kit
+copying a company's login onto free hosting, and while `onemanagency.be` points
+elsewhere there is nothing for Google to reconcile the branding against.
+
+robots.txt and `noindex` do not help. They govern search indexing; Safe Browsing
+scans regardless.
+
+`src/lib/server/gate.ts` runs before anything else in `hooks.server.ts`: without
+HTTP Basic credentials, any path under `/admin` returns a bare `401` with a
+plain-text body — no branding, no inputs, nothing to classify. Set
+`ADMIN_GATE_USER` and `ADMIN_GATE_PASSWORD` in the deployment. With them unset
+the gate is off, which is how local development runs; requests from localhost
+are never gated.
+
+This is a doormat, not the lock. The Supabase login behind it is unchanged.
+
+The browser tooling reads the same two variables from `.env` and passes them as
+`httpCredentials`, so `admin-e2e.mjs` and `confirm-guard-e2e.mjs` work through
+the gate unchanged.
+
+After deploying the gate, use **Request review** in Search Console's Security
+Issues panel. Reviews take a few days.
+
+## Deleting is confirmed on the server
+
+The CMS asks before it deletes. That question used to live only in an `onsubmit`
+handler on a hydrated component, so a submit that reached the server without
+passing through the dialog was obeyed — a click before the page hydrated, or any
+direct post. Not theoretical: it deleted a real blog post during testing.
+
+`src/lib/server/confirm.ts` is the floor under the dialog. Answering it attaches
+a `confirmed` field (`confirmSubmit.ts` adds the field itself, so a destructive
+form added later cannot forget it), and every destructive action refuses without
+it: posts, logos, media, submissions. Nothing is deleted, and the editor is told
+why rather than being left guessing.
+
+The trade is deliberate: deleting now needs JavaScript. It previously worked
+without it, but silently skipped the question, and the admin sets `csr = true`
+anyway.
+
+    node tools/confirm-guard-e2e.mjs --base <url>
+
+brings its own throwaway draft, tries to delete it the wrong way, checks it
+survived, then deletes it properly. Like `admin-e2e.mjs` it acts on whatever
+database the target is wired to — point both at a throwaway project, never at
+live content.
+
 ## Before the domain cutover
 
 Run against the deployed URL, not locally:
@@ -244,6 +343,8 @@ Run against the deployed URL, not locally:
 - [ ] `/sitemap.xml`, `/robots.txt`, `/llms.txt` load
 - [ ] Old URLs 301: `/vragen` → `/veelgestelde-vragen`, `/webdesign` → `/diensten/webdesign`
 - [ ] JSON-LD passes Google's Rich Results Test on the home page, a service page, a post
+- [ ] `/google1943806656245000.html` loads and Search Console reports the property verified
+- [ ] The sitemap is submitted in Search Console and reports 41 discovered URLs
 - [ ] Mobile menu opens and closes and `aria-expanded` flips
 - [ ] Both forms submit and appear under **Berichten**
 - [ ] `/admin` redirects to the login screen when logged out

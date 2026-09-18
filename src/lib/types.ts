@@ -65,6 +65,8 @@ export interface Page {
 	header_alt: string | null;
 	cta_primary: Cta | null;
 	cta_secondary: Cta | null;
+	/** Set by the database trigger. Absent in the seed fallback, so optional. */
+	updated_at?: string;
 }
 
 export interface Post {
@@ -79,6 +81,8 @@ export interface Post {
 	image_url: string | null;
 	is_published: boolean;
 	legacy_url: string | null;
+	/** Set by the database trigger. Absent in the seed fallback, so optional. */
+	updated_at?: string;
 }
 
 export interface Logo {

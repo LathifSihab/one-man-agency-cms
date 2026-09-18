@@ -192,6 +192,89 @@ the project team. Sending to a client address needs custom SMTP under
 
 ---
 
+## Search Console and SEO (added after the first delivery)
+
+**Ownership is in place.** The Search Console HTML token lives at
+`static/google1943806656245000.html` and is served from the site root. Verify the
+property in Search Console as a URL prefix on `https://www.onemanagency.be/`
+using the HTML file method, then submit `/sitemap.xml` under *Sitemaps*. The file
+must never be deleted: removing it un-verifies the property.
+
+Note the ordering. Verification reads the live domain, and the domain still
+points at the old Hostinger site, so this can only succeed against the Vercel
+deployment URL or after the cutover.
+
+**On the site.** Every page already carried a title, a description, a canonical
+and the JSON-LD graph. Added: preview directives (`max-image-preview:large`,
+without which Google shows a thumbnail instead of a card), a per-page social
+image with the twitter set, `og:type=article` with publication and modification
+dates on posts, BreadcrumbList on every page below the root, WebSite and WebPage
+nodes, a richer BlogPosting (image, modification date, category, word count,
+tied to the Blog), a Blog node on `/blog` listing its posts, `Disallow: /admin`
+in robots.txt, and a real `lastmod` per URL in the sitemap instead of the build
+date on all 41.
+
+**In the CMS.** Under the blog editor and the page editor there is now a
+**Vindbaarheid** panel: the Google result as it will actually render, truncation
+and all, plus a checklist that updates while typing — title and description
+length, whether the subject of the SEO title comes back in the text, the
+description and a subheading, word count, internal links, intro, image, URL.
+Nothing there can block a save; the 62/158 limits are still the hard ones.
+
+The dashboard runs the same rules over every page and post and shows the average
+with the weakest items, each linking to the editor that fixes it. Today that
+average is 76/100 — the recurring complaints are page length and SEO titles whose
+subject never returns in the body. That is real, pre-existing content work, now
+visible instead of invisible.
+
+## Flagged by Google as phishing, and what was done about it
+
+Search Console reported a security issue on
+`one-man-agency-impact-5d90.vercel.app`: *Phishing Kemungkinan Terdeteksi pada
+Login Pengguna*. Nothing was hacked. The CMS login is a branded credential form
+on a generic `*.vercel.app` subdomain, which is exactly what a phishing kit
+looks like to an automated classifier — and because `onemanagency.be` still
+points at Hostinger, there is no legitimate domain tying that branding to that
+host.
+
+The `Disallow: /admin` added earlier does not address this: robots.txt governs
+indexing, and Safe Browsing scans regardless.
+
+Fixed by putting an HTTP Basic gate in front of `/admin`
+(`src/lib/server/gate.ts`, wired into `hooks.server.ts` before anything else).
+An anonymous request now gets a 25-byte plain-text 401 — no company name, no
+logo, no input fields. Verified on both production aliases. The public site, the
+sitemap, robots.txt and the Search Console token file are untouched.
+
+Niels needs the gate credentials as well as his CMS login: one browser prompt,
+which the browser then remembers. They live in the Vercel project's environment
+variables, not in the repository.
+
+Next step, once this is live: **Request review** in Search Console. Reviews take
+a few days. After the domain cutover the gate can stay or go — on the real
+domain the phishing signal largely disappears, but the gate costs nothing.
+
+## Defect fixed after delivery: deleting skipped its own confirmation
+
+While testing the SEO work, the blog post *Lokale SEO, AI-tools en de
+Google-update* was deleted without anything asking first. It was restored from
+`supabase/seed.json` — every field matched what the live build had rendered
+minutes earlier, so no content was lost.
+
+The cause: the confirmation dialog was an `onsubmit` handler on a hydrated
+component, while the admin renders server-side first. Any submit that landed
+before hydration went straight through to `?/delete`. The same hole existed for
+logos, images and messages.
+
+Fixed in `src/lib/server/confirm.ts`: answering the dialog attaches a field, and
+every destructive action now refuses without it. A delete that does not go
+through the question is rejected with an explanation and nothing is removed.
+`tools/confirm-guard-e2e.mjs` proves it, on a throwaway draft it creates itself.
+
+One caveat worth stating plainly: `tools/admin-e2e.mjs` and the new guard test
+act on whatever database they are pointed at, and the e2e suite's delete step
+targets the newest real post. Point them at a throwaway project.
+
 ## Still open
 
 **Blocking the cutover**
@@ -207,8 +290,10 @@ the project team. Sending to a client address needs custom SMTP under
 **Not verified**
 
 - Google's Rich Results Test and Lighthouse have not been run — both need a
-  browser session. The JSON-LD is structurally verified but not validated by
-  Google.
+  browser session. The JSON-LD is structurally verified (every blob parses, the
+  type counts are asserted) but not validated by Google.
+- Search Console verification itself has not been performed: it needs the live
+  domain and the Google account. The token file is in place and served.
 
 **Client decisions**
 
@@ -228,6 +313,8 @@ address that conflicted between sources in the original material.
 src/lib/images.ts          repo path vs Storage key — the only place that knows
 src/lib/markdown.ts        Markdown -> HTML, matched to the original renderer
 src/lib/schema.ts          JSON-LD; the @id cross-references are the point
+src/lib/seo.ts             the SEO rules, shared by both editors and the dashboard
+src/lib/server/seo-health.ts  those rules over every page and post at once
 src/lib/shortcodes.ts      {{tokens}} in page bodies
 src/routes/(public)/       prerendered, no client JavaScript beyond 1.1KB inline
 src/routes/admin/          the CMS; never prerendered, requires login

@@ -7,6 +7,8 @@
 	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
 	import { confirmSubmit, reportTo } from '$lib/components/admin/confirmSubmit';
 	import ImageField from '$lib/components/admin/ImageField.svelte';
+	import SeoPanel from '$lib/components/admin/SeoPanel.svelte';
+	import type { Subject } from '$lib/seo';
 
 	let { data, form } = $props();
 	// Read once on purpose: these seed the editing state below.
@@ -24,6 +26,19 @@
 	let busy = $state(false);
 
 	const slugChanged = $derived(slug !== post.slug);
+
+	/* Everything the SEO panel grades is already bound state above, so the
+	   verdict follows the typing without the panel owning anything. */
+	const seoSubject: Subject = $derived({
+		kind: 'post',
+		title,
+		seoTitle,
+		metaDescription,
+		intro,
+		body,
+		path: `/blog/${slug}`,
+		imageUrl: imageUrl
+	});
 </script>
 
 <ConfirmDialog bind:this={confirmer} />
@@ -122,6 +137,8 @@
 	{/if}
 
 </form>
+
+<SeoPanel subject={seoSubject} />
 
 <!--
   Delete is its own form: a form cannot be nested inside another. The buttons sit

@@ -25,31 +25,10 @@ max_frequency = "1m0s"
 otp_length = 8
 otp_expiry = 3600
 
-# The recovery mail carries a one-time code instead of a link, so the reset can
-# be completed on the screen where it was started. Pushed with `config push`.
-[auth.email.template.recovery]
-subject = "Je code om een nieuw wachtwoord in te stellen"
-content_path = "./supabase/templates/recovery.html"
-
-# ── mail delivery ────────────────────────────────────────────────────────────
+# No Supabase mail settings here on purpose.
 #
-# Custom SMTP, for two reasons rather than one. Supabase's built-in mail only
-# reaches addresses on the project team and is capped at roughly two messages an
-# hour, which breaks a one-time code the moment someone asks for a second one.
-# And on the free tier the recovery template cannot be changed at all while the
-# default provider is in use -- so without this, the mail keeps sending a link
-# and the code box can never be filled.
-#
-# Brevo verifies a single sender address by email, so mail can come from
-# info@onemanagency.be without DNS changes, which matters while that domain is
-# still served elsewhere.
-#
-# The key is read from the environment and never committed.
-[auth.email.smtp]
-enabled = true
-host = "smtp-relay.brevo.com"
-port = 587
-user = "env(BREVO_SMTP_USER)"
-pass = "env(BREVO_SMTP_KEY)"
-admin_email = "env(MAIL_FROM)"
-sender_name = "One Man Agency"
+# On the free tier Supabase refuses to let its templates be changed while the
+# default provider is in use, so its recovery mail always carries a link and a
+# one-time code could never reach anyone. The CMS therefore mints the code with
+# the admin API and sends the message itself -- see src/lib/server/mail.ts --
+# which also escapes the roughly two-an-hour cap on the built-in mailer.

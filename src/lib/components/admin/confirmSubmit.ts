@@ -14,6 +14,28 @@ export interface Confirmer {
 	finish(succeeded: boolean, message: string): void;
 }
 
+/** The field name the server checks. Must match $lib/server/confirm.ts. */
+export const CONFIRM_FIELD = 'confirmed';
+
+/**
+ * Attach the proof of confirmation to the form being resubmitted.
+ *
+ * Created here rather than written into every form's markup, so a destructive
+ * form cannot be added later that forgets it and quietly falls back to the old,
+ * unguarded behaviour: if the dialog did not run, the field does not exist, and
+ * the server refuses.
+ */
+function markConfirmed(form: HTMLFormElement): void {
+	const existing = form.elements.namedItem(CONFIRM_FIELD);
+	const field = existing instanceof HTMLInputElement ? existing : document.createElement('input');
+
+	field.type = 'hidden';
+	field.name = CONFIRM_FIELD;
+	field.value = 'yes';
+
+	if (!field.isConnected) form.appendChild(field);
+}
+
 /**
  * Ask before a form submits, using the CMS's own dialog instead of the
  * browser's.
@@ -22,9 +44,12 @@ export interface Confirmer {
  * once answered. A marker on the form element lets that second pass through to
  * use:enhance rather than asking a second time.
  *
- * Doing it this way, rather than calling the action from script, keeps
- * progressive enhancement intact: without JavaScript the form still posts, it
- * just posts without asking first.
+ * Answering also attaches a hidden field to the form, which the server action
+ * checks (see $lib/server/confirm.ts). That is what makes the question real: a
+ * submit that reaches the server without going through this dialog — a click
+ * before the page hydrated, say — is refused rather than obeyed. Deleting
+ * therefore needs JavaScript now. It previously worked without it, but silently
+ * skipped the question, which is how a real post was deleted during testing.
  *
  *     <form use:enhance onsubmit={(e) => confirmSubmit(e, confirmer, { … })}>
  */
@@ -53,6 +78,7 @@ export async function confirmSubmit(
 		// Keep the dialog up with a spinner until the action reports back.
 		confirmer.working(options.workingLabel);
 		form.dataset.confirmed = 'yes';
+		markConfirmed(form);
 		form.requestSubmit(
 			submitter instanceof HTMLButtonElement || submitter instanceof HTMLInputElement
 				? submitter

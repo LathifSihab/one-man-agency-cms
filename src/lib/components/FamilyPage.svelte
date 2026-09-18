@@ -7,7 +7,7 @@
 	import TodoNotice from './TodoNotice.svelte';
 	import ServicesGrid from './ServicesGrid.svelte';
 	import { renderMarkdown } from '$lib/markdown';
-	import { faqSchema, serviceSchema } from '$lib/schema';
+	import { faqSchema, serviceSchema, webPageSchema } from '$lib/schema';
 	import { SITE } from '$lib/site';
 
 	/**
@@ -24,12 +24,26 @@
 
 	const path = $derived(`/${family}/${page.slug}`);
 	const schemas = $derived([
+		webPageSchema(page, path),
 		serviceSchema(page.title, page.meta_description, SITE + path),
 		...(page.faq?.length ? [faqSchema(page.faq)] : [])
 	]);
+
+	/*
+	 * The breadcrumb markup mirrors the visible trail below, including its one
+	 * asymmetry: /diensten is a real page, /sectoren and /regio are not, so those
+	 * families go straight from Home to the page rather than inventing a level
+	 * that would send Google to a 404.
+	 */
+	const crumbs = $derived([
+		{ name: 'Home', path: '/' },
+		...(family === 'diensten' ? [{ name: 'Diensten', path: '/diensten' }] : []),
+		{ name: page.title, path }
+	]);
 </script>
 
-<Seo seoTitle={page.seo_title} metaDescription={page.meta_description} {path} {schemas} />
+<Seo seoTitle={page.seo_title} metaDescription={page.meta_description} {path} {schemas}
+     {crumbs} image={page.header_image_url} />
 
 <PageHead title={page.title} intro={page.intro}>
 	{#snippet crumbs()}

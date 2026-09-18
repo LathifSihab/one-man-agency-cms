@@ -93,16 +93,60 @@ def visible_text(soup):
     return norm_space(clone.get_text(' '))
 
 
+# -- Deliberate additions since the reference build -------------------------
+#
+# The SEO pass adds markup the 2024 static build never had. Reporting it on all
+# 41 pages would bury the differences this tool exists to catch, so the additions
+# are allowed for by name -- and only as ADDITIONS. A changed title, a dropped
+# canonical or a rewritten Service node still fails, because every rule below
+# asserts that the reference value is still there underneath.
+
+# Nodes added to the JSON-LD graph. Anything the reference had must still match.
+ADDED_SCHEMA_TYPES = {'WebSite', 'WebPage', 'BreadcrumbList', 'Blog'}
+
+# Keys added to the reference's BlogPosting node.
+ADDED_BLOGPOSTING_KEYS = {'dateModified', 'image', 'articleSection', 'wordCount',
+                          'isPartOf', 'url'}
+
+# The robots value gained preview directives; the indexing part must not change.
+ROBOTS_ADDITIONS = ', max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+
+
+def robots_ok(reference, candidate):
+    """The candidate may append the preview directives, and nothing else."""
+    if reference == candidate:
+        return True
+    return candidate == (reference or '') + ROBOTS_ADDITIONS
+
+
+def strip_added_schemas(ref_ld, cand_ld):
+    """Drop the added nodes, and the added keys, from the candidate graph."""
+    kept = []
+    for node in cand_ld:
+        if node.get('@type') in ADDED_SCHEMA_TYPES:
+            continue
+        if node.get('@type') == 'BlogPosting':
+            node = {k: v for k, v in node.items() if k not in ADDED_BLOGPOSTING_KEYS}
+        kept.append(node)
+    return ref_ld, sorted(kept, key=lambda o: json.dumps(o, sort_keys=True, ensure_ascii=False))
+
+
 def compare_page(rel, ref_path, cand_path):
     ref, cand = load(ref_path), load(cand_path)
     issues = []
 
     r_head, c_head = head_set(ref), head_set(cand)
     for key in r_head:
+        if key == 'robots' and robots_ok(r_head[key], c_head[key]):
+            continue
+        # og:type became "article" on posts, and the reference had no
+        # per-page image. Both are deliberate; an emptied value is not.
+        if key in ('og:type', 'og:image') and c_head[key]:
+            continue
         if r_head[key] != c_head[key]:
             issues.append(f'head[{key}]:\n      reference: {r_head[key]!r}\n      candidate: {c_head[key]!r}')
 
-    r_ld, c_ld = schemas(ref), schemas(cand)
+    r_ld, c_ld = strip_added_schemas(schemas(ref), schemas(cand))
     if r_ld != c_ld:
         r_types = Counter(o.get('@type') for o in r_ld)
         c_types = Counter(o.get('@type') for o in c_ld)
@@ -142,9 +186,12 @@ def compare_page(rel, ref_path, cand_path):
 def compare_text_file(rel, ref_path, cand_path, ignore=()):
     a = open(ref_path, encoding='utf-8').read()
     b = open(cand_path, encoding='utf-8').read()
+    # Removed rather than masked, so a pattern can cover a whole line that only
+    # one side has (robots.txt gained two Disallow lines). Both sides get the
+    # same treatment, so a masked value still has to match where both carry it.
     for pattern in ignore:
-        a = re.sub(pattern, 'X', a)
-        b = re.sub(pattern, 'X', b)
+        a = re.sub(pattern, '', a)
+        b = re.sub(pattern, '', b)
     if norm_space(a) != norm_space(b):
         diff = list(difflib.unified_diff(a.splitlines(), b.splitlines(),
                                          fromfile='reference', tofile='candidate',
@@ -180,7 +227,9 @@ def main():
 
     # lastmod is the build date, so it legitimately differs.
     for name, ignore in (('sitemap.xml', (r'<lastmod>[^<]*</lastmod>',)),
-                         ('robots.txt', ()),
+                         # The admin and the API were added after the reference
+                         # build and are not content; see the robots.txt handler.
+                         ('robots.txt', (r'Disallow: /(admin|api/)\n',)),
                          ('llms.txt', ())):
         ref_file = os.path.join(ref_root, name)
         cand_file = os.path.join(cand_root, name)

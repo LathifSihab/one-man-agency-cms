@@ -1,5 +1,6 @@
 import { fail } from '@sveltejs/kit';
 import { adminDb } from '$lib/server/admin';
+import { requireConfirmation } from '$lib/server/confirm';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
@@ -26,6 +27,9 @@ export const actions: Actions = {
 
 	delete: async ({ request }) => {
 		const form = await request.formData();
+		const stop = requireConfirmation(form);
+		if (stop) return stop;
+
 		const { error } = await adminDb()
 			.from('submissions')
 			.delete()

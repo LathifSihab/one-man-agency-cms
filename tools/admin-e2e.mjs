@@ -57,8 +57,20 @@ const check = (name, condition, detail = '') => {
 	if (!condition) failures.push(name);
 };
 
+/*
+ * The admin sits behind an HTTP Basic gate on deployed hosts (see
+ * $lib/server/gate.ts). Without these the browser gets a 401 and every check
+ * below fails on a login screen that never rendered.
+ */
+const GATE_USER = fromEnvFile('ADMIN_GATE_USER');
+const GATE_PASSWORD = fromEnvFile('ADMIN_GATE_PASSWORD');
+const httpCredentials =
+	GATE_USER && GATE_PASSWORD ? { username: GATE_USER, password: GATE_PASSWORD } : undefined;
+
 const browser = await chromium.launch();
-const page = await browser.newContext({ viewport: { width: 1280, height: 900 } }).then((c) => c.newPage());
+const page = await browser
+	.newContext({ viewport: { width: 1280, height: 900 }, httpCredentials })
+	.then((c) => c.newPage());
 
 /* Any window.confirm or alert reaching the browser is itself the failure. */
 let nativeDialogs = 0;
