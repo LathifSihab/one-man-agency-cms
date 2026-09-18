@@ -39,3 +39,6 @@ desktop.ini
 # fetched from Supabase Storage at build time
 static/assets/media/
 .flow.mjs
+
+# stray output from a mistyped curl -w
+-w
