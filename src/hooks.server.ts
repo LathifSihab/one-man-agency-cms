@@ -67,8 +67,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 		};
 	}
 
-	// Guard everything under /admin except the login screen itself.
-	if (event.url.pathname.startsWith('/admin') && !event.url.pathname.startsWith('/admin/login')) {
+	/*
+	 * Guard everything under /admin except the two routes that exist to get in.
+	 *
+	 * /admin/unlock has to be here as well as in the gate: it carries its own
+	 * key and its whole job is to run before anyone is signed in. Redirecting it
+	 * to the login page meant the cookie was never set, and the redirect then
+	 * hit the gate and 404'd — the link appeared to do nothing at all.
+	 */
+	const WAY_IN = ['/admin/login', '/admin/unlock'];
+	const needsSession = !WAY_IN.some((path) => event.url.pathname.startsWith(path));
+
+	if (event.url.pathname.startsWith('/admin') && needsSession) {
 		if (!event.locals.getUser) {
 			throw redirect(303, '/admin/login?reden=config');
 		}
