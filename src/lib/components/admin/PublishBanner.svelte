@@ -22,13 +22,19 @@
 	let message = $state('');
 	let elapsed = $state(0);
 
-	const building = $derived(publishState.status === 'building');
+	/* Polling continues through 'stale' as well as 'building': a deployment can
+	   go live a little after it finishes, and giving up at the build's end is how
+	   a slow promotion gets mistaken for a broken one. */
+	const building = $derived(
+		publishState.status === 'building' || publishState.status === 'stale'
+	);
 
 	const TONE: Record<string, string> = {
 		live: 'live',
 		pending: 'pending',
 		building: 'pending',
 		failed: 'failed',
+		stale: 'failed',
 		unknown: 'pending'
 	};
 
@@ -123,7 +129,9 @@
 				Bezig met publiceren{changeCount ? ` van ${changeCount} ${changeWord}` : ''}…
 			{:else if publishState.status === 'live'}
 				De site is bijgewerkt. Laatste publicatie {when(publishState.lastBuild?.finished_at ?? null)}.
-			{:else if publishState.status === 'failed'}
+			{:else if publishState.status === 'stale'}
+			De site is opnieuw opgebouwd, maar bezoekers krijgen nog de vorige versie.
+		{:else if publishState.status === 'failed'}
 				De laatste publicatie is mislukt{publishState.lastBuild?.detail
 					? ` (${publishState.lastBuild.detail})`
 					: ''}. Je wijzigingen staan nog klaar.
@@ -149,6 +157,17 @@
 			<p class="cms-progress-note">
 				{elapsed}s bezig{overdue ? ' — langer dan gewoonlijk' : ', meestal ongeveer een minuut'}.
 				De site wordt opnieuw opgebouwd; je kan dit venster gerust sluiten.
+			</p>
+		{/if}
+
+		{#if publishState.status === 'stale'}
+			<p class="cms-progress-note">
+				Het opbouwen is gelukt, maar de nieuwe versie is niet live gezet. Probeer
+				opnieuw te publiceren. Blijft dit staan, dan moet de laatste versie bij de
+				hosting handmatig live gezet worden.
+				{#if publishState.liveBuiltAt}
+					De live versie dateert van {when(publishState.liveBuiltAt)}.
+				{/if}
 			</p>
 		{/if}
 
@@ -181,7 +200,11 @@
 	</div>
 
 	<span class="cms-actions">
-		{#if building}
+		{#if publishState.status === 'stale'}
+			<button class="cms-btn" onclick={triggerPublish} disabled={busy}>
+				{busy ? 'Bezig…' : 'Opnieuw proberen'}
+			</button>
+		{:else if building}
 			<button class="cms-btn" disabled>Bezig…</button>
 		{:else if publishState.status === 'live'}
 			<button class="cms-btn cms-btn-ghost" onclick={triggerPublish} disabled={busy}>

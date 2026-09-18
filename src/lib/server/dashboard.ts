@@ -1,3 +1,5 @@
+import { env } from '$env/dynamic/private';
+import { env as publicEnv } from '$env/dynamic/public';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 /**
@@ -25,7 +27,15 @@ export interface PendingChange {
 }
 
 export interface PublishState {
-	status: 'live' | 'pending' | 'building' | 'failed' | 'unknown';
+	/**
+	 * 'stale' is the one worth explaining: the build finished, but the site
+	 * visitors get is still the previous one. That happens when a deployment
+	 * succeeds without becoming the production deployment, and it used to be
+	 * reported as success — the editor published, saw green, and nothing changed.
+	 */
+	status: 'live' | 'pending' | 'building' | 'failed' | 'stale' | 'unknown';
+	/** When the copy of the site visitors actually get was built. */
+	liveBuiltAt: string | null;
 	pendingChanges: number;
 	/** What actually changed, newest first, so the editor can see it before publishing. */
 	pending: PendingChange[];
@@ -121,7 +131,7 @@ async function newestMediaChange(
 }
 
 export async function getPublishState(db: SupabaseClient): Promise<PublishState> {
-	const [pages, posts, logos, settings, build, media] = await Promise.all([
+	const [pages, posts, logos, settings, build, media, liveBuiltAt] = await Promise.all([
 		db.from('pages').select('updated_at').order('updated_at', { ascending: false }).limit(1),
 		db.from('posts').select('updated_at').order('updated_at', { ascending: false }).limit(1),
 		db.from('logos').select('updated_at').order('updated_at', { ascending: false }).limit(1),
@@ -132,7 +142,8 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 			.order('triggered_at', { ascending: false })
 			.limit(1)
 			.maybeSingle(),
-		newestMediaChange(db)
+		newestMediaChange(db),
+		liveBuildStamp()
 	]);
 
 	const stamps = [
@@ -156,7 +167,14 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 	} else if (lastEditedAt && lastBuild.finished_at && lastEditedAt > lastBuild.finished_at) {
 		status = 'pending';
 	} else if (lastBuild.status === 'live') {
-		status = 'live';
+		/*
+		 * The build finished — but did the site change? A deployment can succeed
+		 * without becoming the one production serves, and reporting that as
+		 * success is the failure this whole flow exists to avoid.
+		 */
+		const served = liveBuiltAt ? Date.parse(liveBuiltAt) : NaN;
+		const triggered = Date.parse(lastBuild.triggered_at);
+		status = Number.isNaN(served) || served >= triggered ? 'live' : 'stale';
 	}
 
 	// List what changed since the last successful build. A bare count does not
@@ -177,7 +195,7 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 		pending.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 	}
 
-	return { status, pendingChanges: pending.length, pending, lastEditedAt, lastBuild };
+	return { status, pendingChanges: pending.length, pending, lastEditedAt, lastBuild, liveBuiltAt };
 }
 
 const PAGE_KIND: Record<string, string> = {
@@ -245,6 +263,35 @@ export interface Analytics {
 	topReferrers: { referrer_host: string; views: number }[];
 	devices: { device: string; views: number }[];
 	countries: { country: string; views: number }[];
+}
+
+/**
+ * When the site visitors are served was built.
+ *
+ * Fetched from the live address rather than from this process: the admin runs
+ * inside a deployment that may not be the one production points at, so asking
+ * ourselves would answer the wrong question.
+ */
+async function liveBuildStamp(): Promise<string | null> {
+	const base =
+		env.VERCEL_PROJECT_PRODUCTION_URL
+			? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
+			: (env.ADMIN_URL ?? publicEnv.PUBLIC_SITE_URL ?? '');
+
+	if (!base) return null;
+
+	try {
+		const response = await fetch(`${base.replace(/\/$/, '')}/build-info.json`, {
+			headers: { 'cache-control': 'no-cache' },
+			signal: AbortSignal.timeout(5000)
+		});
+		if (!response.ok) return null;
+		const body = await response.json();
+		return typeof body?.builtAt === 'string' ? body.builtAt : null;
+	} catch {
+		// The site being unreachable is not a reason to break the dashboard.
+		return null;
+	}
 }
 
 const EMPTY: Analytics = {
