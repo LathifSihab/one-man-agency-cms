@@ -10,7 +10,7 @@ directly, so the cause is named — a bad key, an unverified sender, a daily cap
     python tools/check_mail.py --to you@example.com  # send one real message
 
 Checks whichever transport is configured, using the same precedence the
-application does: SMTP when SMTP_HOST is set, otherwise Brevo's HTTP API. So
+application does: Brevo's HTTP API when BREVO_API_KEY is set, otherwise SMTP. So
 this tests what will actually run.
 
 MAIL_FROM is the sender and must be verified with the provider. Recipients never
@@ -173,10 +173,11 @@ def main():
     if not sender:
         sys.exit('MAIL_FROM is not set in .env')
 
-    if env.get('SMTP_HOST', '').strip() and env.get('SMTP_USER', '').strip():
-        check_smtp(env, sender, args.to)
-    elif env.get('BREVO_API_KEY', '').strip():
+    # Same precedence the application uses, so this tests what will actually run.
+    if env.get('BREVO_API_KEY', '').strip():
         check_api(env, sender, args.to)
+    elif env.get('SMTP_HOST', '').strip() and env.get('SMTP_USER', '').strip():
+        check_smtp(env, sender, args.to)
     else:
         sys.exit('Set either SMTP_HOST/SMTP_USER/SMTP_PASS, or BREVO_API_KEY, in .env')
 

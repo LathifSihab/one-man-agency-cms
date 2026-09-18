@@ -12,13 +12,20 @@ import { env } from '$env/dynamic/private';
  *
  * Two transports, chosen by what is configured:
  *
+ *   BREVO_API_KEY set    Brevo's HTTP API
  *   SMTP_HOST set        SMTP, via nodemailer
- *   BREVO_API_KEY set     Brevo's HTTP API
  *
- * SMTP is the portable one: swapping provider is configuration rather than code,
- * which is why it wins when both are present. The HTTP API needs no dependency
- * and is one request rather than a handshake of half a dozen round trips, which
- * matters in a function that starts cold — so it stays as the lighter option.
+ * The API wins when both are present. Brevo restricts SMTP to authorised IP
+ * addresses, and a serverless function's address changes and cannot be
+ * whitelisted — so SMTP here breaks the moment that setting is switched on, and
+ * the failure looks like mail simply not arriving. An API key is not subject to
+ * it. The API also needs no dependency and is one request rather than a
+ * handshake of half a dozen round trips, which tells in a function that starts
+ * cold.
+ *
+ * SMTP stays supported because it is the portable one: moving to another
+ * provider, on a host that is not serverless, is then configuration rather than
+ * code.
  *
  * The address mail is sent FROM has to be one the provider has verified, and
  * must be one we control. The address it is sent TO is unrestricted. The two are
@@ -34,8 +41,8 @@ export interface MailResult {
 /** Which transport a send would use, or null if none is usable. */
 export function mailTransport(): 'smtp' | 'api' | null {
 	if (!env.MAIL_FROM) return null;
-	if (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS) return 'smtp';
 	if (env.BREVO_API_KEY) return 'api';
+	if (env.SMTP_HOST && env.SMTP_USER && env.SMTP_PASS) return 'smtp';
 	return null;
 }
 
