@@ -15,7 +15,16 @@
 		{ href: '/admin/settings', label: 'Instellingen' }
 	];
 
-	const onLogin = $derived(page.url.pathname.startsWith('/admin/login'));
+	/*
+	 * The screens you reach before being signed in get no CMS shell.
+	 *
+	 * Recovery used to render the full sidebar — every section name, the account
+	 * menu, the link to the site — to someone who has not proved anything yet.
+	 * It is also the screen most likely to be reached by whoever should not be
+	 * there, so it should show the least.
+	 */
+	const WAY_IN = ['/admin/login', '/admin/herstel', '/admin/unlock'];
+	const bare = $derived(WAY_IN.some((path) => page.url.pathname.startsWith(path)));
 
 	function active(href: string): boolean {
 		return href === '/admin'
@@ -29,7 +38,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-{#if onLogin}
+{#if bare}
 	{@render children()}
 {:else}
 	<div class="cms">
