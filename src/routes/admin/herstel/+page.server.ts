@@ -16,12 +16,26 @@ import type { Actions, PageServerLoad } from './$types';
  * a numeric code is short enough to guess at speed.
  */
 
-export const load: PageServerLoad = async ({ locals, url }) => {
-	// Already signed in and just curious: send them on.
+/*
+ * Proof that the password about to be set was earned with a code.
+ *
+ * Verifying the code signs the person in, so "is there a session?" is not a
+ * sufficient test for step three: anyone already signed in would then be able
+ * to post straight to it and change the password without knowing the current
+ * one, which is exactly what /admin/account requires. This marker is set only
+ * by a verified code, lives for ten minutes, is scoped to this page, and is
+ * cleared the moment it is used.
+ */
+const RECOVERY_COOKIE = 'oma_recovery';
+const RECOVERY_PATH = '/admin/herstel';
+const RECOVERY_MAX_AGE = 600;
+
+export const load: PageServerLoad = async ({ locals, cookies }) => {
+	const midRecovery = Boolean(cookies.get(RECOVERY_COOKIE));
+	// Already signed in and just curious: send them on. Not during a recovery,
+	// because verifying the code is what created that session.
 	const user = await locals.getUser?.();
-	if (user && url.searchParams.get('stap') !== 'wachtwoord') {
-		throw redirect(303, '/admin');
-	}
+	if (user && !midRecovery) throw redirect(303, '/admin');
 	return {};
 };
 
@@ -74,7 +88,7 @@ export const actions: Actions = {
 	},
 
 	/** Step two: the code, which establishes the session. */
-	verify: async ({ request, locals, getClientAddress }) => {
+	verify: async ({ request, locals, getClientAddress, cookies, url }) => {
 		const form = await request.formData();
 		const email = String(form.get('email') ?? '').trim();
 		const token = String(form.get('code') ?? '').replace(/\s+/g, '');
@@ -108,17 +122,26 @@ export const actions: Actions = {
 			});
 		}
 
+		cookies.set(RECOVERY_COOKIE, '1', {
+			path: RECOVERY_PATH,
+			httpOnly: true,
+			secure: url.protocol === 'https:',
+			sameSite: 'lax',
+			maxAge: RECOVERY_MAX_AGE
+		});
+
 		return { step: 'wachtwoord', email, verified: true };
 	},
 
 	/** Step three: the new password, on the session step two created. */
-	update: async ({ request, locals }) => {
+	update: async ({ request, locals, cookies }) => {
 		const form = await request.formData();
 		const next = String(form.get('next') ?? '');
 		const repeat = String(form.get('repeat') ?? '');
 
+		// A session alone is not enough: it must have come from a code.
 		const user = await locals.getUser?.();
-		if (!user) {
+		if (!user || !cookies.get(RECOVERY_COOKIE)) {
 			return fail(401, {
 				step: 'email',
 				message: 'De code is verlopen. Vraag een nieuwe aan.'
@@ -142,6 +165,9 @@ export const actions: Actions = {
 		if (error) {
 			return fail(500, { step: 'wachtwoord', message: `Wijzigen mislukt: ${error.message}` });
 		}
+
+		// Spend the marker: one verified code buys exactly one password change.
+		cookies.delete(RECOVERY_COOKIE, { path: RECOVERY_PATH });
 
 		// The session from the code is now a normal one, so go straight in.
 		throw redirect(303, '/admin?wachtwoord=gewijzigd');
