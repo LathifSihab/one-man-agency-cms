@@ -60,7 +60,7 @@ export function nlDate(iso: string): string {
 /** Sitemap priority per route family (handover/06 route map). */
 export function priorityFor(pathname: string): string {
 	if (pathname === '/') return '1.0';
-	if (['/diensten', '/prijzen', '/referenties', '/gratis-marketingscan'].includes(pathname))
+	if (['/diensten', '/offerte', '/referenties', '/gratis-marketingscan'].includes(pathname))
 		return '0.9';
 	if (pathname.startsWith('/diensten/')) return '0.8';
 	if (pathname.startsWith('/blog/')) return '0.6';

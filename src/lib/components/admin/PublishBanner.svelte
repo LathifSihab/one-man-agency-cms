@@ -22,6 +22,9 @@
 	let message = $state('');
 	let elapsed = $state(0);
 
+	/** Set when publishing was refused because a link points at a missing page. */
+	let brokenLinks = $state<{ link: string; where: string }[]>([]);
+
 	/* Polling continues through 'stale' as well as 'building': a deployment can
 	   go live a little after it finishes, and giving up at the build's end is how
 	   a slow promotion gets mistaken for a broken one. */
@@ -82,11 +85,20 @@
 	async function triggerPublish() {
 		busy = true;
 		message = '';
+		brokenLinks = [];
 		try {
 			const res = await fetch('/api/publish', { method: 'POST' });
 			const body = await res.json().catch(() => ({}));
 			if (!res.ok) {
-				message = body.message ?? 'Publiceren is niet gelukt. Je wijzigingen blijven bewaard.';
+				// A refused publish lists the links itself; the sentence then only
+				// has to explain what to do about them.
+				brokenLinks = body.brokenLinks ?? [];
+				message = brokenLinks.length
+					? 'Publiceren is gestopt: deze links verwijzen naar een pagina die niet meer ' +
+						'bestaat. Dat gebeurt meestal nadat het webadres van een pagina is gewijzigd. ' +
+						'Pas de link aan, of zet het oude webadres terug, en publiceer opnieuw. ' +
+						'Je wijzigingen blijven bewaard.'
+					: (body.message ?? 'Publiceren is niet gelukt. Je wijzigingen blijven bewaard.');
 			} else if (body.deduped) {
 				message = `Er loopt al een publicatie. Nog ongeveer ${body.wait} seconden.`;
 			} else {
@@ -218,4 +230,14 @@
 	</span>
 </div>
 
-{#if message}<p class="cms-hint" style="margin:-.9rem 0 1.4rem">{message}</p>{/if}
+{#if message}
+	<p class="cms-hint" style="margin:-.9rem 0 {brokenLinks.length ? '.6rem' : '1.4rem'}">{message}</p>
+{/if}
+
+{#if brokenLinks.length}
+	<ul class="cms-changes" style="margin:0 0 1.4rem">
+		{#each brokenLinks as b (b.link + b.where)}
+			<li><code>{b.link}</code> <span>in {b.where}</span></li>
+		{/each}
+	</ul>
+{/if}

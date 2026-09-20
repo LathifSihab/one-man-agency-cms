@@ -109,7 +109,9 @@ def seo_artefacts(candidate):
     redirects = os.path.join(candidate, '_redirects')
     if os.path.exists(redirects):
         rules = [l for l in open(redirects, encoding='utf-8').read().splitlines() if l.strip()]
-        check('16 redirect rules', len(rules) == 16, f'got {len(rules)}')
+        # 10 legacy Zyro paths + 6 post oude_url rules = the reference's 16,
+        # plus one per slug renamed since launch (tools/redirects.mjs RENAMED).
+        check('17 redirect rules', len(rules) == 17, f'got {len(rules)}')
 
     # googleXXXX.html is the Search Console ownership token: a bare text file
     # that happens to carry an .html extension, with no head and nothing to

@@ -18,11 +18,24 @@ import { createClient } from '@supabase/supabase-js';
 const CONFIG = '.vercel/output/config.json';
 const STATIC = '.vercel/output/static';
 
-/** The ten legacy paths from the old Zyro site. Order matters: /post/* is last. */
+/**
+ * Slugs that were renamed after the site went live. The old path was indexed
+ * and linked to from outside, so it keeps working rather than 404-ing.
+ *
+ * `/prijzen` became `/offerte` on 20 September 2026, when the page changed from
+ * a price list into a quote request.
+ */
+const RENAMED = [['/prijzen', '/offerte']];
+
+/**
+ * The ten legacy paths from the old Zyro site. Order matters: /post/* is last.
+ * Two of them pointed at /prijzen and follow the rename above — a redirect to a
+ * redirect would cost a hop and lose a little link equity.
+ */
 const STATIC_RULES = [
 	['/diensten-one-man-agency', '/diensten'],
-	['/marketingbureau-prijzen', '/prijzen'],
-	['/pakketten', '/prijzen'],
+	['/marketingbureau-prijzen', '/offerte'],
+	['/pakketten', '/offerte'],
 	['/marketingbureau-kmo', '/over-niels'],
 	['/referenties', '/referenties'],
 	['/vragen', '/veelgestelde-vragen'],
@@ -58,7 +71,7 @@ async function legacyPostRules() {
 		.map((p) => [p.legacy_url, `/blog/${p.slug}`]);
 }
 
-const rules = [...STATIC_RULES, ...(await legacyPostRules())];
+const rules = [...RENAMED, ...STATIC_RULES, ...(await legacyPostRules())];
 
 // ── Vercel routes ───────────────────────────────────────────────────────────
 if (!existsSync(CONFIG)) {
@@ -94,7 +107,8 @@ writeFileSync(`${STATIC}/_redirects`, text, 'utf8');
 const skipped = rules.length - routable.length;
 console.log(
 	`Injected ${routes.length} redirect routes ` +
-		`(${STATIC_RULES.length} static, ${rules.length - STATIC_RULES.length} legacy post URLs` +
+		`(${RENAMED.length} renamed, ${STATIC_RULES.length} static, ` +
+		`${rules.length - STATIC_RULES.length - RENAMED.length} legacy post URLs` +
 		(skipped ? `, ${skipped} self-referencing rule skipped` : '') +
 		`); wrote ${rules.length} rules to _redirects.`
 );

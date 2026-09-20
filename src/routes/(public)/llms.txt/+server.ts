@@ -28,7 +28,7 @@ Kernpunten:
 - [Over Niels Van de Meersch](${SITE}/over-niels)
 - [Diensten](${SITE}/diensten)
 - [Referenties](${SITE}/referenties)
-- [Prijzen](${SITE}/prijzen)
+- [Offerte](${SITE}/offerte)
 - [Veelgestelde vragen](${SITE}/veelgestelde-vragen)
 - [Blog](${SITE}/blog)
 - [Contact](${SITE}/contact)

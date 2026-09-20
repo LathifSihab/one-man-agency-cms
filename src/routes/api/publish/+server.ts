@@ -1,6 +1,7 @@
 import { json, error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { adminDb } from '$lib/server/admin';
+import { explainBrokenLinks, findBrokenLinks, readContentForCheck } from '$lib/server/links';
 import type { RequestHandler } from './$types';
 
 export const prerender = false;
@@ -52,6 +53,19 @@ export const POST: RequestHandler = async ({ locals }) => {
 			wait: Math.ceil((COOLDOWN_MS - since) / 1000),
 			build: data
 		});
+	}
+
+	// A link to a slug that no longer exists fails the prerender and takes the
+	// whole deploy with it (svelte.config.js sets handleHttpError: 'fail'). That
+	// is worth catching here: from the CMS it reads as a sentence naming the
+	// page, instead of arriving later as a Vercel build-failure email. Checked
+	// before the build row is written, so a refusal leaves no record behind.
+	const broken = findBrokenLinks(await readContentForCheck(db));
+	if (broken.length) {
+		return json(
+			{ ok: false, brokenLinks: broken, message: explainBrokenLinks(broken) },
+			{ status: 409 }
+		);
 	}
 
 	const { data: build, error: insertError } = await db
