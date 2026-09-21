@@ -49,8 +49,22 @@ export interface PublishState {
 	} | null;
 }
 
-/** Placeholder testimonial text carried over from the reference content. */
+/**
+ * Sample text carried over from the reference content.
+ *
+ * The name was checked from the start; the role was not, and "functie, bedrijf"
+ * sat under three real quotes on the home page, visible to visitors, for as long
+ * as the site had been up. A placeholder anyone can read is exactly what this
+ * panel exists to surface.
+ */
 const PLACEHOLDER_NAMES = ['Voornaam Naam'];
+const PLACEHOLDER_ROLES = ['functie, bedrijf', 'functie en bedrijf', 'functie', 'bedrijf'];
+
+function isPlaceholderQuote(t: { naam?: string; functie?: string }): boolean {
+	const naam = (t.naam ?? '').trim();
+	const functie = (t.functie ?? '').trim().toLowerCase();
+	return PLACEHOLDER_NAMES.includes(naam) || PLACEHOLDER_ROLES.includes(functie);
+}
 
 /**
  * After this long, a build that still says 'building' is treated as failed.
@@ -109,8 +123,8 @@ export async function getOutstanding(db: SupabaseClient): Promise<Outstanding[]>
 	}
 
 	const placeholders = (pages.data ?? []).flatMap((p) =>
-		((p.testimonials as { naam?: string }[] | null) ?? []).filter((t) =>
-			PLACEHOLDER_NAMES.includes((t.naam ?? '').trim())
+		((p.testimonials as { naam?: string; functie?: string }[] | null) ?? []).filter(
+			isPlaceholderQuote
 		)
 	);
 	if (placeholders.length) {
@@ -119,7 +133,9 @@ export async function getOutstanding(db: SupabaseClient): Promise<Outstanding[]>
 			label: 'Citaten met een voorbeeldnaam',
 			count: placeholders.length,
 			href: '/admin/pages',
-			detail: 'Deze citaten staan nog op "Voornaam Naam" en zijn zichtbaar op de startpagina.'
+			detail:
+				'Deze citaten tonen nog voorbeeldtekst in plaats van een echte naam of functie, ' +
+				'en staan zo op de live site.'
 		});
 	}
 

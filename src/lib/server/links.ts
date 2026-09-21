@@ -88,7 +88,7 @@ const PREFIX: Record<Page['type'], string> = {
 const CODE_PATHS: ReadonlyArray<readonly [string, string]> = [
 	['/afspraak', 'de knop "Maak een afspraak"'],
 	['/diensten', 'de knop "Bekijk alle diensten"'],
-	['/offerte', 'de knop "Bekijk de prijzen"'],
+	['/offerte', 'de knop "Vraag een offerte"'],
 	['/referenties', 'de knop "Bekijk de referenties"'],
 	['/gratis-marketingscan', 'de knop "Vraag je gratis scan aan"'],
 	['/contact', 'de tekst onder "Ik werk vooral met"'],

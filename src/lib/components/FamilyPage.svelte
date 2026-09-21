@@ -67,6 +67,6 @@
 	<TodoNotice note={page.todo_note} />
 	<div class="btns">
 		<a class="btn" href="/afspraak">Maak een afspraak</a>
-		<a class="btn btn-ghost" href="/offerte">Bekijk de prijzen</a>
+		<a class="btn btn-ghost" href="/offerte">Vraag een offerte</a>
 	</div>
 </div></div></section>

@@ -255,7 +255,7 @@
 			fields={[
 				{ key: 'tekst', label: 'Citaat', type: 'textarea' },
 				{ key: 'naam', label: 'Naam' },
-				{ key: 'functie', label: 'Functie en bedrijf' }
+				{ key: 'functie', label: 'Functie en bedrijf (optioneel)' }
 			]}
 			summary={(r) => String(r.naam ?? '')}
 		/>
