@@ -380,3 +380,300 @@ footer.site ul a,
 		aspect-ratio: 4 / 3;
 	}
 }
+
+/* ── hero met tekst over het beeld ───────────────────────────────────────────
+ *
+ * The homepage opens on the header image with the title over it, instead of a
+ * green band with a banner underneath. The image is a real <img> rather than a
+ * background so it stays the discoverable LCP element; it is pulled behind the
+ * text with z-index, and a scrim carries the contrast, because the photo is
+ * black and white and its top half is bright sky.
+ *
+ * Scoped to .herohead, which the homepage only sets when a header image exists.
+ * Without one it stays the plain green head it was.
+ */
+
+.herohead {
+	position: relative;
+	isolation: isolate;
+	background: var(--ink);
+	overflow: hidden;
+}
+
+/* The ink arcs behind the green head are decoration for a flat colour; over a
+   photograph they are just noise, and invisible anyway. */
+.herohead::before {
+	display: none;
+}
+
+/* The entrance animations keyed off .hero, which the photo hero replaces. */
+.herohead .heroover .lead {
+	animation: oma-rise 0.55s cubic-bezier(0.22, 0.68, 0.24, 1) 0.08s both;
+}
+
+.herohead .heroover .btns {
+	animation: oma-rise 0.55s cubic-bezier(0.22, 0.68, 0.24, 1) 0.16s both;
+}
+
+.herohead .herobeeld {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	object-position: center 40%;
+	z-index: -2;
+}
+
+/*
+ * Dark at the left where the text sits, clearing towards the right — plus a
+ * second wash rising from the bottom. The photo's lower half is a sunlit road
+ * and a zebra crossing, near-white, and the figures row sits right on it.
+ */
+.herohead::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	/*
+	 * .sign::after above is the dot grid, and it masks itself out towards the
+	 * right. That is the same pseudo-element as this one, so without clearing
+	 * the mask the scrim faded out across the page — which is precisely where
+	 * the photo is brightest and the figures row sits.
+	 */
+	-webkit-mask-image: none;
+	mask-image: none;
+	background:
+		linear-gradient(to right, rgba(10, 10, 10, 0.92) 0%, rgba(10, 10, 10, 0.74) 45%, rgba(10, 10, 10, 0.5) 100%),
+		linear-gradient(
+			to top,
+			rgba(10, 10, 10, 0.72) 0%,
+			rgba(10, 10, 10, 0.5) 22%,
+			rgba(10, 10, 10, 0) 52%
+		);
+}
+
+.herohead .wrap {
+	position: relative;
+	min-height: clamp(360px, 42vw, 540px);
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.herohead .heroover {
+	max-width: 46rem;
+}
+
+/*
+ * A shadow as well as the scrim. The header image is editable, so the next one
+ * could be bright anywhere; a gradient tuned to this photo would not survive
+ * that, and this keeps the text legible whatever is behind it.
+ */
+.herohead h1,
+.herohead .lead,
+.herohead .facts {
+	text-shadow: 0 1px 3px rgba(10, 10, 10, 0.55);
+}
+
+.herohead h1 {
+	color: #fff;
+	max-width: 18ch;
+	text-wrap: balance;
+}
+
+.herohead .lead {
+	color: rgba(255, 255, 255, 0.9);
+	max-width: 48ch;
+}
+
+/* The green head's buttons are dark-on-green; over the photo they need to read
+   against a dark scrim instead. */
+.herohead .btn {
+	background: #fff;
+	border-color: #fff;
+	color: var(--ink);
+}
+.herohead .btn:hover {
+	background: var(--signal);
+	border-color: var(--signal);
+	color: var(--ink);
+}
+.herohead .btn-ghost {
+	background: transparent;
+	border-color: #fff;
+	color: #fff;
+}
+.herohead .btn-ghost:hover {
+	background: #fff;
+	border-color: #fff;
+	color: var(--ink);
+}
+
+.herohead .facts {
+	border-top-color: rgba(255, 255, 255, 0.28);
+}
+.herohead .facts div {
+	color: rgba(255, 255, 255, 0.92);
+}
+.herohead .facts b {
+	color: #fff;
+}
+
+@media (max-width: 700px) {
+	.herohead .wrap {
+		min-height: 0;
+	}
+	/* Narrow screens crop the photo to almost nothing either side of the
+	   subject, so lean harder on the scrim rather than on the image. */
+	.herohead::after {
+		background: linear-gradient(
+			to bottom,
+			rgba(10, 10, 10, 0.78) 0%,
+			rgba(10, 10, 10, 0.88) 55%,
+			rgba(10, 10, 10, 0.93) 100%
+		);
+	}
+	.herohead h1 {
+		max-width: none;
+	}
+}
+
+/* ── portret naast de tekst ──────────────────────────────────────────────────
+ *
+ * {{portret}} is folded into the prose that follows it (see foldPortrait), so
+ * this floats inside that same block and the paragraphs wrap around it.
+ */
+
+.prose-portret {
+	float: right;
+	width: min(300px, 38%);
+	margin: 0.4rem 0 1.4rem 2rem;
+	shape-outside: margin-box;
+}
+
+.prose-portret img {
+	display: block;
+	width: 100%;
+	height: auto;
+	border-radius: var(--r);
+	background: #fff;
+	box-shadow: 0 10px 30px rgba(10, 10, 10, 0.14);
+}
+
+/* A float this wide leaves slivers of text beside it; below that, stack. */
+@media (max-width: 720px) {
+	.prose-portret {
+		float: none;
+		width: min(240px, 60%);
+		margin: 0 0 1.4rem;
+	}
+}
+
+/* ── afbeeldingen in de lopende tekst ────────────────────────────────────────
+ *
+ * Images placed in a body with the editor's Afbeelding button. Block, full
+ * column width: the prose column is already narrow, and on a page like /contact
+ * it sits next to a form, where a float would leave nothing usable either side.
+ */
+
+.prose img {
+	display: block;
+	max-width: 100%;
+	height: auto;
+	border-radius: var(--r);
+	margin: 1.6rem 0;
+}
+
+.prose-portret img {
+	margin: 0;
+}
+
+/* ── blogoverzicht als raster ────────────────────────────────────────────────
+ *
+ * Cards rather than a stacked list, and no dates (see BlogIndex). The base
+ * list rules live in style.css, which is verified byte-for-byte against the
+ * reference build, so the grid is layered over them here.
+ */
+
+.postlist.postgrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(clamp(240px, 30%, 320px), 1fr));
+	gap: clamp(1.4rem, 3vw, 2.2rem);
+	border-top: 0;
+	margin-top: 2rem;
+}
+
+.postlist.postgrid li,
+.postlist.postgrid li.met-beeld {
+	display: flex;
+	flex-direction: column;
+	gap: 0;
+	border-bottom: 0;
+	padding: 0;
+	border: 1px solid var(--line);
+	border-radius: var(--r);
+	overflow: hidden;
+	background: var(--paper);
+	transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+}
+
+.postlist.postgrid li:hover {
+	border-color: var(--line-dark);
+	box-shadow: 0 10px 28px rgba(10, 10, 10, 0.08);
+	transform: translateY(-2px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.postlist.postgrid li {
+		transition: none;
+	}
+	.postlist.postgrid li:hover {
+		transform: none;
+	}
+}
+
+.postlist.postgrid .postthumb {
+	width: 100%;
+	height: auto;
+	aspect-ratio: 3 / 2;
+	border-radius: 0;
+	object-fit: cover;
+}
+
+.postlist.postgrid li > div {
+	padding: 1.1rem 1.2rem 1.4rem;
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+}
+
+/* Reused for the category now that the date is gone. */
+.postlist.postgrid .date {
+	text-transform: uppercase;
+	letter-spacing: 0.06em;
+	font-size: 0.74rem;
+	font-weight: 600;
+	color: var(--signal-dk);
+}
+
+.postlist.postgrid h3 {
+	margin: 0;
+	font-size: 1.08rem;
+	line-height: 1.35;
+}
+
+.postlist.postgrid h3 a {
+	text-decoration: none;
+}
+
+/* Intros vary from two lines to ten; clamped so the cards read as a row. */
+.postlist.postgrid p {
+	margin: 0;
+	font-size: 0.94rem;
+	display: -webkit-box;
+	-webkit-line-clamp: 4;
+	line-clamp: 4;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}

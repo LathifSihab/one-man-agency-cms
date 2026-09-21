@@ -1,7 +1,8 @@
 <script lang="ts">
 	import type { Logo, Page, Post, Settings } from '$lib/types';
 	import { renderMarkdown } from '$lib/markdown';
-	import { splitBody } from '$lib/shortcodes';
+	import { foldPortrait, splitBody } from '$lib/shortcodes';
+	import { resolveImage } from '$lib/images';
 
 	import ServicesGrid from './ServicesGrid.svelte';
 	import ServicesGrouped from './ServicesGrouped.svelte';
@@ -33,7 +34,7 @@
 
 	let { page, logos, posts, settings }: Props = $props();
 
-	const parts = $derived(splitBody(page.body));
+	const parts = $derived(foldPortrait(splitBody(page.body)));
 
 	/**
 	 * Blocks that bring their own <section><div class="wrap"> wrapper.
@@ -59,6 +60,17 @@
 {#each parts as part, i (i)}
 	{#if part.kind === 'prose'}
 		<section><div class="wrap"><div class="prose">{@html renderMarkdown(part.value)}</div></div></section>
+	{:else if part.kind === 'portretprose'}
+		<!-- Portrait and text in one block, so the text can wrap beside it. -->
+		<section><div class="wrap"><div class="prose">
+			{#if page.portrait_url}
+				<figure class="prose-portret">
+					<img src={resolveImage(page.portrait_url)} alt={page.portrait_alt ?? ''}
+					     width="900" height="1125" loading="lazy" decoding="async" />
+				</figure>
+			{/if}
+			{@html renderMarkdown(part.value)}
+		</div></div></section>
 	{:else if SELF_WRAPPING.has(part.value)}
 		{#if part.value === '{{diensten}}'}
 			<ServicesGrid />

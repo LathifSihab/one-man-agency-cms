@@ -2,7 +2,6 @@
 	import Seo from '$components/Seo.svelte';
 	import { renderMarkdown } from '$lib/markdown';
 	import { blogPostingSchema } from '$lib/schema';
-	import { nlDate } from '$lib/site';
 	import { resolveImage } from '$lib/images';
 
 	let { data } = $props();
@@ -24,9 +23,11 @@
 	<p class="crumbs"><a href="/">Home</a> / <a href="/blog">Blog</a></p>
 	<h1>{p.title}</h1>
 	<p class="lead">{p.intro}</p>
-	<p class="crumbs" style="margin:1rem 0 0">
-		<time datetime={p.published_on}>{nlDate(p.published_on)}</time> &middot; Niels Van de Meersch
-	</p>
+	<!-- No visible date, to match the index. It is still published in the meta
+	     tags and in the BlogPosting schema, where a search engine reads it: the
+	     point is not to hide when something was written, it is that a reader
+	     should judge the article and not its age. -->
+	<p class="crumbs" style="margin:1rem 0 0">Niels Van de Meersch</p>
 </div></header>
 <section><div class="wrap">
 	<!-- Only when the editor sets one: posts without an image render exactly as

@@ -48,6 +48,7 @@
 	function reseed() {
 		logos = [...data.logos].sort((a, b) => a.sort_order - b.sort_order);
 		snapshotOrder();
+		snapshotMatches();
 	}
 
 	function snapshotOrder() {
@@ -61,20 +62,46 @@
 
 	untrack(snapshotOrder);
 
-	const matches = (l: { name: string; file_path: string }) => {
+	const matches = (l: { name: string; file_path: string }, q: string) =>
+		l.name.toLowerCase().includes(q) || l.file_path.split('/').pop()!.toLowerCase().includes(q);
+
+	/**
+	 * Which cards the search is showing, held as a fixed set of ids.
+	 *
+	 * The order was already snapshotted so a card could not move while a name was
+	 * being typed, but the search was still applied live — and the search runs on
+	 * the name. The banner's "Toon enkel deze" sets it to "Klant", so the first
+	 * letter of a real name stopped matching and the card being edited vanished
+	 * from under the cursor. The typed name was still held in state and would
+	 * still have saved, which made it worse: it looked like the work was lost.
+	 *
+	 * The set is therefore taken when the search changes, and left alone while
+	 * names are typed. Searching again refreshes it.
+	 */
+	let matchIds = $state<string[] | null>(null);
+
+	function snapshotMatches() {
 		const q = query.trim().toLowerCase();
-		if (!q) return true;
-		return (
-			l.name.toLowerCase().includes(q) ||
-			l.file_path.split('/').pop()!.toLowerCase().includes(q)
-		);
-	};
+		matchIds = q ? untrack(() => logos).filter((l) => matches(l, q)).map((l) => l.id) : null;
+	}
+
+	/* Re-runs on the search text only; the names it reads are untracked above. */
+	$effect(() => {
+		query;
+		snapshotMatches();
+	});
+
+	/** The banner's shortcut. Also the way to refresh the list after saving. */
+	function showUnnamedOnly() {
+		query = 'Klant';
+		snapshotMatches();
+	}
 
 	const shown = $derived(
 		displayIds
 			.map((id) => logos.find((l) => l.id === id))
 			.filter((l) => l !== undefined)
-			.filter(matches)
+			.filter((l) => matchIds === null || matchIds.includes(l.id))
 	);
 
 	const filtering = $derived(query.trim().length > 0);
@@ -133,7 +160,7 @@
 		<button
 			type="button"
 			class="cms-btn cms-btn-ghost cms-btn-small"
-			onclick={() => (query = 'Klant')}
+			onclick={showUnnamedOnly}
 		>
 			Toon enkel deze
 		</button>
@@ -243,8 +270,10 @@
 
 	<p class="cms-hint" style="margin:.4rem 0 1rem">
 		{#if filtering}
-			{shown.length} van {logos.length} logo's tonen &ldquo;{query}&rdquo;. Herschikken kan niet
-			terwijl je zoekt.
+			{shown.length}
+			{shown.length === 1 ? 'logo' : "logo's"} gevonden voor &ldquo;{query}&rdquo;. Deze kaarten
+			blijven staan terwijl je typt, ook als de naam niet meer bij de zoekterm past &mdash; zoek
+			opnieuw om de lijst te verversen. Herschikken kan niet terwijl je zoekt.
 		{:else if unnamedFirst}
 			Logo's zonder naam staan vooraan. Dit is enkel een weergave; de volgorde op de site
 			verandert er niet door, en kaarten blijven staan terwijl je typt. Zet dit uit om te

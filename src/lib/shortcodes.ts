@@ -22,7 +22,12 @@ export const SHORTCODES = [
 	{ token: '{{projecten}}', label: 'Projectprijzen', description: 'Tabel met projectprijzen' },
 	{ token: '{{faq}}', label: 'Veelgestelde vragen', description: 'De FAQ-lijst van deze pagina' },
 	{ token: '{{agenda}}', label: 'Agenda', description: 'De afsprakenkalender' },
-	{ token: '{{blogindex}}', label: 'Blogoverzicht', description: 'Alle gepubliceerde artikels' }
+	{ token: '{{blogindex}}', label: 'Blogoverzicht', description: 'Alle gepubliceerde artikels' },
+	{
+		token: '{{portret}}',
+		label: 'Portretfoto',
+		description: 'De portretfoto van deze pagina, naast de tekst die erop volgt'
+	}
 ] as const;
 
 /**
@@ -33,7 +38,34 @@ export const NOOP_TOKENS = new Set(['{{intro-blok}}', '{{einde-blok}}']);
 
 const KNOWN = new Set<string>(SHORTCODES.map((s) => s.token));
 
-export type BodyPart = { kind: 'prose' | 'block'; value: string };
+export type BodyPart = { kind: 'prose' | 'block' | 'portretprose'; value: string };
+
+/** The block that folds into the prose after it; see foldPortrait. */
+export const PORTRAIT_TOKEN = '{{portret}}';
+
+/**
+ * Fold a {{portret}} into the prose run that follows it.
+ *
+ * The portrait floats and the text wraps beside it, and a float only reaches
+ * content inside its own containing block — so the two cannot be rendered as
+ * separate sections, the way every other block is. With nothing after it, it
+ * stands on its own.
+ */
+export function foldPortrait(parts: BodyPart[]): BodyPart[] {
+	const out: BodyPart[] = [];
+	for (let i = 0; i < parts.length; i++) {
+		const part = parts[i];
+		if (part.kind === 'block' && part.value === PORTRAIT_TOKEN) {
+			const next = parts[i + 1];
+			const followed = next?.kind === 'prose';
+			out.push({ kind: 'portretprose', value: followed ? next.value : '' });
+			if (followed) i++;
+			continue;
+		}
+		out.push(part);
+	}
+	return out;
+}
 
 export function splitBody(body: string): BodyPart[] {
 	const parts: BodyPart[] = [];
