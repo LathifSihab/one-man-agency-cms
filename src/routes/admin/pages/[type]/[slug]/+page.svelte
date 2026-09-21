@@ -168,6 +168,7 @@
 		<select id="f-form" name="form_variant" bind:value={formVariant}>
 			<option value="">Geen formulier</option>
 			<option value="contact">Contactformulier (naam, bedrijf, vraag, budget)</option>
+			<option value="offerte">Offerteformulier (zelfde velden, andere tekst)</option>
 			<option value="scan">Scanformulier (naam, bedrijf, website, gemeente)</option>
 		</select>
 		<p class="cms-hint">

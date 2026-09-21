@@ -10,6 +10,13 @@
 		gemeente: 'Gemeente', nieuwsbrief: 'Nieuwsbrief'
 	};
 
+	/** How each form announces itself in the list. */
+	const VARIANT_LABEL: Record<string, string> = {
+		scan: 'Gratis scan',
+		offerte: 'Offerteaanvraag',
+		contact: 'Contact'
+	};
+
 	let confirmer: ConfirmDialog | undefined = $state();
 
 	const when = (iso: string) =>
@@ -20,7 +27,7 @@
 
 <h1>Berichten</h1>
 <p class="cms-lead">
-	Ingevulde contact- en scanformulieren. Nieuwste eerst.
+	Ingevulde contact-, offerte- en scanformulieren. Nieuwste eerst.
 </p>
 
 {#if form?.message}<div class="cms-error">{form.message}</div>{/if}
@@ -33,7 +40,7 @@
 	<div class="cms-card" style="margin-bottom:.8rem">
 		<div class="cms-row-head">
 			<strong>
-				{s.variant === 'scan' ? 'Gratis scan' : 'Contact'} &middot; {when(s.created_at)}
+				{VARIANT_LABEL[s.variant] ?? s.variant} &middot; {when(s.created_at)}
 				{#if !s.is_read}<span class="cms-badge warn">Nieuw</span>{/if}
 			</strong>
 			<span class="cms-actions">

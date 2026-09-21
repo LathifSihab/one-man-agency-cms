@@ -57,7 +57,7 @@ export interface Page {
 	figures: Figure[] | null;
 	testimonials: Testimonial[] | null;
 	sector_list: string[] | null;
-	form_variant: 'contact' | 'scan' | null;
+	form_variant: 'contact' | 'scan' | 'offerte' | null;
 	booking_url: string | null;
 	portrait_url: string | null;
 	portrait_alt: string | null;

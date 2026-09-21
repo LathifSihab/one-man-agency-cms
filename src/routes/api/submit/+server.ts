@@ -12,13 +12,16 @@ export const prerender = false;
  * submissions table has no anon policy, so a browser cannot insert directly.
  */
 
-const VARIANTS = new Set(['contact', 'scan']);
-
 /** Fields we accept per variant. Anything else in the body is ignored. */
 const FIELDS: Record<string, string[]> = {
 	contact: ['naam', 'bedrijf', 'email', 'telefoon', 'onderwerp', 'budget', 'vraag'],
-	scan: ['naam', 'bedrijf', 'website', 'gemeente', 'email', 'telefoon', 'vraag', 'nieuwsbrief']
+	scan: ['naam', 'bedrijf', 'website', 'gemeente', 'email', 'telefoon', 'vraag', 'nieuwsbrief'],
+	// A quote request needs exactly what contact needs; it is kept apart so the
+	// two can be told from each other in Berichten.
+	offerte: ['naam', 'bedrijf', 'email', 'telefoon', 'onderwerp', 'budget', 'vraag']
 };
+
+const VARIANTS = new Set(Object.keys(FIELDS));
 
 /** Crude per-instance rate limit: enough to blunt a naive flood. */
 const recent = new Map<string, number[]>();

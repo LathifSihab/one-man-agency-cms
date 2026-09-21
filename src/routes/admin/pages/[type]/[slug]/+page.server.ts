@@ -56,7 +56,7 @@ const TEXT_FIELDS = [
  * in a form that was not there. Empty means no form.
  */
 const ENUM_FIELDS: Record<string, string[]> = {
-	form_variant: ['contact', 'scan']
+	form_variant: ['contact', 'scan', 'offerte']
 };
 
 export const actions: Actions = {

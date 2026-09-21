@@ -46,7 +46,7 @@ create table if not exists pages (
   figures           jsonb,      -- [{getal, label}]                     home
   testimonials      jsonb,      -- [{tekst, naam, functie}]             home
   sector_list       jsonb,      -- [text]                               home
-  form_variant      text check (form_variant in ('contact', 'scan')),
+  form_variant      text check (form_variant in ('contact', 'scan', 'offerte')),
   booking_url       text,
   portrait_url      text,
   portrait_alt      text,
@@ -125,7 +125,7 @@ create trigger settings_updated_at before update on settings
 -- ─────────────────────────────────────────────────────────── form submissions (Q1)
 create table if not exists submissions (
   id         uuid primary key default gen_random_uuid(),
-  variant    text not null check (variant in ('contact', 'scan')),
+  variant    text not null check (variant in ('contact', 'scan', 'offerte')),
   payload    jsonb not null,
   is_read    boolean not null default false,
   created_at timestamptz not null default now()
