@@ -26,6 +26,7 @@
 	let portraitAlt = $state(p.portrait_alt ?? '');
 	let headerImageUrl = $state(p.header_image_url ?? '');
 	let headerAlt = $state(p.header_alt ?? '');
+	let formVariant = $state(p.form_variant ?? '');
 
 	/* Only the pages that actually show an image offer the fields. */
 	const hasPortrait = $derived(Boolean(p.portrait_url) || p.slug === 'home');
@@ -43,6 +44,22 @@
 
 	let busy = $state(false);
 	const slugChanged = $derived(slug !== p.slug);
+
+	/**
+	 * A form replaces the blocks rather than joining them: the public template
+	 * puts the text and the form side by side and renders nothing else. Worth
+	 * saying out loud before someone turns it on and loses a price table.
+	 */
+	const blocksHiddenByForm = $derived(
+		[
+			prices.length && 'prijzen',
+			packages.length && 'maandpakketten',
+			projects.length && 'projectprijzen',
+			figures.length && 'cijfers',
+			testimonials.length && 'citaten',
+			faq.length && 'veelgestelde vragen'
+		].filter(Boolean) as string[]
+	);
 
 	const TYPE_LABEL: Record<string, string> = {
 		page: 'Pagina',
@@ -146,6 +163,28 @@
 	<MarkdownEditor bind:value={body} {emptyBlocks} />
 	<input type="hidden" name="body" value={body} />
 
+	<div class="cms-field">
+		<label for="f-form">Formulier op deze pagina</label>
+		<select id="f-form" name="form_variant" bind:value={formVariant}>
+			<option value="">Geen formulier</option>
+			<option value="contact">Contactformulier (naam, bedrijf, vraag, budget)</option>
+			<option value="scan">Scanformulier (naam, bedrijf, website, gemeente)</option>
+		</select>
+		<p class="cms-hint">
+			Het formulier komt naast de tekst hierboven te staan. Berichten komen binnen bij
+			<a href="/admin/submissions">Berichten</a>.
+		</p>
+		{#if formVariant && blocksHiddenByForm.length}
+			<div class="cms-banner failed" style="margin-top:.6rem">
+				<p>
+					Met een formulier toont deze pagina enkel de tekst hierboven en het formulier.
+					Deze blokken verdwijnen dan van de live pagina:
+					<strong>{blocksHiddenByForm.join(', ')}</strong>. Ze blijven wel bewaard.
+				</p>
+			</div>
+		{/if}
+	</div>
+
 	{#if p.type === 'service' || prices.length}
 		<RepeatRows
 			label="Prijzen"
@@ -160,7 +199,7 @@
 		<input type="hidden" name="prices" value={JSON.stringify(prices)} />
 	{/if}
 
-	{#if packages.length || p.slug === 'prijzen'}
+	{#if packages.length || p.slug === 'offerte'}
 		<RepeatRows
 			label="Maandpakketten"
 			noun="pakket"
@@ -178,7 +217,7 @@
 		<input type="hidden" name="packages" value={JSON.stringify(packages)} />
 	{/if}
 
-	{#if projects.length || p.slug === 'prijzen'}
+	{#if projects.length || p.slug === 'offerte'}
 		<RepeatRows
 			label="Projectprijzen"
 			noun="project"

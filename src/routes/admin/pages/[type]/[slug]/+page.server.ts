@@ -47,6 +47,18 @@ const TEXT_FIELDS = [
 	'header_alt'
 ];
 
+/**
+ * Fields the database restricts to a fixed set of values.
+ *
+ * form_variant was readable and rendered but had no way in: it was set once
+ * during the migration and never again. When a new page needed a form, there
+ * was no switch to find — so the offerte page shipped asking visitors to fill
+ * in a form that was not there. Empty means no form.
+ */
+const ENUM_FIELDS: Record<string, string[]> = {
+	form_variant: ['contact', 'scan']
+};
+
 export const actions: Actions = {
 	save: async ({ request, params }) => {
 		const form = await request.formData();
@@ -69,6 +81,15 @@ export const actions: Actions = {
 					return fail(400, { message: `Kon het veld "${field}" niet opslaan.` });
 				}
 			}
+		}
+
+		for (const [field, allowed] of Object.entries(ENUM_FIELDS)) {
+			if (!form.has(field)) continue;
+			const value = String(form.get(field) ?? '');
+			if (value && !allowed.includes(value)) {
+				return fail(400, { message: `"${value}" is geen geldige keuze voor "${field}".` });
+			}
+			patch[field] = value || null;
 		}
 
 		// Mirror the database constraints so the editor reports the problem
