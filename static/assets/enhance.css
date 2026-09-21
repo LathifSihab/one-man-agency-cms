@@ -426,9 +426,14 @@ footer.site ul a,
 }
 
 /*
- * Dark at the left where the text sits, clearing towards the right — plus a
+ * Dark at the right where the text sits, clearing towards the left — plus a
  * second wash rising from the bottom. The photo's lower half is a sunlit road
  * and a zebra crossing, near-white, and the figures row sits right on it.
+ *
+ * The text is on the right for the sake of the photograph. Its subject walks
+ * across the whole frame, so an overlay anywhere covers someone; on the left it
+ * covered Niels, who is the point of the picture. Keeping the left side light
+ * leaves him visible and puts the scrim over the emptying road instead.
  */
 .herohead::after {
 	content: '';
@@ -444,11 +449,16 @@ footer.site ul a,
 	-webkit-mask-image: none;
 	mask-image: none;
 	background:
-		linear-gradient(to right, rgba(10, 10, 10, 0.92) 0%, rgba(10, 10, 10, 0.74) 45%, rgba(10, 10, 10, 0.5) 100%),
+		linear-gradient(
+			to left,
+			rgba(10, 10, 10, 0.92) 0%,
+			rgba(10, 10, 10, 0.72) 42%,
+			rgba(10, 10, 10, 0.28) 100%
+		),
 		linear-gradient(
 			to top,
-			rgba(10, 10, 10, 0.72) 0%,
-			rgba(10, 10, 10, 0.5) 22%,
+			rgba(10, 10, 10, 0.6) 0%,
+			rgba(10, 10, 10, 0.42) 22%,
 			rgba(10, 10, 10, 0) 52%
 		);
 }
@@ -463,6 +473,30 @@ footer.site ul a,
 
 .herohead .heroover {
 	max-width: 46rem;
+}
+
+/*
+ * Above the narrow breakpoint the whole overlay column sits right, figures row
+ * included — half of it moving and half staying would read as a mistake. Below
+ * it the photo is cropped to almost nothing either side and the scrim is a flat
+ * vertical wash, so the text goes back to the left like every other page.
+ */
+@media (min-width: 701px) {
+	.herohead .heroover,
+	.herohead .facts {
+		margin-left: auto;
+		text-align: right;
+	}
+
+	.herohead h1,
+	.herohead .lead {
+		margin-left: auto;
+	}
+
+	.herohead .btns,
+	.herohead .facts {
+		justify-content: flex-end;
+	}
 }
 
 /*
