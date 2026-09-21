@@ -18,7 +18,8 @@
     "check:mail": "python tools/check_mail.py",
     "test:links": "node tools/links-test.mjs",
     "test:publish-state": "node tools/publish-state-test.mjs",
-    "test:logos": "node tools/logos-test.mjs"
+    "test:logos": "node tools/logos-test.mjs",
+    "test:publish-banner": "node tools/publish-banner-test.mjs"
   },
   "devDependencies": {
     "@sveltejs/adapter-vercel": "^5.10.2",

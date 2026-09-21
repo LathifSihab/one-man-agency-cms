@@ -47,19 +47,37 @@
 	 */
 	const polling = $derived(running || publishState.status === 'stale');
 
-	/** True once a publish started here has actually reached the live site. */
-	let awaitingPublish = $state(false);
-	let justPublished = $state(false);
+	/**
+	 * Which build was already live when Publish was last pressed here.
+	 *
+	 * Null until something is published from this window, so a reload does not
+	 * congratulate anyone on a publish they did not just make.
+	 */
+	let publishedPast = $state<string | null>(null);
 
-	$effect(() => {
-		if (awaitingPublish && publishState.status === 'live') {
-			awaitingPublish = false;
-			justPublished = true;
-		} else if (publishState.status === 'pending' || publishState.status === 'building') {
-			// Something has been edited since, so the confirmation is stale too.
-			justPublished = false;
-		}
-	});
+	/**
+	 * Whether a publish started here has reached the live site.
+	 *
+	 * Derived rather than latched. An earlier version raised a flag and let an
+	 * effect consume it on the transition to 'live', which meant the answer
+	 * depended on the effect observing a particular moment — and it did not
+	 * reliably: republishing an already-live site fired the effect before
+	 * invalidateAll had moved the status to 'building', so it consumed the flag
+	 * against the build that was already there and had nothing left to report
+	 * when the real one landed. Tests caught it passing and failing on timing
+	 * alone.
+	 *
+	 * As a derivation there is no moment to miss: it is true exactly while the
+	 * live site is showing a *different* finished build from the one that was
+	 * live when Publish was pressed. It stops being true on its own when an edit
+	 * makes the site pending again, when a later publish fails, or when the next
+	 * publish moves the marker.
+	 */
+	const justPublished = $derived(
+		publishedPast !== null &&
+			publishState.status === 'live' &&
+			(publishState.lastBuild?.finished_at ?? '') !== publishedPast
+	);
 
 	const TONE: Record<string, string> = {
 		live: 'live',
@@ -175,11 +193,12 @@
 				}
 			} else if (body.deduped) {
 				message = `Er loopt al een publicatie. Nog ongeveer ${body.wait} seconden.`;
-				awaitingPublish = true;
 			} else {
 				message = '';
-				justPublished = false;
-				awaitingPublish = true;
+				// Remember which build was live at this moment. The confirmation is
+				// then whatever differs from it, rather than a flag someone has to
+				// catch being raised.
+				publishedPast = publishState.lastBuild?.finished_at ?? '';
 			}
 			await invalidateAll();
 		} catch {

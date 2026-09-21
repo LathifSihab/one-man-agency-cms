@@ -20,9 +20,9 @@
  * sits behind the admin gate and a Supabase login. The route is written before
  * the run and removed after it, and nothing is ever submitted.
  */
-import { spawn } from 'node:child_process';
 import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
 import { chromium } from 'playwright';
+import { startDevServer } from './_devserver.mjs';
 
 const ROUTE_DIR = 'src/routes/dev-logocheck';
 const PORT = 5599;
@@ -53,28 +53,10 @@ const check = (name, ok, detail = '') => {
 mkdirSync(ROUTE_DIR, { recursive: true });
 writeFileSync(`${ROUTE_DIR}/+page.svelte`, HARNESS, 'utf8');
 
-const vite = spawn('npx', ['vite', 'dev', '--port', String(PORT), '--strictPort'], {
-	stdio: 'ignore',
-	shell: process.platform === 'win32'
-});
-
-const base = `http://localhost:${PORT}`;
+const { base, stop } = await startDevServer(PORT, '/dev-logocheck');
 let browser;
 
 try {
-	// Wait for the dev server rather than sleeping a fixed amount.
-	const deadline = Date.now() + 60000;
-	for (;;) {
-		try {
-			const res = await fetch(`${base}/dev-logocheck`);
-			if (res.ok) break;
-		} catch {
-			/* not up yet */
-		}
-		if (Date.now() > deadline) throw new Error('vite dev did not start in time');
-		await new Promise((r) => setTimeout(r, 500));
-	}
-
 	browser = await chromium.launch();
 	const page = await browser.newPage();
 	await page.goto(`${base}/dev-logocheck`, { waitUntil: 'networkidle' });
@@ -111,7 +93,7 @@ try {
 	check('searching again drops the one now named', (await cards().count()) === 2);
 } finally {
 	if (browser) await browser.close();
-	vite.kill();
+	stop();
 	rmSync(ROUTE_DIR, { recursive: true, force: true });
 }
 
