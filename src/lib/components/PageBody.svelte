@@ -61,8 +61,10 @@
 	{#if part.kind === 'prose'}
 		<section><div class="wrap"><div class="prose">{@html renderMarkdown(part.value)}</div></div></section>
 	{:else if part.kind === 'portretprose'}
-		<!-- Portrait and text in one block, so the text can wrap beside it. -->
-		<section><div class="wrap"><div class="prose">
+		<!-- Portrait and text in one block, so the text can wrap beside it. The
+		     block spans the whole container so the portrait reaches the outer
+		     edge; paragraphs keep their own measure and are unaffected. -->
+		<section><div class="wrap"><div class="prose prose-wide">
 			{#if page.portrait_url}
 				<figure class="prose-portret">
 					<img src={resolveImage(page.portrait_url)} alt={page.portrait_alt ?? ''}

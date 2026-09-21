@@ -579,11 +579,32 @@ footer.site ul a,
  * this floats inside that same block and the paragraphs wrap around it.
  */
 
+/*
+ * A prose block that spans the whole container rather than stopping at the
+ * measure.
+ *
+ * Only the layout widens. p, ul and ol carry their own max-width: var(--prose)
+ * in style.css, so the lines stay exactly as long as they were — which is the
+ * point: 68ch is already at the top of the comfortable range, and the full
+ * 1140px would be around 134 characters, well past where the eye starts losing
+ * its place on the way back. What this buys is the float reaching the outer
+ * edge, instead of being boxed inside the text column with the rest of the
+ * container empty beside it.
+ */
+.prose-wide {
+	max-width: none;
+}
+
 .prose-portret {
 	float: right;
 	width: min(300px, 38%);
 	margin: 0.4rem 0 1.4rem 2rem;
 	shape-outside: margin-box;
+}
+
+.prose-wide .prose-portret {
+	width: min(340px, 32%);
+	margin-left: clamp(2rem, 4vw, 3.5rem);
 }
 
 .prose-portret img {
