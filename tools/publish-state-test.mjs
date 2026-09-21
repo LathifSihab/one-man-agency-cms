@@ -25,6 +25,26 @@ const { getPublishState } = await server.ssrLoadModule('/src/lib/server/dashboar
 const minutesAgo = (n) => new Date(Date.now() - n * 60000).toISOString();
 
 /**
+ * Stand in for the live site's build-info.json.
+ *
+ * getPublishState fetches it to answer "is the site serving what I just
+ * built?", so the answer has to be controllable to test either outcome.
+ */
+const realFetch = globalThis.fetch;
+function serveBuildInfo(body) {
+	globalThis.fetch = async (url, init) => {
+		if (String(url).includes('/build-info.json')) {
+			if (body === null) return new Response('nope', { status: 404 });
+			return new Response(JSON.stringify(body), {
+				status: 200,
+				headers: { 'content-type': 'application/json' }
+			});
+		}
+		return realFetch(url, init);
+	};
+}
+
+/**
  * A stand-in for the Supabase client: every builder method returns the builder,
  * and awaiting it hands the recorded query to the fixture.
  */
@@ -143,6 +163,70 @@ const check = (name, got, want) => {
 		['Contact', 'Cookiebeleid']
 	);
 	check('and are counted', state.pendingChanges, 2);
+}
+
+// ── 5. Is the site serving what was just built? ─────────────────────────────
+//
+// This used to be decided by comparing the live site's stamp against the build
+// row's triggered_at, and that comparison could not be made correct.
+// build-info.json is stamped while the site is prerendering; a build started by
+// a git push only gets its row at the END of the build, seconds later. Every
+// such deploy was therefore reported as "built, but never made live" — the red
+// box the client hit. It is now decided by deployment id.
+{
+	const row = (over = {}) => ({
+		id: 'd1',
+		status: 'live',
+		triggered_at: minutesAgo(2),
+		finished_at: minutesAgo(1),
+		detail: 'ok',
+		deployment_id: 'dpl_AAA',
+		...over
+	});
+
+	// The exact shape that broke: the row is stamped after the site was.
+	serveBuildInfo({ builtAt: minutesAgo(3), deployment: 'dpl_AAA' });
+	const pushBuild = fakeDb({
+		builds: [row({ triggered_at: minutesAgo(1), finished_at: minutesAgo(1) })]
+	});
+	check(
+		'a git-push build whose stamp predates its row still reads as live',
+		(await getPublishState(pushBuild)).status,
+		'live'
+	);
+
+	// A genuinely stale site: production is serving some other deployment.
+	serveBuildInfo({ builtAt: minutesAgo(30), deployment: 'dpl_OLD' });
+	check(
+		'a different deployment on production is stale',
+		(await getPublishState(fakeDb({ builds: [row()] }))).status,
+		'stale'
+	);
+
+	// Older rows have no id; the clock is still the fallback for them.
+	serveBuildInfo({ builtAt: minutesAgo(1), deployment: null });
+	check(
+		'without ids it falls back to the clock, and agrees',
+		(await getPublishState(fakeDb({ builds: [row({ deployment_id: null })] }))).status,
+		'live'
+	);
+
+	serveBuildInfo({ builtAt: minutesAgo(30), deployment: null });
+	check(
+		'and still catches a stale site that way',
+		(await getPublishState(fakeDb({ builds: [row({ deployment_id: null })] }))).status,
+		'stale'
+	);
+
+	// The site being unreachable must not invent a problem.
+	serveBuildInfo(null);
+	check(
+		'an unreachable site is not reported as stale',
+		(await getPublishState(fakeDb({ builds: [row()] }))).status,
+		'live'
+	);
+
+	globalThis.fetch = realFetch;
 }
 
 await server.close();

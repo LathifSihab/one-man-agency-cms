@@ -45,6 +45,7 @@ export interface PublishState {
 		triggered_at: string;
 		finished_at: string | null;
 		detail: string | null;
+		deployment_id?: string | null;
 	} | null;
 }
 
@@ -167,6 +168,8 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 		liveBuildStamp()
 	]);
 
+	const live = liveBuiltAt;
+
 	const stamps = [
 		pages.data?.[0]?.updated_at,
 		posts.data?.[0]?.updated_at,
@@ -212,10 +215,25 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 		 * The build finished — but did the site change? A deployment can succeed
 		 * without becoming the one production serves, and reporting that as
 		 * success is the failure this whole flow exists to avoid.
+		 *
+		 * Answered by identity when both ends know their deployment, because the
+		 * timestamp version could not be made correct. build-info.json is stamped
+		 * while the site is being prerendered; tools/mark-build-live.mjs writes
+		 * the row seconds later, at the end of the same build. For a build started
+		 * by a git push, where the row is only created at that point, the stamp is
+		 * therefore always older than the trigger and every such deploy was
+		 * reported as never having gone live.
+		 *
+		 * Falls back to the clock for rows written before deployment_id existed,
+		 * and for builds run outside Vercel, where there is no id to compare.
 		 */
-		const served = liveBuiltAt ? Date.parse(liveBuiltAt) : NaN;
-		const triggered = Date.parse(lastBuild.triggered_at);
-		status = Number.isNaN(served) || served >= triggered ? 'live' : 'stale';
+		if (live.deployment && lastBuild.deployment_id) {
+			status = live.deployment === lastBuild.deployment_id ? 'live' : 'stale';
+		} else {
+			const served = live.builtAt ? Date.parse(live.builtAt) : NaN;
+			const triggered = Date.parse(lastBuild.triggered_at);
+			status = Number.isNaN(served) || served >= triggered ? 'live' : 'stale';
+		}
 	}
 
 	// List what changed since the last successful build. A bare count does not
@@ -240,7 +258,14 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 		pending.sort((a, b) => (a.updatedAt < b.updatedAt ? 1 : -1));
 	}
 
-	return { status, pendingChanges: pending.length, pending, lastEditedAt, lastBuild, liveBuiltAt };
+	return {
+		status,
+		pendingChanges: pending.length,
+		pending,
+		lastEditedAt,
+		lastBuild,
+		liveBuiltAt: live.builtAt
+	};
 }
 
 const PAGE_KIND: Record<string, string> = {
@@ -317,25 +342,29 @@ export interface Analytics {
  * inside a deployment that may not be the one production points at, so asking
  * ourselves would answer the wrong question.
  */
-async function liveBuildStamp(): Promise<string | null> {
+async function liveBuildStamp(): Promise<{ builtAt: string | null; deployment: string | null }> {
 	const base =
 		env.VERCEL_PROJECT_PRODUCTION_URL
 			? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
 			: (env.ADMIN_URL ?? publicEnv.PUBLIC_SITE_URL ?? '');
 
-	if (!base) return null;
+	const none = { builtAt: null, deployment: null };
+	if (!base) return none;
 
 	try {
 		const response = await fetch(`${base.replace(/\/$/, '')}/build-info.json`, {
 			headers: { 'cache-control': 'no-cache' },
 			signal: AbortSignal.timeout(5000)
 		});
-		if (!response.ok) return null;
+		if (!response.ok) return none;
 		const body = await response.json();
-		return typeof body?.builtAt === 'string' ? body.builtAt : null;
+		return {
+			builtAt: typeof body?.builtAt === 'string' ? body.builtAt : null,
+			deployment: typeof body?.deployment === 'string' ? body.deployment : null
+		};
 	} catch {
 		// The site being unreachable is not a reason to break the dashboard.
-		return null;
+		return none;
 	}
 }
 

@@ -34,19 +34,40 @@
 	 */
 	let problems = $state<{ ref: string; where: string }[]>([]);
 
-	/* Polling continues through 'stale' as well as 'building': a deployment can
-	   go live a little after it finishes, and giving up at the build's end is how
-	   a slow promotion gets mistaken for a broken one. */
-	const building = $derived(
-		publishState.status === 'building' || publishState.status === 'stale'
-	);
+	/** A build is genuinely running. Only this gets a progress bar. */
+	const running = $derived(publishState.status === 'building');
+
+	/*
+	 * Polling continues through 'stale' as well: a deployment can go live a
+	 * little after it finishes, and giving up at the build's end is how a slow
+	 * promotion gets mistaken for a broken one. But 'stale' is not a build in
+	 * progress, and showing it a progress bar and "de site wordt opnieuw
+	 * opgebouwd" next to "het opbouwen is gelukt" said two opposite things at
+	 * once.
+	 */
+	const polling = $derived(running || publishState.status === 'stale');
+
+	/** True once a publish started here has actually reached the live site. */
+	let awaitingPublish = $state(false);
+	let justPublished = $state(false);
+
+	$effect(() => {
+		if (awaitingPublish && publishState.status === 'live') {
+			awaitingPublish = false;
+			justPublished = true;
+		} else if (publishState.status === 'pending' || publishState.status === 'building') {
+			// Something has been edited since, so the confirmation is stale too.
+			justPublished = false;
+		}
+	});
 
 	const TONE: Record<string, string> = {
 		live: 'live',
 		pending: 'pending',
 		building: 'pending',
 		failed: 'failed',
-		stale: 'failed',
+		// A wait, not a failure — the build worked, the hosting is catching up.
+		stale: 'pending',
 		unknown: 'pending'
 	};
 
@@ -54,14 +75,42 @@
 	const progress = $derived(Math.min(95, Math.round((elapsed / EXPECTED_SECONDS) * 100)));
 	const overdue = $derived(elapsed > EXPECTED_SECONDS * 2);
 
+	/**
+	 * What went wrong, in words the person reading it can act on.
+	 *
+	 * The stored detail is written for the record, not for the editor: it can be
+	 * as bare as "Deploy hook antwoordde met 500". Nobody should have to
+	 * interpret an HTTP status to find out whether their afternoon's work is
+	 * safe.
+	 */
+	function humanFailure(detail: string | null): string {
+		const code = detail?.match(/antwoordde met (\d+)/)?.[1];
+		if (code) {
+			return (
+				`De hosting nam de opdracht om te publiceren niet aan (foutcode ${code}). ` +
+				'Dat ligt niet aan je wijzigingen.'
+			);
+		}
+		if (detail?.includes('niets meer teruggemeld')) {
+			return (
+				'Het opbouwen van de site is stilgevallen zonder iets terug te melden. ' +
+				'Waarschijnlijk liep er iets mis bij de hosting.'
+			);
+		}
+		if (detail?.includes('niet aanvaard')) {
+			return 'De bouwopdracht werd niet aanvaard door de hosting.';
+		}
+		return 'Er liep iets mis tijdens het opbouwen van de site.';
+	}
+
 	function when(iso: string | null): string {
 		if (!iso) return 'onbekend';
 		return new Date(iso).toLocaleString('nl-BE', { dateStyle: 'medium', timeStyle: 'short' });
 	}
 
-	// Tick and poll only while a build is actually running.
+	// Tick and poll while a build runs, and on through a slow promotion.
 	$effect(() => {
-		if (!building) {
+		if (!polling) {
 			elapsed = 0;
 			return;
 		}
@@ -126,8 +175,11 @@
 				}
 			} else if (body.deduped) {
 				message = `Er loopt al een publicatie. Nog ongeveer ${body.wait} seconden.`;
+				awaitingPublish = true;
 			} else {
 				message = '';
+				justPublished = false;
+				awaitingPublish = true;
 			}
 			await invalidateAll();
 		} catch {
@@ -145,7 +197,7 @@
 	let expanded = $state(false);
 
 	const showList = $derived(
-		!building && publishState.pending.length > 0 &&
+		!polling && publishState.pending.length > 0 &&
 			(publishState.status === 'pending' || publishState.status === 'failed')
 	);
 	const visible = $derived(
@@ -161,17 +213,20 @@
 <div class="cms-banner {TONE[publishState.status]}">
 	<div style="flex:1 1 320px">
 		<p>
-			{#if building}
+			{#if running}
 				<span class="cms-spinner" aria-hidden="true"></span>
 				Bezig met publiceren{changeCount ? ` van ${changeCount} ${changeWord}` : ''}…
+			{:else if justPublished}
+				<strong>Gepubliceerd.</strong> Je wijzigingen staan nu op de live site.
 			{:else if publishState.status === 'live'}
 				De site is bijgewerkt. Laatste publicatie {when(publishState.lastBuild?.finished_at ?? null)}.
 			{:else if publishState.status === 'stale'}
-			De site is opnieuw opgebouwd, maar bezoekers krijgen nog de vorige versie.
-		{:else if publishState.status === 'failed'}
-				De laatste publicatie is mislukt{publishState.lastBuild?.detail
-					? ` (${publishState.lastBuild.detail})`
-					: ''}. Je wijzigingen staan nog klaar.
+				<span class="cms-spinner" aria-hidden="true"></span>
+				De site is opgebouwd. Even wachten tot de hosting de nieuwe versie live zet…
+			{:else if publishState.status === 'failed'}
+				<strong>Publiceren is niet gelukt.</strong>
+				{humanFailure(publishState.lastBuild?.detail ?? null)}
+				Je wijzigingen zijn niet verloren — ze staan nog klaar om gepubliceerd te worden.
 			{:else if publishState.status === 'pending'}
 				{changeCount}
 				{changeWord} sinds de laatste publicatie
@@ -180,7 +235,7 @@
 			{/if}
 		</p>
 
-		{#if building}
+		{#if running}
 			<div
 				class="cms-progress"
 				role="progressbar"
@@ -199,11 +254,11 @@
 
 		{#if publishState.status === 'stale'}
 			<p class="cms-progress-note">
-				Het opbouwen is gelukt, maar de nieuwe versie is niet live gezet. Probeer
-				opnieuw te publiceren. Blijft dit staan, dan moet de laatste versie bij de
-				hosting handmatig live gezet worden.
+				Je wijzigingen zijn goed opgebouwd. De hosting zet de nieuwe versie meestal
+				binnen een halve minuut live; deze melding verdwijnt dan vanzelf. Je hoeft
+				niets te doen en kan dit venster gerust sluiten.
 				{#if publishState.liveBuiltAt}
-					De live versie dateert van {when(publishState.liveBuiltAt)}.
+					Bezoekers krijgen op dit moment nog de versie van {when(publishState.liveBuiltAt)}.
 				{/if}
 			</p>
 		{/if}
@@ -237,15 +292,19 @@
 	</div>
 
 	<span class="cms-actions">
-		{#if publishState.status === 'stale'}
-			<button class="cms-btn" onclick={triggerPublish} disabled={busy}>
-				{busy ? 'Bezig…' : 'Opnieuw proberen'}
-			</button>
-		{:else if building}
+		{#if running || publishState.status === 'stale'}
 			<button class="cms-btn" disabled>Bezig…</button>
+		{:else if justPublished}
+			<!-- Nothing left to do here, so the action is to go and look at it
+			     rather than an invitation to publish the same thing twice. -->
+			<a class="cms-btn" href="/" target="_blank" rel="noopener">Bekijk de site ↗</a>
 		{:else if publishState.status === 'live'}
 			<button class="cms-btn cms-btn-ghost" onclick={triggerPublish} disabled={busy}>
 				Opnieuw publiceren
+			</button>
+		{:else if publishState.status === 'failed'}
+			<button class="cms-btn" onclick={triggerPublish} disabled={busy}>
+				{busy ? 'Bezig…' : 'Probeer opnieuw'}
 			</button>
 		{:else}
 			<button class="cms-btn" onclick={triggerPublish} disabled={busy}>

@@ -141,7 +141,10 @@ create table if not exists builds (
   status       text not null check (status in ('pending', 'building', 'live', 'failed')),
   triggered_at timestamptz not null default now(),
   finished_at  timestamptz,
-  detail       text
+  detail       text,
+  -- The deployment this build produced, so "is the live site what I just
+  -- built?" can be answered by identity instead of by comparing clocks.
+  deployment_id text
 );
 
 create index if not exists builds_triggered_idx on builds (triggered_at desc);
