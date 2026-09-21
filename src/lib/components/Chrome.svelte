@@ -1,14 +1,14 @@
 <script lang="ts">
-	import type { Settings } from '$lib/types';
-	import { SERVICES } from '$lib/site';
+	import type { ServiceLink, Settings } from '$lib/types';
 
 	interface Props {
 		settings: Settings;
+		services: ServiceLink[];
 		pathname: string;
 		children: import('svelte').Snippet;
 	}
 
-	let { settings, pathname, children }: Props = $props();
+	let { settings, services, pathname, children }: Props = $props();
 
 	const b = $derived(settings.company);
 	const current = $derived('/' + pathname.replace(/^\/|\/$/g, ''));
@@ -59,8 +59,8 @@
 		<p>{b.juridisch}<br>{b.straat}<br>{b.postcode} {b.stad}<br>BTW {b.btw}</p>
 	</div>
 	<div><h4>Diensten</h4><ul>
-		{#each SERVICES.slice(0, 8) as [slug, naam] (slug)}
-			<li><a href="/diensten/{slug}">{naam}</a></li>
+		{#each services.slice(0, 8) as s (s.link)}
+			<li><a href={s.link}>{s.label}</a></li>
 		{/each}
 	</ul></div>
 	<div><h4>Regio</h4><ul>

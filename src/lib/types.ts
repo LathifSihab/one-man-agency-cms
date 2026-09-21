@@ -57,6 +57,12 @@ export interface Page {
 	figures: Figure[] | null;
 	testimonials: Testimonial[] | null;
 	sector_list: string[] | null;
+	/* Services navigation; see the migration that added them. */
+	in_services?: boolean;
+	menu_label?: string | null;
+	menu_summary?: string | null;
+	menu_group?: string | null;
+	menu_order?: number | null;
 	form_variant: 'contact' | 'scan' | 'offerte' | null;
 	booking_url: string | null;
 	portrait_url: string | null;
@@ -120,6 +126,14 @@ export interface Settings {
 	header_cta: Cta;
 	formspree_id: string | null;
 	socials: Social[];
+}
+
+/** One entry in the services navigation, built from a page. */
+export interface ServiceLink {
+	link: string;
+	label: string;
+	summary: string;
+	group: string;
 }
 
 export interface SiteContent {

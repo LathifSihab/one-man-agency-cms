@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Page } from '$lib/types';
+	import type { Page, ServiceLink } from '$lib/types';
 	import Seo from './Seo.svelte';
 	import PageHead from './PageHead.svelte';
 	import PriceTable from './PriceTable.svelte';
@@ -18,9 +18,11 @@
 	interface Props {
 		page: Page;
 		family: 'diensten' | 'sectoren' | 'regio';
+		/** Only the region pages append the full list, but all three are passed it. */
+		services: ServiceLink[];
 	}
 
-	let { page, family }: Props = $props();
+	let { page, family, services }: Props = $props();
 
 	const path = $derived(`/${family}/${page.slug}`);
 	const schemas = $derived([
@@ -60,7 +62,7 @@
 <section><div class="wrap"><div class="prose">
 	{@html renderMarkdown(page.body)}
 </div>
-{#if family === 'regio'}<ServicesGrid short={false} />{/if}
+{#if family === 'regio'}<ServicesGrid {services} short={false} />{/if}
 <div class="prose">
 	{#if page.prices?.length}<PriceTable prices={page.prices} />{/if}
 	<Faq faq={page.faq} />

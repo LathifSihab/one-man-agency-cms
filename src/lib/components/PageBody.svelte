@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Logo, Page, Post, Settings } from '$lib/types';
+	import type { Logo, Page, Post, ServiceLink, Settings } from '$lib/types';
 	import { renderMarkdown } from '$lib/markdown';
 	import { foldPortrait, splitBody } from '$lib/shortcodes';
 	import { resolveImage } from '$lib/images';
@@ -30,9 +30,10 @@
 		logos: Logo[];
 		posts: Post[];
 		settings: Settings;
+		services: ServiceLink[];
 	}
 
-	let { page, logos, posts, settings }: Props = $props();
+	let { page, logos, posts, settings, services }: Props = $props();
 
 	const parts = $derived(foldPortrait(splitBody(page.body)));
 
@@ -75,9 +76,9 @@
 		</div></div></section>
 	{:else if SELF_WRAPPING.has(part.value)}
 		{#if part.value === '{{diensten}}'}
-			<ServicesGrid />
+			<ServicesGrid {services} />
 		{:else if part.value === '{{diensten-volledig}}'}
-			<ServicesGrouped />
+			<ServicesGrouped {services} />
 		{:else if part.value === '{{citaten}}'}
 			<Testimonials items={page.testimonials} />
 		{:else if part.value === '{{stappen}}'}

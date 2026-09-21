@@ -3,4 +3,4 @@
 	let { data } = $props();
 </script>
 
-<FamilyPage page={data.page} family="sectoren" />
+<FamilyPage page={data.page} family="sectoren" services={data.services} />

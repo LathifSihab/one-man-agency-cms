@@ -38,6 +38,14 @@ create table if not exists pages (
   todo_note         text,                                              -- af_te_werken
   sort_order        integer     not null default 0,
 
+  -- Services navigation, edited in the CMS. The list used to be a hardcoded
+  -- array in src/lib/site.ts, so only a developer could add a service.
+  in_services       boolean     not null default false,                -- shown under Diensten
+  menu_label        text,                                              -- short name for menus
+  menu_summary      text,                                              -- one line under it
+  menu_group        text,                                              -- heading it sits under
+  menu_order        integer,                                           -- position in that list
+
   -- type-specific, nullable
   faq               jsonb,      -- [{vraag, antwoord}]
   prices            jsonb,      -- [{wat, vanaf}]                       services

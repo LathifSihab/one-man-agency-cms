@@ -27,6 +27,11 @@
 	let headerImageUrl = $state(p.header_image_url ?? '');
 	let headerAlt = $state(p.header_alt ?? '');
 	let formVariant = $state(p.form_variant ?? '');
+	let inServices = $state(Boolean(p.in_services));
+	let menuLabel = $state(p.menu_label ?? '');
+	let menuSummary = $state(p.menu_summary ?? '');
+	let menuGroup = $state(p.menu_group ?? '');
+	let menuOrder = $state(p.menu_order ?? 0);
 
 	/* Only the pages that actually show an image offer the fields. */
 	const hasPortrait = $derived(Boolean(p.portrait_url) || p.slug === 'home');
@@ -314,6 +319,56 @@
 		<div class="cms-field">
 			<label for="f-header-alt">Omschrijving van die afbeelding</label>
 			<input id="f-header-alt" name="header_alt" type="text" bind:value={headerAlt} />
+		</div>
+	{/if}
+
+	<h2>Plaats bij de diensten</h2>
+
+	<div class="cms-field">
+		<label style="font-weight:500;display:flex;align-items:center;gap:.5rem">
+			<input type="checkbox" bind:checked={inServices} style="width:auto" />
+			Toon deze pagina bij de diensten
+		</label>
+		<input type="hidden" name="in_services" value={inServices ? 'on' : ''} />
+		<p class="cms-hint">
+			Zet dit aan om de pagina op te nemen in het dienstenoverzicht en in de voettekst. De
+			pagina blijft op haar eigen webadres staan.
+		</p>
+	</div>
+
+	{#if inServices}
+		<div class="cms-two">
+			<div class="cms-field">
+				<label for="f-menulabel">Korte naam</label>
+				<input id="f-menulabel" name="menu_label" type="text" bind:value={menuLabel}
+				       placeholder={title} />
+				<p class="cms-hint">De naam in de lijst. Laat leeg om de titel hierboven te gebruiken.</p>
+			</div>
+			<div class="cms-field">
+				<label for="f-menugroup">Onder welke tussentitel</label>
+				<input id="f-menugroup" name="menu_group" type="text" bind:value={menuGroup}
+				       placeholder="Bv. Online zichtbaar" list="menu-groups" />
+				<datalist id="menu-groups">
+					{#each data.groups ?? [] as g (g)}<option value={g}></option>{/each}
+				</datalist>
+				<p class="cms-hint">
+					Diensten met dezelfde tussentitel staan samen. Typ een nieuwe naam om een nieuwe
+					groep te maken.
+				</p>
+			</div>
+		</div>
+
+		<div class="cms-field">
+			<label for="f-menusummary">Regel onder de naam</label>
+			<input id="f-menusummary" name="menu_summary" type="text" bind:value={menuSummary}
+			       placeholder="Eén zin die zegt wat het oplevert." />
+		</div>
+
+		<div class="cms-field">
+			<label for="f-menuorder">Volgorde</label>
+			<input id="f-menuorder" name="menu_order" type="number" bind:value={menuOrder}
+			       style="max-width:9rem" />
+			<p class="cms-hint">Lager staat vooraan. De tussentitels volgen deze volgorde.</p>
 		</div>
 	{/if}
 

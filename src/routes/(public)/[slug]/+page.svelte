@@ -30,7 +30,8 @@
 		<div><ContactForm variant={p.form_variant} /></div>
 	</div></section>
 {:else}
-	<PageBody page={p} logos={data.logos} posts={data.posts} settings={data.settings} />
+	<PageBody page={p} logos={data.logos} posts={data.posts} settings={data.settings}
+	          services={data.services} />
 {/if}
 
 {#if p.todo_note}

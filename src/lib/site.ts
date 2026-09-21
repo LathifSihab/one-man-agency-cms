@@ -1,36 +1,65 @@
 import { env } from '$env/dynamic/public';
+import type { Page, PageType, ServiceLink } from '$lib/types';
 
 /** Canonical origin. Always absolute in canonical/og:url — never relative. */
 export const SITE = env.PUBLIC_SITE_URL || 'https://www.onemanagency.be';
 
 /**
- * The ten services, in the order the design depends on. Copied verbatim from
- * build.py:DIENSTEN_KORT — slug, display name, one-line description.
+ * Where a page lives on the site.
+ *
+ * The one place that turns a page's type and slug into a path. The home page is
+ * served at / rather than /home.
  */
-export const SERVICES: ReadonlyArray<readonly [string, string, string]> = [
-	['marketingstrategie', 'Marketingstrategie', 'Weten waar je naartoe gaat, voor je geld uitgeeft.'],
-	['branding-en-huisstijl', 'Branding & huisstijl', 'Een merk dat blijft hangen, van logo tot toon.'],
-	['webdesign', 'Webdesign', 'Een website die vragen beantwoordt en klanten oplevert.'],
-	['seo-en-geo', 'SEO & GEO', 'Gevonden worden in Google én in AI-antwoorden.'],
-	['google-ads', 'Google Ads', 'Bovenaan staan op het moment dat iemand koopklaar zoekt.'],
-	['social-media', 'Social media', 'Een contentkalender die doorloopt, ook als jij het druk hebt.'],
-	['e-mailmarketing', 'E-mailmarketing', 'Je bestaande klanten zijn je goedkoopste omzet.'],
-	[
-		'grafische-vormgeving-en-drukwerk',
-		'Vormgeving & drukwerk',
-		'Van visitekaartje tot gevelreclame.'
-	],
-	['foto-en-video', 'Foto & video', 'Echte beelden van jouw zaak, geen stockfoto’s.'],
-	['ai-voor-kmo', 'AI voor KMO’s', 'Tijd winnen op administratie, offertes en klantcommunicatie.']
-] as const;
+export const PATH_PREFIX: Record<PageType, string> = {
+	page: '',
+	service: '/diensten',
+	sector: '/sectoren',
+	region: '/regio'
+};
 
-/** The four themed groups on /diensten (build.py:blok_diensten_volledig). */
-export const SERVICE_GROUPS: ReadonlyArray<readonly [string, number, number]> = [
-	['Strategie en merk', 0, 2],
-	['Online zichtbaar', 2, 5],
-	['Content en contact', 5, 9],
-	['Nieuw', 9, 10]
-] as const;
+export function pagePath(p: { type: PageType; slug: string }): string {
+	if (p.type === 'page' && p.slug === 'home') return '/';
+	return `${PATH_PREFIX[p.type]}/${p.slug}`;
+}
+
+/**
+ * The services navigation, built from the content.
+ *
+ * This was a hardcoded array of ten, and the overview grouped it by slicing that
+ * array at fixed positions — so adding a service took a code change and a
+ * deploy, and the person who writes the content could not do it. It now follows
+ * whatever is flagged in the CMS, in the order set there.
+ *
+ * Membership is a flag rather than "type is service": the free marketing scan
+ * belongs in this list but keeps its own address, which is linked and indexed,
+ * and a service can be taken out of the navigation without being deleted.
+ */
+export function serviceMenu(pages: Page[]): ServiceLink[] {
+	return pages
+		.filter((p) => p.in_services)
+		.slice()
+		.sort((a, b) => (a.menu_order ?? 0) - (b.menu_order ?? 0))
+		.map((p) => ({
+			link: pagePath(p),
+			// The page's own heading is written for the page and is usually too
+			// long for a menu; the short name falls back to it rather than to
+			// nothing.
+			label: p.menu_label?.trim() || p.title,
+			summary: p.menu_summary?.trim() || '',
+			group: p.menu_group?.trim() || 'Diensten'
+		}));
+}
+
+/** The services in the order they appear, gathered under their headings. */
+export function serviceGroups(services: ServiceLink[]): { name: string; items: ServiceLink[] }[] {
+	const groups: { name: string; items: ServiceLink[] }[] = [];
+	for (const service of services) {
+		const existing = groups.find((g) => g.name === service.group);
+		if (existing) existing.items.push(service);
+		else groups.push({ name: service.group, items: [service] });
+	}
+	return groups;
+}
 
 /** The four fixed steps on the homepage (build.py:STAPPEN). */
 export const STEPS: ReadonlyArray<readonly [string, string]> = [

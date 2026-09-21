@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { SERVICES } from '$lib/site';
+import { pagePath } from '$lib/site';
 import { MEDIA_PREFIXES, imageValuesInMarkdown, isStorageKey } from '$lib/images';
 import type { Logo, Page, Post, Settings, SiteContent } from '$lib/types';
 
@@ -65,13 +65,6 @@ const FIXED_ROUTES = [
 	'/build-info.json'
 ];
 
-const PREFIX: Record<Page['type'], string> = {
-	page: '',
-	service: '/diensten',
-	sector: '/sectoren',
-	region: '/regio'
-};
-
 /**
  * Paths written straight into components, which no content edit can change.
  *
@@ -81,9 +74,11 @@ const PREFIX: Record<Page['type'], string> = {
  * the build discover it.
  *
  * Add to this list whenever a literal internal href is added to a component.
- * Links built from content — `/diensten/{slug}` in ServicesGrid, `/blog/{slug}`
- * in BlogIndex — do not belong here; they follow the content by construction.
- * The exception is SERVICES below, a hardcoded list of service slugs.
+ * Links built from content — the services navigation, `/blog/{slug}` in
+ * BlogIndex — do not belong here; they follow the content by construction and
+ * cannot dangle. The ten service paths used to be listed below, because the
+ * menu read them from a hardcoded array; now that the list comes from the
+ * content itself, they are no longer code paths.
  */
 const CODE_PATHS: ReadonlyArray<readonly [string, string]> = [
 	['/afspraak', 'de knop "Maak een afspraak"'],
@@ -107,8 +102,7 @@ const CODE_PATHS: ReadonlyArray<readonly [string, string]> = [
 	['/sectoren/verzekeringsmakelaars', 'het menu'],
 	['/sectoren/garages-en-autobedrijven', 'het menu'],
 	['/sectoren/bouw-en-renovatie', 'het menu'],
-	['/sectoren/horeca-en-retail', 'het menu'],
-	...SERVICES.map(([slug, naam]) => [`/diensten/${slug}`, `het menu ("${naam}")`] as const)
+	['/sectoren/horeca-en-retail', 'het menu']
 ];
 
 /** Trailing slashes and anchors do not make a different page. */
@@ -134,7 +128,7 @@ function validPaths({ pages, posts }: SiteContent): Set<string> {
 		// The home page is served at / and the 404 body is rendered by the error
 		// page, so neither is reachable at /home or /404 as a crawled link.
 		if (page.type === 'page' && page.slug === 'home') continue;
-		valid.add(`${PREFIX[page.type]}/${page.slug}`);
+		valid.add(pagePath(page));
 	}
 	for (const post of posts) valid.add(`/blog/${post.slug}`);
 	return valid;

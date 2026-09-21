@@ -44,4 +44,5 @@
 	</div>
 </header>
 
-<PageBody page={p} logos={data.logos} posts={data.posts} settings={data.settings} />
+<PageBody page={p} logos={data.logos} posts={data.posts} settings={data.settings}
+          services={data.services} />

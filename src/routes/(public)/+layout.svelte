@@ -18,6 +18,6 @@
 	{@html `<script type="application/ld+json">${site}<\/script>`}
 </svelte:head>
 
-<Chrome settings={data.settings} pathname={page.url.pathname}>
+<Chrome settings={data.settings} services={data.services} pathname={page.url.pathname}>
 	{@render children()}
 </Chrome>

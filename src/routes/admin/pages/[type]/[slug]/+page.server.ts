@@ -17,7 +17,15 @@ export const load: PageServerLoad = async ({ params }) => {
 	if (dbError) throw error(500, dbError.message);
 	if (!data) throw error(404, 'Pagina niet gevonden');
 
-	return { page: data };
+	// The headings already in use, offered as suggestions so a typo does not
+	// silently create a second group that looks the same.
+	const { data: grouped } = await adminDb()
+		.from('pages')
+		.select('menu_group')
+		.not('menu_group', 'is', null);
+	const groups = [...new Set((grouped ?? []).map((g) => g.menu_group).filter(Boolean))].sort();
+
+	return { page: data, groups };
 };
 
 /** Fields the editor may write. Anything else is ignored. */
@@ -44,8 +52,17 @@ const TEXT_FIELDS = [
 	'portrait_url',
 	'portrait_alt',
 	'header_image_url',
-	'header_alt'
+	'header_alt',
+	'menu_label',
+	'menu_summary',
+	'menu_group'
 ];
+
+/** Checkboxes: absent means false, which is not the same as "leave alone". */
+const BOOLEAN_FIELDS = ['in_services'];
+
+/** Whole numbers. An empty box means "no position given", not zero. */
+const NUMBER_FIELDS = ['menu_order'];
 
 /**
  * Fields the database restricts to a fixed set of values.
@@ -81,6 +98,24 @@ export const actions: Actions = {
 					return fail(400, { message: `Kon het veld "${field}" niet opslaan.` });
 				}
 			}
+		}
+
+		for (const field of BOOLEAN_FIELDS) {
+			if (form.has(field)) patch[field] = String(form.get(field) ?? '') === 'on';
+		}
+
+		for (const field of NUMBER_FIELDS) {
+			if (!form.has(field)) continue;
+			const raw = String(form.get(field) ?? '').trim();
+			if (!raw) {
+				patch[field] = null;
+				continue;
+			}
+			const value = Number(raw);
+			if (!Number.isInteger(value)) {
+				return fail(400, { message: `"${raw}" is geen geheel getal.` });
+			}
+			patch[field] = value;
 		}
 
 		for (const [field, allowed] of Object.entries(ENUM_FIELDS)) {
