@@ -191,12 +191,14 @@
 				Een richting volstaat. Ik gebruik dit om een voorstel te maken dat klopt, niet om een
 				prijs op te plakken.
 			</p>
-			{#each [['geen', 'Ik heb er nog geen idee van'], ['beperkt', 'Beperkt — laten we klein beginnen'], ['degelijk', 'Er is ruimte voor een degelijk traject'], ['bedrag', 'Ik heb een bedrag in gedachten, dat bespreek ik liever persoonlijk']] as [waarde, label] (waarde)}
-				<div class="checkline">
-					<input id="b-{waarde}" type="radio" name="budget" value={label} />
-					<label for="b-{waarde}" class="normaal">{label}</label>
-				</div>
-			{/each}
+			<div class="keuzelijst">
+				{#each [['geen', 'Ik heb er nog geen idee van'], ['beperkt', 'Beperkt — laten we klein beginnen'], ['degelijk', 'Er is ruimte voor een degelijk traject'], ['bedrag', 'Ik heb een bedrag in gedachten, dat bespreek ik liever persoonlijk']] as [waarde, label] (waarde)}
+					<div class="checkline">
+						<input id="b-{waarde}" type="radio" name="budget" value={label} />
+						<label for="b-{waarde}" class="normaal">{label}</label>
+					</div>
+				{/each}
+			</div>
 		</div>
 	</fieldset>
 
@@ -257,7 +259,7 @@
 			<textarea id="q-opmerking" name="opmerkingen" rows="4"></textarea>
 		</div>
 
-		<div class="field checkline">
+		<div class="field checkline privacyveld">
 			<input id="q-privacy" name="privacy" type="checkbox" value="ja" required />
 			<label for="q-privacy" class="normaal">
 				Ik ga ermee akkoord dat mijn gegevens gebruikt worden om deze aanvraag te

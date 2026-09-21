@@ -719,7 +719,9 @@ footer.site ul a,
 .postlist.postgrid .date {
 	text-transform: uppercase;
 	letter-spacing: 0.06em;
-	font-size: 0.74rem;
+	/* 0.74rem came out at 11.8px, below the 12px floor the responsiveness
+	   audit holds the site to. */
+	font-size: 0.8rem;
 	font-weight: 600;
 	color: var(--signal-dk);
 }
@@ -743,6 +745,25 @@ footer.site ul a,
 	line-clamp: 4;
 	-webkit-box-orient: vertical;
 	overflow: hidden;
+}
+
+/* ── long words in running text ──────────────────────────────────────────────
+ *
+ * "www.gegevensbeschermingsautoriteit.be" in the privacy policy is a single
+ * 38-character token. On a 320px screen it is wider than the viewport, and
+ * because it overflows its paragraph rather than widening it, it pushed the
+ * whole page sideways without any element measuring too wide. Breaking only
+ * when a word genuinely does not fit leaves ordinary text alone.
+ */
+
+.prose,
+.prose p,
+.prose li,
+.prose h1,
+.prose h2,
+.prose h3,
+.pagehead .lead {
+	overflow-wrap: break-word;
 }
 
 /* ── offerteformulier ────────────────────────────────────────────────────────
@@ -803,13 +824,35 @@ footer.site ul a,
 	margin-top: 1.2rem;
 }
 
-.offerteform .keuzes .checkline,
 .offerteform .checkline {
-	margin: 0;
 	padding: 0.55rem 0.8rem;
 	border: 1px solid var(--line);
 	border-radius: var(--r);
 	background: #fff;
+}
+
+/*
+ * Only inside a group, where the grid gap does the spacing. Applying it to
+ * every .checkline also stripped the margin from the standalone privacy line,
+ * which then sat flush against the submit button.
+ */
+.offerteform .keuzes .checkline,
+.offerteform .keuzelijst .checkline {
+	margin: 0;
+}
+
+/* The budget choices are a stack, not a grid, so they need their own gap. */
+.offerteform .keuzelijst {
+	display: grid;
+	gap: 0.55rem;
+}
+
+.offerteform .privacyveld {
+	margin: 1.8rem 0 0;
+}
+
+.offerteform button[type='submit'] {
+	margin-top: 1.5rem;
 }
 
 .offerteform .checkline label {
@@ -828,6 +871,21 @@ footer.site ul a,
 	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 	gap: 0 1.4rem;
 	margin-top: 1.2rem;
+}
+
+/*
+ * Keep the boxes on a row in line with each other. "Btw-nummer (voor op de
+ * offerte)" wraps to two lines where "Naam" does not, and without this its
+ * input sits a line lower than its neighbours — which reads as a broken grid
+ * rather than a longer label.
+ */
+.offerteform .tweeluik .field {
+	display: flex;
+	flex-direction: column;
+}
+
+.offerteform .tweeluik .field input {
+	margin-top: auto;
 }
 
 /* A single-column select or textarea stretched across the whole container

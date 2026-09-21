@@ -128,12 +128,20 @@ check('healthy content has no broken links', findBrokenLinks(base()).map((b) => 
 	check(
 		'a media key resolves to the published path',
 		renderMarkdown('![gevel](site/gevel.jpg)'),
-		'<p><img alt="gevel" src="/assets/media/site/gevel.jpg" /></p>'
+		'<p><img alt="gevel" src="/assets/media/site/gevel.jpg" loading="lazy" decoding="async" /></p>'
 	);
+	// An image the size manifest knows carries its dimensions, so the browser can
+	// reserve the space and the text below does not jump when it loads.
 	check(
-		'a repo path is left as it is',
+		'a repo path is left as it is, with its measured size',
 		renderMarkdown('![niels](/assets/niels.jpg)'),
-		'<p><img alt="niels" src="/assets/niels.jpg" /></p>'
+		'<p><img alt="niels" src="/assets/niels.jpg" width="900" height="1125" loading="lazy" decoding="async" /></p>'
+	);
+	// One that was never measured renders without them rather than with a guess.
+	check(
+		'an unmeasured image gets no dimensions',
+		renderMarkdown('![x](/assets/bestaat-niet.png)').includes('width='),
+		false
 	);
 }
 
