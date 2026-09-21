@@ -17,9 +17,9 @@
 import { createServer } from 'vite';
 
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
-const { findBrokenLinks, explainBrokenLinks } = await server.ssrLoadModule(
-	'/src/lib/server/links.ts'
-);
+const { findBrokenLinks, explainBrokenLinks, findMissingImages, explainMissingImages } =
+	await server.ssrLoadModule('/src/lib/server/links.ts');
+const { renderMarkdown } = await server.ssrLoadModule('/src/lib/markdown.ts');
 
 const page = (over = {}) => ({
 	type: 'page', slug: 'x', title: 'X', seo_title: '', meta_description: '',
@@ -121,7 +121,43 @@ check('healthy content has no broken links', findBrokenLinks(base()).map((b) => 
 	console.log('        message:', explainBrokenLinks(broken));
 }
 
-// 8. Optionally: the live database, checked exactly as publishing would.
+// ── images in bodies ────────────────────────────────────────────────────────
+
+// 8. A media key resolves to the baked path; a repo path is left alone.
+{
+	check(
+		'a media key resolves to the published path',
+		renderMarkdown('![gevel](site/gevel.jpg)'),
+		'<p><img alt="gevel" src="/assets/media/site/gevel.jpg" /></p>'
+	);
+	check(
+		'a repo path is left as it is',
+		renderMarkdown('![niels](/assets/niels.jpg)'),
+		'<p><img alt="niels" src="/assets/niels.jpg" /></p>'
+	);
+}
+
+// 9. An image the library no longer holds is caught before it fails the build.
+{
+	const c = base();
+	c.pages.find((p) => p.slug === 'contact').body = 'Kom langs\n\n![gevel](site/weg.jpg)';
+	c.pages.find((p) => p.slug === 'home').header_image_url = 'site/aanwezig.jpg';
+	const available = new Set(['site/aanwezig.jpg']);
+	const missing = findMissingImages(c, available);
+	check('a deleted image is caught', missing.map((m) => m.value), ['site/weg.jpg']);
+	check('and named by its page', missing[0]?.where, 'de pagina "contact"');
+	check('an image that is still there is fine', findMissingImages({ ...c, pages: c.pages.filter((p) => p.slug === 'home') }, available).length, 0);
+	console.log('        message:', explainMissingImages(missing));
+}
+
+// 10. Repo images are not in the bucket and must not be reported as missing.
+{
+	const c = base();
+	c.pages.find((p) => p.slug === 'contact').body = '![niels](/assets/niels.jpg)';
+	check('a repo image is never reported missing', findMissingImages(c, new Set()).length, 0);
+}
+
+// 11. Optionally: the live database, checked exactly as publishing would.
 if (process.argv.includes('--live')) {
 	const { readContentForCheck } = await server.ssrLoadModule('/src/lib/server/links.ts');
 	const { createClient } = await import('@supabase/supabase-js');
@@ -140,9 +176,16 @@ if (process.argv.includes('--live')) {
 	const db = createClient(env.PUBLIC_SUPABASE_URL, env.SUPABASE_SERVICE_ROLE_KEY, {
 		auth: { persistSession: false }
 	});
-	const broken = findBrokenLinks(await readContentForCheck(db));
+	const { readMediaKeys } = await server.ssrLoadModule('/src/lib/server/links.ts');
+	const content = await readContentForCheck(db);
+
+	const broken = findBrokenLinks(content);
 	check('live content has no broken links', broken.map((b) => b.link), []);
 	if (broken.length) console.log('        ' + explainBrokenLinks(broken));
+
+	const missing = findMissingImages(content, await readMediaKeys(db));
+	check('live content has no missing images', missing.map((m) => m.value), []);
+	if (missing.length) console.log('        ' + explainMissingImages(missing));
 }
 
 await server.close();

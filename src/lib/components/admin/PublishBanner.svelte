@@ -28,8 +28,11 @@
 	let message = $state('');
 	let elapsed = $state(0);
 
-	/** Set when publishing was refused because a link points at a missing page. */
-	let brokenLinks = $state<{ link: string; where: string }[]>([]);
+	/**
+	 * Set when publishing was refused because the content points at something
+	 * that is not there — a page that was renamed, or a deleted image.
+	 */
+	let problems = $state<{ ref: string; where: string }[]>([]);
 
 	/* Polling continues through 'stale' as well as 'building': a deployment can
 	   go live a little after it finishes, and giving up at the build's end is how
@@ -92,20 +95,35 @@
 	async function triggerPublish() {
 		busy = true;
 		message = '';
-		brokenLinks = [];
+		problems = [];
 		try {
 			const res = await fetch('/api/publish', { method: 'POST' });
 			const body = await res.json().catch(() => ({}));
 			if (!res.ok) {
-				// A refused publish lists the links itself; the sentence then only
-				// has to explain what to do about them.
-				brokenLinks = body.brokenLinks ?? [];
-				message = brokenLinks.length
-					? 'Publiceren is gestopt: deze links verwijzen naar een pagina die niet meer ' +
+				// A refused publish lists what is wrong itself; the sentence then
+				// only has to explain what to do about it.
+				if (body.brokenLinks?.length) {
+					problems = body.brokenLinks.map((b: { link: string; where: string }) => ({
+						ref: b.link,
+						where: b.where
+					}));
+					message =
+						'Publiceren is gestopt: deze links verwijzen naar een pagina die niet meer ' +
 						'bestaat. Dat gebeurt meestal nadat het webadres van een pagina is gewijzigd. ' +
 						'Pas de link aan, of zet het oude webadres terug, en publiceer opnieuw. ' +
-						'Je wijzigingen blijven bewaard.'
-					: (body.message ?? 'Publiceren is niet gelukt. Je wijzigingen blijven bewaard.');
+						'Je wijzigingen blijven bewaard.';
+				} else if (body.missingImages?.length) {
+					problems = body.missingImages.map((m: { value: string; where: string }) => ({
+						ref: m.value,
+						where: m.where
+					}));
+					message =
+						'Publiceren is gestopt: deze afbeeldingen staan niet meer in de ' +
+						'mediabibliotheek. Upload ze opnieuw, of haal ze van de pagina, en ' +
+						'publiceer opnieuw. Je wijzigingen blijven bewaard.';
+				} else {
+					message = body.message ?? 'Publiceren is niet gelukt. Je wijzigingen blijven bewaard.';
+				}
 			} else if (body.deduped) {
 				message = `Er loopt al een publicatie. Nog ongeveer ${body.wait} seconden.`;
 			} else {
@@ -238,13 +256,13 @@
 </div>
 
 {#if message}
-	<p class="cms-hint" style="margin:-.9rem 0 {brokenLinks.length ? '.6rem' : '1.4rem'}">{message}</p>
+	<p class="cms-hint" style="margin:-.9rem 0 {problems.length ? '.6rem' : '1.4rem'}">{message}</p>
 {/if}
 
-{#if brokenLinks.length}
+{#if problems.length}
 	<ul class="cms-changes" style="margin:0 0 1.4rem">
-		{#each brokenLinks as b (b.link + b.where)}
-			<li><code>{b.link}</code> <span>in {b.where}</span></li>
+		{#each problems as p (p.ref + p.where)}
+			<li><code>{p.ref}</code> <span>in {p.where}</span></li>
 		{/each}
 	</ul>
 {/if}

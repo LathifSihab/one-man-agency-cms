@@ -30,6 +30,19 @@ function isStorageKey(value) {
 	return PREFIXES.includes(value.split('/')[0]);
 }
 
+/**
+ * The src of every `![alt](src)` in a body.
+ *
+ * Mirrors MARKDOWN_IMAGE in src/lib/images.ts, which cannot be imported here:
+ * this runs as plain Node before the build. Change them together.
+ */
+const MARKDOWN_IMAGE = /!\[[^\]]*\]\(\s*([^)\s]+)/g;
+
+function inMarkdown(source) {
+	if (typeof source !== 'string' || !source) return [];
+	return [...source.matchAll(MARKDOWN_IMAGE)].map((m) => m[1]);
+}
+
 function referencedImages(content) {
 	const found = new Set();
 	const add = (v) => {
@@ -38,8 +51,16 @@ function referencedImages(content) {
 	for (const p of content.pages ?? []) {
 		add(p.portrait_url);
 		add(p.header_image_url);
+		// Images placed in the text. Missing these does not show a broken image,
+		// it fails the build: prerendering follows every img src.
+		for (const v of inMarkdown(p.body)) add(v);
+		for (const v of inMarkdown(p.intro)) add(v);
 	}
-	for (const p of content.posts ?? []) add(p.image_url);
+	for (const p of content.posts ?? []) {
+		add(p.image_url);
+		for (const v of inMarkdown(p.body)) add(v);
+		for (const v of inMarkdown(p.intro)) add(v);
+	}
 	for (const l of content.logos ?? []) add(l.file_path);
 	return [...found].filter(isStorageKey);
 }
@@ -53,8 +74,8 @@ let db = null;
 if (url && key) {
 	db = createClient(url, key, { auth: { persistSession: false } });
 	const [pages, posts, logos] = await Promise.all([
-		db.from('pages').select('portrait_url, header_image_url'),
-		db.from('posts').select('image_url'),
+		db.from('pages').select('portrait_url, header_image_url, body, intro'),
+		db.from('posts').select('image_url, body, intro'),
 		db.from('logos').select('file_path')
 	]);
 	content = { pages: pages.data ?? [], posts: posts.data ?? [], logos: logos.data ?? [] };

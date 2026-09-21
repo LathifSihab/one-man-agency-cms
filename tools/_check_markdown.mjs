@@ -2,7 +2,13 @@
 // python-markdown produced for every body chunk in content/.
 //   node tools/_check_markdown.mjs [--show N]
 import fs from 'node:fs';
-import { renderMarkdown } from '../src/lib/markdown.ts';
+import { createServer } from 'vite';
+
+// Loaded through the project's own Vite config rather than imported directly:
+// markdown.ts resolves media keys through ./images, which plain Node cannot
+// resolve without an extension.
+const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
+const { renderMarkdown } = await server.ssrLoadModule('/src/lib/markdown.ts');
 
 const bodies = JSON.parse(fs.readFileSync('.tmp_bodies.json', 'utf8'));
 const show = process.argv.includes('--show')
@@ -43,3 +49,5 @@ for (const f of failures.slice(0, show)) {
 	console.log('GOT :', JSON.stringify(f.got.slice(Math.max(0, i - 80), i + 160)));
 }
 if (failures.length > show) console.log(`\n...and ${failures.length - show} more`);
+
+await server.close();

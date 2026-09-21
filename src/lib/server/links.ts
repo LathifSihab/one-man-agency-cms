@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { SERVICES } from '$lib/site';
+import { MEDIA_PREFIXES, imageValuesInMarkdown, isStorageKey } from '$lib/images';
 import type { Logo, Page, Post, Settings, SiteContent } from '$lib/types';
 
 /**
@@ -25,13 +26,14 @@ import type { Logo, Page, Post, Settings, SiteContent } from '$lib/types';
  * request — checking the edit before last and passing a build that then fails.
  */
 export async function readContentForCheck(db: SupabaseClient): Promise<SiteContent> {
-	const [pages, posts, settings] = await Promise.all([
+	const [pages, posts, logos, settings] = await Promise.all([
 		db.from('pages').select('*'),
 		db.from('posts').select('*'),
+		db.from('logos').select('*'),
 		db.from('settings').select('*').single()
 	]);
 
-	for (const result of [pages, posts, settings]) {
+	for (const result of [pages, posts, logos, settings]) {
 		if (result.error) throw new Error(`Supabase read failed: ${result.error.message}`);
 	}
 
@@ -39,7 +41,7 @@ export async function readContentForCheck(db: SupabaseClient): Promise<SiteConte
 		pages: pages.data as Page[],
 		// Only published posts are prerendered, so only they have a /blog/<slug>.
 		posts: (posts.data as Post[]).filter((p) => p.is_published),
-		logos: [] as Logo[],
+		logos: logos.data as Logo[],
 		settings: settings.data as Settings
 	};
 }
@@ -204,6 +206,83 @@ export function findBrokenLinks(content: SiteContent): BrokenLink[] {
 	for (const [link, where] of CODE_PATHS) check(link, where);
 
 	return broken;
+}
+
+/** An image the content points at that is no longer in the media library. */
+export interface MissingImage {
+	/** The media key, e.g. "site/gevel.jpg". */
+	value: string;
+	where: string;
+}
+
+/** Every key currently in the media bucket. */
+export async function readMediaKeys(db: SupabaseClient): Promise<Set<string>> {
+	const folders = await Promise.all(
+		MEDIA_PREFIXES.map(async (prefix) => {
+			const { data } = await db.storage.from('media').list(prefix, { limit: 1000 });
+			return (data ?? []).filter((f) => f.id).map((f) => `${prefix}/${f.name}`);
+		})
+	);
+	return new Set(folders.flat());
+}
+
+/**
+ * Images the content refers to that Storage no longer holds.
+ *
+ * tools/fetch-media.mjs downloads every referenced object before the build and
+ * exits non-zero if one cannot be fetched — deliberately, since a missing image
+ * is a hole in the page. But that means deleting a picture from the media
+ * library while a page still uses it fails the deploy, and the editor who
+ * deleted it finds out from a build log. Only Storage keys are checked: images
+ * that ship with the repository are not in the bucket and are not at risk.
+ */
+export function findMissingImages(content: SiteContent, available: Set<string>): MissingImage[] {
+	const missing: MissingImage[] = [];
+	const seen = new Set<string>();
+
+	const check = (raw: unknown, where: string) => {
+		if (typeof raw !== 'string') return;
+		const value = raw.trim();
+		if (!value || !isStorageKey(value) || available.has(value)) return;
+		const key = `${value}\u0000${where}`;
+		if (seen.has(key)) return;
+		seen.add(key);
+		missing.push({ value, where });
+	};
+
+	for (const page of content.pages) {
+		const where = pageLabel(page);
+		check(page.portrait_url, where);
+		check(page.header_image_url, where);
+		for (const value of imageValuesInMarkdown(page.body)) check(value, where);
+		for (const value of imageValuesInMarkdown(page.intro)) check(value, where);
+	}
+
+	for (const post of content.posts) {
+		const where = postLabel(post);
+		check(post.image_url, where);
+		for (const value of imageValuesInMarkdown(post.body)) check(value, where);
+		for (const value of imageValuesInMarkdown(post.intro)) check(value, where);
+	}
+
+	for (const logo of content.logos) {
+		check(logo.file_path, `het logo "${logo.name}"`);
+	}
+
+	return missing;
+}
+
+export function explainMissingImages(missing: MissingImage[]): string {
+	const list = missing.map((m) => `${m.value} (in ${m.where})`).join('; ');
+	const opening =
+		missing.length === 1
+			? 'Publiceren is gestopt: er wordt nog een afbeelding gebruikt die niet meer in de mediabibliotheek staat'
+			: `Publiceren is gestopt: er worden nog ${missing.length} afbeeldingen gebruikt die niet meer in de mediabibliotheek staan`;
+	return (
+		`${opening} — ${list}. ` +
+		'Upload ze opnieuw, of haal ze van de pagina, en publiceer opnieuw. ' +
+		'Je wijzigingen blijven bewaard.'
+	);
 }
 
 /**

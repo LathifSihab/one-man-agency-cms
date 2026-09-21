@@ -124,7 +124,20 @@ export const actions: Actions = {
 			.eq('type', params.type)
 			.eq('slug', params.slug);
 
-		if (dbError) return fail(500, { message: `Opslaan mislukt: ${dbError.message}` });
+		if (dbError) {
+			// A check constraint means the database has not caught up with this
+			// build — the offerte form variant, say, before its migration is
+			// applied. Raw Postgres text helps nobody who sees it.
+			if (/violates check constraint/i.test(dbError.message)) {
+				return fail(400, {
+					message:
+						'Deze keuze wordt door de database nog niet aanvaard. Waarschijnlijk moet er ' +
+						'nog een databank-update uitgevoerd worden. De rest van je wijzigingen is niet ' +
+						'opgeslagen; kies iets anders en probeer opnieuw.'
+				});
+			}
+			return fail(500, { message: `Opslaan mislukt: ${dbError.message}` });
+		}
 
 		return { saved: true, slug: patch.slug ?? params.slug };
 	}

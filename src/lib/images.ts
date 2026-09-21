@@ -56,7 +56,28 @@ export function previewImage(
 	return version ? `${base}?v=${version}` : base;
 }
 
-/** Every image value referenced anywhere in the content, de-duplicated. */
+/**
+ * Markdown image references in a body: the `src` of every `![alt](src)`.
+ *
+ * Kept here beside isStorageKey because tools/fetch-media.mjs needs the same
+ * rule and cannot import this module — it is plain Node, run before the build.
+ * That copy carries a pointer back to this one; change them together.
+ */
+export const MARKDOWN_IMAGE = /!\[[^\]]*\]\(\s*([^)\s]+)/g;
+
+export function imageValuesInMarkdown(source: unknown): string[] {
+	if (typeof source !== 'string' || !source) return [];
+	return [...source.matchAll(MARKDOWN_IMAGE)].map((m) => m[1]);
+}
+
+/**
+ * Every image value referenced anywhere in the content, de-duplicated.
+ *
+ * Bodies count. An image placed in a page body is as real a reference as one in
+ * portrait_url, and missing it means the file is never copied into the output —
+ * which does not produce a broken image, it fails the whole build, because
+ * prerendering follows every img src.
+ */
 export function collectImageValues(content: {
 	pages: Array<Record<string, unknown>>;
 	posts: Array<Record<string, unknown>>;
@@ -70,8 +91,14 @@ export function collectImageValues(content: {
 	for (const page of content.pages) {
 		add(page.portrait_url);
 		add(page.header_image_url);
+		for (const value of imageValuesInMarkdown(page.body)) add(value);
+		for (const value of imageValuesInMarkdown(page.intro)) add(value);
 	}
-	for (const post of content.posts) add(post.image_url);
+	for (const post of content.posts) {
+		add(post.image_url);
+		for (const value of imageValuesInMarkdown(post.body)) add(value);
+		for (const value of imageValuesInMarkdown(post.intro)) add(value);
+	}
 	for (const logo of content.logos) add(logo.file_path);
 
 	return [...found];

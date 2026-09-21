@@ -1,7 +1,14 @@
 import { json, error } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { adminDb } from '$lib/server/admin';
-import { explainBrokenLinks, findBrokenLinks, readContentForCheck } from '$lib/server/links';
+import {
+	explainBrokenLinks,
+	explainMissingImages,
+	findBrokenLinks,
+	findMissingImages,
+	readContentForCheck,
+	readMediaKeys
+} from '$lib/server/links';
 import type { RequestHandler } from './$types';
 
 export const prerender = false;
@@ -60,10 +67,23 @@ export const POST: RequestHandler = async ({ locals }) => {
 	// is worth catching here: from the CMS it reads as a sentence naming the
 	// page, instead of arriving later as a Vercel build-failure email. Checked
 	// before the build row is written, so a refusal leaves no record behind.
-	const broken = findBrokenLinks(await readContentForCheck(db));
+	const [content, mediaKeys] = await Promise.all([readContentForCheck(db), readMediaKeys(db)]);
+
+	const broken = findBrokenLinks(content);
 	if (broken.length) {
 		return json(
 			{ ok: false, brokenLinks: broken, message: explainBrokenLinks(broken) },
+			{ status: 409 }
+		);
+	}
+
+	// Same reasoning, one step further along: tools/fetch-media.mjs fails the
+	// build on an image it cannot download, so a picture deleted from the media
+	// library while a page still uses it would take the deploy with it.
+	const missing = findMissingImages(content, mediaKeys);
+	if (missing.length) {
+		return json(
+			{ ok: false, missingImages: missing, message: explainMissingImages(missing) },
 			{ status: 409 }
 		);
 	}

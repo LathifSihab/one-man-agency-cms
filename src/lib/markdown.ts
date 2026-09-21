@@ -1,4 +1,6 @@
 import { marked, type Tokens } from 'marked';
+// Relative, not $lib: tools/_check_markdown.mjs loads this module directly.
+import { resolveImage } from './images';
 
 /**
  * Markdown -> HTML, matching the reference implementation (build.py, which uses
@@ -68,6 +70,23 @@ renderer.link = function ({ href, title, tokens }: Tokens.Link) {
 
 renderer.blockquote = function ({ tokens }: Tokens.Blockquote) {
 	return `<blockquote>\n${this.parser.parse(tokens)}</blockquote>\n`;
+};
+
+/**
+ * An image in a body names a media-library object ("site/gevel.jpg") or a file
+ * that ships with the repository ("/assets/niels.jpg"). Both are written the
+ * same way in Markdown, and only $lib/images knows the difference — without
+ * this the Storage form would be emitted verbatim as a relative URL and 404.
+ *
+ * The reference content has no body images, so there is nothing for this to
+ * match in the parity check: it exists for images added through the CMS.
+ */
+renderer.image = function ({ href, title, text }: Tokens.Image) {
+	const src = resolveImage(href);
+	const alt = text ?? '';
+	return title
+		? `<img alt="${alt}" src="${src}" title="${title}" />`
+		: `<img alt="${alt}" src="${src}" />`;
 };
 
 marked.setOptions({

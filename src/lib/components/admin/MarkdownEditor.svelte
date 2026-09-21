@@ -1,6 +1,9 @@
 <script lang="ts">
 	import { renderMarkdown } from '$lib/markdown';
 	import { SHORTCODES, NOOP_TOKENS, splitBody, unknownTokens } from '$lib/shortcodes';
+	import { MEDIA_OUTPUT_DIR } from '$lib/images';
+	import { env } from '$env/dynamic/public';
+	import MediaPicker from './MediaPicker.svelte';
 
 	/**
 	 * Body editor: a formatting toolbar, insertable content blocks, and a live
@@ -51,8 +54,56 @@
 		queueMicrotask(() => textarea?.focus());
 	}
 
+	let pickerOpen = $state(false);
+	let picker: MediaPicker | undefined = $state();
+
+	/**
+	 * Insert a picked image at the cursor, as ordinary Markdown.
+	 *
+	 * The alt text is left as a prompt rather than guessed from the filename:
+	 * Google and screen readers both read it, and "Scherm-afbeelding-2026-09-20"
+	 * would be worse than nothing. Selecting it makes it the obvious next thing
+	 * to type over.
+	 */
+	function insertImage(key: string) {
+		const placeholder = 'wat er op de afbeelding staat';
+		const before = `![`;
+		const after = `](${key})`;
+		if (!textarea) {
+			value = `${value}\n\n${before}${placeholder}${after}`.replace(/^\n+/, '');
+			return;
+		}
+		const s = textarea.selectionStart;
+		const head = value.slice(0, s).replace(/\s*$/, '');
+		const tail = value.slice(s).replace(/^\s*/, '');
+		const snippet = `${before}${placeholder}${after}`;
+		const prefix = head ? `${head}\n\n` : '';
+		value = `${prefix}${snippet}${tail ? `\n\n${tail}` : ''}`;
+		const caret = prefix.length + before.length;
+		queueMicrotask(() => {
+			textarea?.focus();
+			textarea?.setSelectionRange(caret, caret + placeholder.length);
+		});
+	}
+
 	const label = (token: string) =>
 		SHORTCODES.find((s) => s.token === token)?.label ?? token;
+
+	/**
+	 * The preview reads images from Storage, not from the published path.
+	 *
+	 * renderMarkdown resolves a media key to /assets/media/…, which is written
+	 * during a build — so between choosing an image and publishing, that path is
+	 * a broken thumbnail on exactly the screen where you want to see it. Same
+	 * reason ImageField uses previewImage.
+	 */
+	const supabaseUrl = env.PUBLIC_SUPABASE_URL;
+	function previewHtml(markdown: string): string {
+		const html = renderMarkdown(markdown);
+		if (!supabaseUrl) return html;
+		const base = `${supabaseUrl.replace(/\/$/, '')}/storage/v1/object/public/media/`;
+		return html.replaceAll(`src="/${MEDIA_OUTPUT_DIR}/`, `src="${base}`);
+	}
 
 	const parts = $derived(splitBody(value));
 	const unknown = $derived(unknownTokens(value));
@@ -77,14 +128,25 @@
 		        onclick={() => atLineStart('1. ')}>Genummerd</button>
 		<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
 		        onclick={() => surround('[', '](/pagina)', 'linktekst')}>Link</button>
+		<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
+		        onclick={() => picker?.browse()}>Afbeelding</button>
 	</div>
 
 	<textarea id="body-editor" bind:this={textarea} bind:value rows="20"></textarea>
 
 	<p class="cms-hint">
-		Gebruik de knoppen hierboven; je hoeft geen opmaakcodes te kennen.
+		Gebruik de knoppen hierboven; je hoeft geen opmaakcodes te kennen. Een
+		afbeelding komt op een eigen regel te staan, op de plaats van je cursor.
 	</p>
 </div>
+
+<MediaPicker
+	bind:this={picker}
+	bind:open={pickerOpen}
+	folder="site"
+	onchoose={insertImage}
+	title="Kies een afbeelding voor in de tekst"
+/>
 
 <div class="cms-field">
 	<p class="cms-group-label">Blokken invoegen</p>
@@ -123,7 +185,7 @@
 	<div class="cms-preview">
 		{#each parts as part, i (i)}
 			{#if part.kind === 'prose'}
-				{@html renderMarkdown(part.value)}
+				{@html previewHtml(part.value)}
 			{:else}
 				<span class="cms-shortcode">Blok: {label(part.value)}</span>
 			{/if}
