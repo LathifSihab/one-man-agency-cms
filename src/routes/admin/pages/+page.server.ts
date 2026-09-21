@@ -5,7 +5,7 @@ import type { Actions, PageServerLoad } from './$types';
 export const load: PageServerLoad = async () => {
 	const { data } = await adminDb()
 		.from('pages')
-		.select('type, slug, title, todo_note, updated_at, noindex, in_services')
+		.select('type, slug, title, todo_note, updated_at, noindex, in_services, is_published')
 		.order('type')
 		.order('sort_order');
 

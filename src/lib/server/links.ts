@@ -38,7 +38,10 @@ export async function readContentForCheck(db: SupabaseClient): Promise<SiteConte
 	}
 
 	return {
-		pages: pages.data as Page[],
+		// Hidden pages are not built, so nothing may link to one and their own
+		// contents are never rendered. Dropping them here is what makes the guard
+		// refuse a publish that would hide a page something still points at.
+		pages: (pages.data as Page[]).filter((p) => p.is_published !== false),
 		// Only published posts are prerendered, so only they have a /blog/<slug>.
 		posts: (posts.data as Post[]).filter((p) => p.is_published),
 		logos: logos.data as Logo[],

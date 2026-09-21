@@ -59,7 +59,7 @@ const TEXT_FIELDS = [
 ];
 
 /** Checkboxes: absent means false, which is not the same as "leave alone". */
-const BOOLEAN_FIELDS = ['in_services'];
+const BOOLEAN_FIELDS = ['in_services', 'is_published'];
 
 /** Whole numbers. An empty box means "no position given", not zero. */
 const NUMBER_FIELDS = ['menu_order'];
@@ -125,6 +125,15 @@ export const actions: Actions = {
 				return fail(400, { message: `"${value}" is geen geldige keuze voor "${field}".` });
 			}
 			patch[field] = value || null;
+		}
+
+		// The site root cannot be taken off the site. The database refuses it too;
+		// this is so the refusal reads like a sentence.
+		if (patch.is_published === false && params.type === 'page' && params.slug === 'home') {
+			return fail(400, {
+				message:
+					'De startpagina kan niet verborgen worden — dat is het adres van de site zelf.'
+			});
 		}
 
 		// Mirror the database constraints so the editor reports the problem

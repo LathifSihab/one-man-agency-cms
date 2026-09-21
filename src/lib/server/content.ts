@@ -49,7 +49,13 @@ function normalise(
 ): SiteContent {
 	return {
 		// Ordering is explicit everywhere; never rely on insertion order.
-		pages: [...pages].sort((a, b) => a.sort_order - b.sort_order),
+		//
+		// Hidden pages are dropped here, once, which is what makes them absent
+		// from everything downstream: the prerender entry lists, the loads behind
+		// them, the sitemap and the services navigation all read this.
+		pages: [...pages]
+			.filter((p) => p.is_published !== false)
+			.sort((a, b) => a.sort_order - b.sort_order),
 		// Newest first. The comparator returns 0 for equal dates so the sort stays
 		// stable: same-day posts keep their slug order, as the reference build does.
 		posts: [...posts]

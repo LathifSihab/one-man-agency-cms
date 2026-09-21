@@ -48,6 +48,8 @@ export interface Page {
 	intro: string;
 	body: string;
 	noindex: boolean;
+	/** False keeps the page out of the build; its address then 404s. */
+	is_published?: boolean;
 	todo_note: string | null;
 	sort_order: number;
 	faq: FaqItem[] | null;

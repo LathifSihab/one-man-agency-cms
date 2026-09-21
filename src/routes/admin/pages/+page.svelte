@@ -128,6 +128,7 @@
 						{#if p.todo_note}<span class="cms-badge warn">Af te werken</span>{/if}
 						{#if p.noindex}<span class="cms-badge draft">Niet in Google</span>{/if}
 						{#if p.in_services}<span class="cms-badge">Bij de diensten</span>{/if}
+						{#if p.is_published === false}<span class="cms-badge warn">Niet op de site</span>{/if}
 					</td>
 					<td><a class="cms-btn cms-btn-ghost cms-btn-small"
 					       href="/admin/pages/{p.type}/{p.slug}">Bewerken</a></td>

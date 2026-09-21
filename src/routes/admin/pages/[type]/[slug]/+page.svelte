@@ -27,6 +27,7 @@
 	let headerImageUrl = $state(p.header_image_url ?? '');
 	let headerAlt = $state(p.header_alt ?? '');
 	let formVariant = $state(p.form_variant ?? '');
+	let isPublished = $state(p.is_published !== false);
 	let inServices = $state(Boolean(p.in_services));
 	let menuLabel = $state(p.menu_label ?? '');
 	let menuSummary = $state(p.menu_summary ?? '');
@@ -49,6 +50,9 @@
 
 	let busy = $state(false);
 	const slugChanged = $derived(slug !== p.slug);
+
+	/** The site root. Hiding it would take the whole site down. */
+	const isHome = p.type === 'page' && p.slug === 'home';
 
 	/**
 	 * A form replaces the blocks rather than joining them: the public template
@@ -120,6 +124,15 @@
 {#if form?.saved}
 	<div class="cms-ok">
 		Opgeslagen. Dit staat nog niet op de live site — publiceer via het overzicht.
+	</div>
+{/if}
+
+{#if !isPublished}
+	<div class="cms-banner pending">
+		<p>
+			Deze pagina staat <strong>niet op de site</strong>. Bezoekers die het adres openen
+			krijgen de foutpagina te zien. Alles wat je hier invult blijft bewaard.
+		</p>
 	</div>
 {/if}
 
@@ -321,6 +334,36 @@
 			<input id="f-header-alt" name="header_alt" type="text" bind:value={headerAlt} />
 		</div>
 	{/if}
+
+	<h2>Zichtbaarheid</h2>
+
+	<div class="cms-field">
+		<label style="font-weight:500;display:flex;align-items:center;gap:.5rem">
+			<input type="checkbox" bind:checked={isPublished} disabled={isHome} style="width:auto" />
+			Deze pagina staat op de site
+		</label>
+		<input type="hidden" name="is_published" value={isPublished ? 'on' : ''} />
+		{#if isHome}
+			<p class="cms-hint">De startpagina is het adres van de site zelf en kan niet verborgen worden.</p>
+		{:else}
+			<p class="cms-hint">
+				Zet dit uit om de pagina van de site te halen zonder ze te verwijderen. De pagina
+				verdwijnt dan volledig: het adres geeft de foutpagina, en ze staat niet meer in het
+				menu, het overzicht of de sitemap. Alle tekst en afbeeldingen blijven bewaard, en je
+				kan dit later gewoon weer aanzetten.
+			</p>
+			{#if isPublished}
+				<p class="cms-hint">
+					Let op bij een pagina die al in Google staat: het adres geeft daarna een foutmelding
+					voor wie er via een zoekresultaat of een oude link op terechtkomt.
+				</p>
+			{:else if inServices}
+				<p class="cms-hint">
+					Zolang ze verborgen is, staat ze ook niet bij de diensten.
+				</p>
+			{/if}
+		{/if}
+	</div>
 
 	<h2>Plaats bij de diensten</h2>
 

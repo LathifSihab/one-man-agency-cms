@@ -34,6 +34,9 @@ create table if not exists pages (
   meta_description  text        not null check (char_length(meta_description) <= 158),
   intro             text        not null,
   body              text        not null default '',                   -- Markdown, may contain {{tokens}}
+  -- False keeps the page out of the build entirely; its address then 404s.
+  -- Not the same as noindex, which leaves the page reachable.
+  is_published      boolean     not null default true,
   noindex           boolean     not null default false,
   todo_note         text,                                              -- af_te_werken
   sort_order        integer     not null default 0,

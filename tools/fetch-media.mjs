@@ -74,7 +74,8 @@ let db = null;
 if (url && key) {
 	db = createClient(url, key, { auth: { persistSession: false } });
 	const [pages, posts, logos] = await Promise.all([
-		db.from('pages').select('portrait_url, header_image_url, body, intro'),
+		// Hidden pages are not built, so their images are not needed either.
+		db.from('pages').select('portrait_url, header_image_url, body, intro').neq('is_published', false),
 		db.from('posts').select('image_url, body, intro'),
 		db.from('logos').select('file_path')
 	]);
