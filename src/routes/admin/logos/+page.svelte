@@ -82,7 +82,11 @@
 
 	function snapshotMatches() {
 		const q = query.trim().toLowerCase();
-		matchIds = q ? untrack(() => logos).filter((l) => matches(l, q)).map((l) => l.id) : null;
+		// The whole read is untracked, not just the array. $state is a deep proxy,
+		// so untracking the reference alone still tracks every l.name the filter
+		// touches — and this effect would then re-run on each keystroke and take a
+		// fresh snapshot, which is the very thing it exists to prevent.
+		matchIds = q ? untrack(() => logos.filter((l) => matches(l, q)).map((l) => l.id)) : null;
 	}
 
 	/* Re-runs on the search text only; the names it reads are untracked above. */
