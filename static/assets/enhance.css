@@ -614,12 +614,24 @@ footer.site ul a,
 .prose img {
 	display: block;
 	max-width: 100%;
+	/*
+	 * Capped by height, not width. A portrait photograph at full column width
+	 * runs about a screen tall and pushes everything after it below the fold —
+	 * the office photo on /contact was 69% of that column on its own. Landscape
+	 * images are untouched: 16:9 in this column comes out near 380px and never
+	 * reaches the cap, so this only bites on the shape that causes the problem.
+	 */
+	max-height: 440px;
+	width: auto;
 	height: auto;
 	border-radius: var(--r);
-	margin: 1.6rem 0;
+	margin: 1.6rem auto;
 }
 
+/* The portrait fills its figure, which is already what constrains it. */
 .prose-portret img {
+	width: 100%;
+	max-height: none;
 	margin: 0;
 }
 
