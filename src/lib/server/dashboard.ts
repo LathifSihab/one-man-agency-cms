@@ -51,6 +51,30 @@ export interface PublishState {
 /** Placeholder testimonial text carried over from the reference content. */
 const PLACEHOLDER_NAMES = ['Voornaam Naam'];
 
+/**
+ * After this long, a build that still says 'building' is treated as failed.
+ *
+ * Only two things ever move a build out of 'building': tools/mark-build-live.mjs
+ * at the end of a successful build, and /api/publish when the deploy hook itself
+ * refuses. A build that Vercel starts and then fails writes nothing at all — so
+ * the row stayed 'building' forever, the banner span forever, and the Publish
+ * button stayed disabled. On 20 September a prerender error left the CMS stuck
+ * like that for twenty hours with no way out from inside the CMS.
+ *
+ * Deploys here take about thirty seconds and the banner already calls sixty
+ * "longer than usual", so ten minutes is far past anything legitimate.
+ */
+const BUILD_DEADLINE_MS = 10 * 60 * 1000;
+
+const TIMED_OUT_DETAIL =
+	'De bouwopdracht heeft niets meer teruggemeld. Waarschijnlijk is het opbouwen ' +
+	'bij de hosting mislukt.';
+
+function timedOut(build: { status: string; triggered_at: string } | null): boolean {
+	if (!build || build.status !== 'building') return false;
+	return Date.now() - Date.parse(build.triggered_at) > BUILD_DEADLINE_MS;
+}
+
 export async function getOutstanding(db: SupabaseClient): Promise<Outstanding[]> {
 	const [logos, pages, settings] = await Promise.all([
 		db.from('logos').select('id, name'),
@@ -136,12 +160,9 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 		db.from('posts').select('updated_at').order('updated_at', { ascending: false }).limit(1),
 		db.from('logos').select('updated_at').order('updated_at', { ascending: false }).limit(1),
 		db.from('settings').select('updated_at').maybeSingle(),
-		db
-			.from('builds')
-			.select('*')
-			.order('triggered_at', { ascending: false })
-			.limit(1)
-			.maybeSingle(),
+		// More than one, so a failed build can still be measured against the last
+		// one that actually reached the live site.
+		db.from('builds').select('*').order('triggered_at', { ascending: false }).limit(20),
 		newestMediaChange(db),
 		liveBuildStamp()
 	]);
@@ -155,7 +176,27 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 	].filter(Boolean) as string[];
 
 	const lastEditedAt = stamps.length ? stamps.sort().at(-1)! : null;
-	const lastBuild = build.data ?? null;
+	const builds = build.data ?? [];
+	let lastBuild = builds[0] ?? null;
+
+	// Close off a build that never reported back, so the record matches what the
+	// editor is told and one failed deploy cannot wedge the CMS.
+	if (timedOut(lastBuild)) {
+		lastBuild = {
+			...lastBuild,
+			status: 'failed',
+			finished_at: new Date(Date.parse(lastBuild.triggered_at) + BUILD_DEADLINE_MS).toISOString(),
+			detail: TIMED_OUT_DETAIL
+		};
+		await db
+			.from('builds')
+			.update({
+				status: lastBuild.status,
+				finished_at: lastBuild.finished_at,
+				detail: lastBuild.detail
+			})
+			.eq('id', builds[0].id);
+	}
 
 	let status: PublishState['status'] = 'unknown';
 	if (!lastBuild) {
@@ -181,7 +222,11 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 	// tell the editor what they are about to put live.
 	let pending: PendingChange[] = [];
 	if (status === 'pending' || status === 'failed') {
-		const since = lastBuild?.finished_at ?? '1970-01-01';
+		// Measured from the last build that actually went live, not from the last
+		// build attempted. A failed build published nothing, so everything edited
+		// before it is still waiting too — dating from the failure itself hid
+		// exactly the changes the editor was trying to publish.
+		const since = builds.find((b) => b.status === 'live' && b.finished_at)?.finished_at ?? '1970-01-01';
 		pending = await getPendingChanges(db, since);
 
 		for (const file of media.files.filter((f) => f.at > since)) {

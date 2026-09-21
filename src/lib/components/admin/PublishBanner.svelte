@@ -16,7 +16,13 @@
 	/** A build normally takes about this long; used only for the progress bar. */
 	const EXPECTED_SECONDS = 60;
 	const POLL_MS = 4000;
-	const GIVE_UP_SECONDS = 360;
+	/**
+	 * Must outlast BUILD_DEADLINE_MS in $lib/server/dashboard.ts, which settles a
+	 * silent build as failed after ten minutes. Giving up before then stopped the
+	 * polling that would have collected that verdict, leaving the spinner turning
+	 * on a build the server had already written off.
+	 */
+	const GIVE_UP_SECONDS = 11 * 60;
 
 	let busy = $state(false);
 	let message = $state('');
@@ -69,8 +75,9 @@
 			if (elapsed > GIVE_UP_SECONDS) {
 				clearInterval(poll);
 				message =
-					'Dit duurt langer dan verwacht. Controleer de bouwstatus bij Vercel; ' +
-					'je wijzigingen blijven bewaard.';
+					'Deze publicatie geeft geen teken van leven meer. Herlaad deze pagina: ' +
+					'de status wordt dan op mislukt gezet en je kan opnieuw publiceren. ' +
+					'Je wijzigingen blijven bewaard.';
 				return;
 			}
 			invalidateAll();
