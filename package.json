@@ -21,7 +21,8 @@
     "test:logos": "node tools/logos-test.mjs",
     "test:publish-banner": "node tools/publish-banner-test.mjs",
     "test:pages-create": "node tools/pages-create-test.mjs",
-    "test:hide-page": "node tools/hide-page-test.mjs"
+    "test:hide-page": "node tools/hide-page-test.mjs",
+    "test:quote-form": "node tools/quote-form-test.mjs"
   },
   "devDependencies": {
     "@sveltejs/adapter-vercel": "^5.10.2",

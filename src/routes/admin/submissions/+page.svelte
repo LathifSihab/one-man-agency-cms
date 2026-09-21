@@ -7,8 +7,22 @@
 	const LABELS: Record<string, string> = {
 		naam: 'Naam', bedrijf: 'Bedrijf', email: 'E-mail', telefoon: 'Telefoon',
 		onderwerp: 'Onderwerp', budget: 'Budget', vraag: 'Vraag', website: 'Website',
-		gemeente: 'Gemeente', nieuwsbrief: 'Nieuwsbrief'
+		gemeente: 'Gemeente', nieuwsbrief: 'Nieuwsbrief',
+		// The quote form. Without these the answers arrive as raw column names,
+		// and a request with twenty of them is unreadable.
+		diensten: 'Waarmee helpen', huidige_website: 'Huidige website',
+		website_soort: 'Soort website', website_materiaal: 'Teksten en beeld',
+		branding_status: 'Huisstijl nu', social_kanalen: 'Kanalen',
+		social_soort: 'Social: wat', google_ads: 'Google Ads',
+		email_lijst: 'Klantgegevens staan', fotovideo_onderwerp: 'In beeld',
+		fotovideo_vorm: 'Foto of video', drukwerk_deadline: 'Deadline drukwerk',
+		start_termijn: 'Wil starten', btw: 'Btw-nummer', functie: 'Functie',
+		adres: 'Adres', postcode_gemeente: 'Postcode en gemeente',
+		hoe_gevonden: 'Gevonden via', opmerkingen: 'Opmerkingen', privacy: 'Privacy akkoord'
 	};
+
+	/** A ticked list arrives as an array; anything else prints as it is. */
+	const show = (value: unknown) => (Array.isArray(value) ? value.join(', ') : String(value));
 
 	/** How each form announces itself in the list. */
 	const VARIANT_LABEL: Record<string, string> = {
@@ -83,7 +97,7 @@
 							{#if key === 'email'}<a href="mailto:{value}">{value}</a>
 							{:else if key === 'telefoon'}<a href="tel:{value}">{value}</a>
 							{:else if key === 'website'}<a href={String(value)} target="_blank" rel="noopener">{value}</a>
-							{:else}{value}{/if}
+							{:else}{show(value)}{/if}
 						</td>
 					</tr>
 				{/each}

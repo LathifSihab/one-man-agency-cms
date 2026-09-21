@@ -1,5 +1,6 @@
 import { redirect } from '@sveltejs/kit';
 import { adminDb } from '$lib/server/admin';
+import { FIELDS, MULTI_FIELDS } from '$lib/server/submissions';
 import type { RequestHandler } from './$types';
 
 export const prerender = false;
@@ -11,15 +12,6 @@ export const prerender = false;
  * answers with a redirect. Writes use the service role key server-side; the
  * submissions table has no anon policy, so a browser cannot insert directly.
  */
-
-/** Fields we accept per variant. Anything else in the body is ignored. */
-const FIELDS: Record<string, string[]> = {
-	contact: ['naam', 'bedrijf', 'email', 'telefoon', 'onderwerp', 'budget', 'vraag'],
-	scan: ['naam', 'bedrijf', 'website', 'gemeente', 'email', 'telefoon', 'vraag', 'nieuwsbrief'],
-	// A quote request needs exactly what contact needs; it is kept apart so the
-	// two can be told from each other in Berichten.
-	offerte: ['naam', 'bedrijf', 'email', 'telefoon', 'onderwerp', 'budget', 'vraag']
-};
 
 const VARIANTS = new Set(Object.keys(FIELDS));
 
@@ -53,8 +45,17 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		throw redirect(303, '/formulier-fout');
 	}
 
-	const payload: Record<string, string> = {};
+	const payload: Record<string, string | string[]> = {};
 	for (const field of FIELDS[variant]) {
+		if (MULTI_FIELDS.has(field)) {
+			const values = form
+				.getAll(field)
+				.filter((v): v is string => typeof v === 'string')
+				.map((v) => v.trim())
+				.filter(Boolean);
+			if (values.length) payload[field] = values;
+			continue;
+		}
 		const value = form.get(field);
 		if (typeof value === 'string' && value.trim()) payload[field] = value.trim();
 	}

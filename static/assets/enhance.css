@@ -744,3 +744,139 @@ footer.site ul a,
 	-webkit-box-orient: vertical;
 	overflow: hidden;
 }
+
+/* ── offerteformulier ────────────────────────────────────────────────────────
+ *
+ * The quote form asks follow-up questions only for the services that were
+ * ticked. The site ships no JavaScript, so the reveal is done by :has() on the
+ * form: a block is shown when its checkbox is checked.
+ *
+ * Gated behind @supports on purpose, and the right way round. Without :has()
+ * nothing is hidden, so every question is visible — a long form, but a complete
+ * and working one. Hiding by default and revealing with :has() would leave the
+ * questions unreachable in a browser that lacks it.
+ */
+
+.offerteform {
+	max-width: none;
+}
+
+.offerteform .offertestap {
+	border: 0;
+	border-top: 2px solid var(--ink);
+	margin: 2.4rem 0 0;
+	padding: 1.6rem 0 0;
+}
+
+.offerteform legend {
+	display: flex;
+	align-items: center;
+	gap: 0.7rem;
+	padding: 0;
+	font-size: 1.28rem;
+	font-weight: 700;
+	letter-spacing: -0.02em;
+}
+
+.offerteform .stapnr {
+	display: inline-grid;
+	place-items: center;
+	width: 1.9rem;
+	height: 1.9rem;
+	border-radius: 100px;
+	background: var(--ink);
+	color: #fff;
+	font-size: 0.95rem;
+	line-height: 1;
+}
+
+.offerteform h3 {
+	font-size: 1rem;
+	margin: 0 0 0.8rem;
+}
+
+/* The service checkboxes read as a list of choices, not a wall of text. */
+.offerteform .keuzes {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+	gap: 0.55rem 1.6rem;
+	margin-top: 1.2rem;
+}
+
+.offerteform .keuzes .checkline,
+.offerteform .checkline {
+	margin: 0;
+	padding: 0.55rem 0.8rem;
+	border: 1px solid var(--line);
+	border-radius: var(--r);
+	background: #fff;
+}
+
+.offerteform .checkline label {
+	margin: 0;
+	cursor: pointer;
+}
+
+.offerteform .checkline:has(input:checked) {
+	border-color: var(--signal);
+	background: var(--signal-lt);
+}
+
+/* Two columns for the short contact fields; one on a phone. */
+.offerteform .tweeluik {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+	gap: 0 1.4rem;
+	margin-top: 1.2rem;
+}
+
+/* A single-column select or textarea stretched across the whole container
+   reads as a mistake; the two-column fields are already narrower than this. */
+.offerteform .field > input,
+.offerteform .field > select,
+.offerteform .field > textarea {
+	max-width: 34rem;
+}
+
+.offerteform .veldkop {
+	font-weight: 600;
+	font-size: 0.92rem;
+	margin: 0 0 0.35rem;
+}
+
+.offerteform .alsdan {
+	/* Its fields are capped, so a panel spanning the whole container would be
+	   mostly empty tint. */
+	max-width: 42rem;
+	margin: 1.6rem 0;
+	padding: 1.2rem 1.3rem;
+	border-left: 4px solid var(--signal);
+	background: var(--paper-2);
+	border-radius: 0 var(--r) var(--r) 0;
+}
+
+.offerteform .alsdan .field:last-child {
+	margin-bottom: 0;
+}
+
+@supports selector(:has(*)) {
+	.offerteform .alsdan {
+		display: none;
+	}
+
+	.offerteform:has(#d-website:checked) .als-website,
+	.offerteform:has(#d-branding:checked) .als-branding,
+	.offerteform:has(#d-social:checked) .als-social,
+	.offerteform:has(#d-vindbaarheid:checked) .als-vindbaarheid,
+	.offerteform:has(#d-email:checked) .als-email,
+	.offerteform:has(#d-fotovideo:checked) .als-fotovideo,
+	.offerteform:has(#d-drukwerk:checked) .als-drukwerk {
+		display: block;
+	}
+}
+
+@media (max-width: 620px) {
+	.offerteform .keuzes {
+		grid-template-columns: 1fr;
+	}
+}

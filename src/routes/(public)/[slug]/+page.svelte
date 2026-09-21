@@ -3,6 +3,7 @@
 	import PageHead from '$components/PageHead.svelte';
 	import PageBody from '$components/PageBody.svelte';
 	import ContactForm from '$components/ContactForm.svelte';
+	import QuoteForm from '$components/QuoteForm.svelte';
 	import TodoNotice from '$components/TodoNotice.svelte';
 	import { renderMarkdown } from '$lib/markdown';
 	import { faqSchema, blogSchema, webPageSchema } from '$lib/schema';
@@ -23,7 +24,14 @@
 
 <PageHead title={p.title} intro={p.intro} />
 
-{#if p.form_variant}
+{#if p.form_variant === 'offerte'}
+	<!-- The quote form asks a lot more than the other two, and its conditional
+	     blocks need the room, so the text sits above it rather than beside it. -->
+	<section><div class="wrap">
+		<div class="prose">{@html renderMarkdown(p.body)}</div>
+		<QuoteForm />
+	</div></section>
+{:else if p.form_variant}
 	<!-- Contact and scan pages put the prose and the form side by side. -->
 	<section><div class="wrap split">
 		<div class="prose">{@html renderMarkdown(p.body)}</div>
