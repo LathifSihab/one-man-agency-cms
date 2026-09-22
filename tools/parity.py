@@ -14,7 +14,7 @@ So this compares, per page:
   * every image src + alt
   * the visible text of <main>, whitespace-normalised
 
-    python tools/parity.py [--candidate .vercel/output/static]
+    python tools/parity.py [--candidate .svelte-kit/cloudflare]
 """
 import os, re, sys, json, glob, argparse, difflib
 from collections import Counter
@@ -204,7 +204,7 @@ def compare_text_file(rel, ref_path, cand_path, ignore=()):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--reference', default=os.path.join(ROOT, 'dist-original'))
-    ap.add_argument('--candidate', default=os.path.join(ROOT, '.vercel', 'output', 'static'))
+    ap.add_argument('--candidate', default=os.path.join(ROOT, '.svelte-kit', 'cloudflare'))
     args = ap.parse_args()
 
     ref_root, cand_root = args.reference, args.candidate

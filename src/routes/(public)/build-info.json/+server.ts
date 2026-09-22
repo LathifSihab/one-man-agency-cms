@@ -23,9 +23,9 @@ export const prerender = true;
 export const GET: RequestHandler = async () => {
 	const body = {
 		builtAt: new Date().toISOString(),
-		// Present on Vercel, absent locally. Neither is secret.
-		commit: env.VERCEL_GIT_COMMIT_SHA?.slice(0, 7) ?? null,
-		deployment: env.VERCEL_DEPLOYMENT_ID ?? null
+		// Injected by Workers Builds, absent locally. Neither is secret.
+		commit: env.WORKERS_CI_COMMIT_SHA?.slice(0, 7) ?? null,
+		deployment: env.WORKERS_CI_BUILD_UUID ?? null
 	};
 
 	return new Response(JSON.stringify(body), {

@@ -20,9 +20,10 @@ import { createClient } from '@supabase/supabase-js';
 import { createHash } from 'node:crypto';
 import { readFileSync, writeFileSync, readdirSync, statSync, existsSync } from 'node:fs';
 import { join, relative, basename } from 'node:path';
+import { OUTPUT_DIR } from './output.mjs';
 
 const STATIC_SRC = 'static/assets';
-const OUTPUT = '.vercel/output/static/assets';
+const OUTPUT = `${OUTPUT_DIR}/assets`;
 const BUCKET = 'media';
 
 /** Storage rejects some characters that are legal on disk; mirrors migrate.py. */

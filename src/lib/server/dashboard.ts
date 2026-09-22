@@ -71,7 +71,7 @@ function isPlaceholderQuote(t: { naam?: string; functie?: string }): boolean {
  *
  * Only two things ever move a build out of 'building': tools/mark-build-live.mjs
  * at the end of a successful build, and /api/publish when the deploy hook itself
- * refuses. A build that Vercel starts and then fails writes nothing at all — so
+ * refuses. A build that Cloudflare starts and then fails writes nothing at all — so
  * the row stayed 'building' forever, the banner span forever, and the Publish
  * button stayed disabled. On 20 September a prerender error left the CMS stuck
  * like that for twenty hours with no way out from inside the CMS.
@@ -241,7 +241,8 @@ export async function getPublishState(db: SupabaseClient): Promise<PublishState>
 		 * reported as never having gone live.
 		 *
 		 * Falls back to the clock for rows written before deployment_id existed,
-		 * and for builds run outside Vercel, where there is no id to compare.
+		 * and for builds run outside Workers Builds, where there is no id to
+		 * compare.
 		 */
 		if (live.deployment && lastBuild.deployment_id) {
 			status = live.deployment === lastBuild.deployment_id ? 'live' : 'stale';
@@ -359,10 +360,12 @@ export interface Analytics {
  * ourselves would answer the wrong question.
  */
 async function liveBuildStamp(): Promise<{ builtAt: string | null; deployment: string | null }> {
-	const base =
-		env.VERCEL_PROJECT_PRODUCTION_URL
-			? `https://${env.VERCEL_PROJECT_PRODUCTION_URL}`
-			: (env.ADMIN_URL ?? publicEnv.PUBLIC_SITE_URL ?? '');
+	/*
+	 * Workers has no equivalent of VERCEL_PROJECT_PRODUCTION_URL — a Worker does
+	 * not learn its own production hostname from the runtime. Configuration says
+	 * it instead, which is what these two were already the fallback for.
+	 */
+	const base = env.ADMIN_URL ?? publicEnv.PUBLIC_SITE_URL ?? '';
 
 	const none = { builtAt: null, deployment: null };
 	if (!base) return none;

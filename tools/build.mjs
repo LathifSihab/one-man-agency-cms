@@ -1,11 +1,13 @@
 /**
  * Build entry point.
  *
- * On Linux (Vercel, CI) this is a plain `vite build`.
+ * On Linux (Workers Builds, CI) this is a plain `vite build`.
  *
- * On Windows it first installs a narrow shim: adapter-vercel links each route's
- * `.func` directory to a shared bundle with a symlink, and Windows refuses to
- * create symlinks unless Developer Mode is on or the shell is elevated.
+ * On Windows it first installs a narrow shim: an adapter may link part of its
+ * output with a symlink, and Windows refuses to create symlinks unless
+ * Developer Mode is on or the shell is elevated. adapter-vercel did this for
+ * every route's `.func` directory; adapter-cloudflare is lighter on symlinks,
+ * but the shim costs nothing and only intercepts an outright EPERM.
  * Directory junctions are allowed and behave identically for this purpose, so
  * we fall back to one only when the symlink is refused. Without this, a local
  * production build cannot complete and the parity check cannot run.

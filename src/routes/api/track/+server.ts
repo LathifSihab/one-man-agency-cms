@@ -80,7 +80,7 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 				path,
 				referrer_host: host,
 				device: deviceFrom(ua),
-				country: request.headers.get('x-vercel-ip-country')?.slice(0, 2) ?? null,
+				country: request.headers.get('cf-ipcountry')?.slice(0, 2) ?? null,
 				is_entry: host !== null || !body.r
 			});
 	} catch {

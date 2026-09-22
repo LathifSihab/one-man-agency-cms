@@ -1,22 +1,23 @@
 /**
- * Inject the 301 redirects into the Vercel build output.
+ * Write the 301 redirects into the build output.
  *
- * Q3 resolved to Vercel, so the reference's Cloudflare `_redirects` file does
- * nothing here. The rules are generated at build time instead — ten static
- * legacy paths plus one per post `legacy_url`, so a new post with a legacy URL
- * is covered automatically without anyone editing a config file.
+ * Q3 resolved to Cloudflare, where `_redirects` is native: the file is read
+ * from the assets directory and applied before the static handler, so there is
+ * nothing to inject into a config. (Under Vercel this same file was only a
+ * portable record, and the real rules were patched into
+ * `.vercel/output/config.json`. That inversion is the whole diff here.)
  *
- * They are prepended to the adapter's route list so they run before the
- * filesystem handler. Run as `postbuild`.
- *
- * A plain-text `_redirects` is written alongside them purely as a portable
- * record of the same rules (and so the acceptance check can read them).
+ * Ten static legacy paths plus one per post `legacy_url`, so a new post with a
+ * legacy URL is covered automatically without anyone editing a config file.
+ * Run as part of `npm run build`, after the build.
  */
-import { readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from 'node:fs';
 import { createClient } from '@supabase/supabase-js';
 
-const CONFIG = '.vercel/output/config.json';
-const STATIC = '.vercel/output/static';
+import { OUTPUT_DIR } from './output.mjs';
+
+/** One newline. Written this way so a patch script cannot mangle the escape. */
+const NL = String.fromCharCode(10);
 
 /**
  * Slugs that were renamed after the site went live. The old path was indexed
@@ -73,42 +74,41 @@ async function legacyPostRules() {
 
 const rules = [...RENAMED, ...STATIC_RULES, ...(await legacyPostRules())];
 
-// ── Vercel routes ───────────────────────────────────────────────────────────
-if (!existsSync(CONFIG)) {
-	throw new Error(`${CONFIG} not found — run this after the build.`);
+// ── write the file ───────────────────────────────────────────────
+if (!existsSync(OUTPUT_DIR)) {
+	throw new Error(`${OUTPUT_DIR} not found — run this after the build.`);
 }
-const config = JSON.parse(readFileSync(CONFIG, 'utf8'));
 
-// A rule pointing at its own path is a no-op on Cloudflare, which is where these
-// came from, but on Vercel it is an infinite redirect loop. `/referenties` is
-// one of them. Drop them from the routes; they stay in the _redirects record so
-// it still matches the reference file.
-const routable = rules.filter(([from, to]) => from !== to);
+/*
+ * A rule pointing at its own path is dropped. `/referenties` → `/referenties`
+ * is one, inherited from the reference `_redirects` in dist-original.
+ *
+ * The previous version of this file claimed such a rule was "a no-op on
+ * Cloudflare" and filtered it only out of the Vercel routes. That is not true,
+ * and it was never tested: `wrangler dev` answers `/referenties` with a 301 to
+ * itself and the browser gives up after ~20 hops. It is a real page, so the
+ * result is a dead page rather than a cosmetic wart.
+ *
+ * This is why the emitted file carries 16 rules where dist-original has 17, and
+ * why tools/verify.py expects 16.
+ *
+ * `/post/*` is a splat, which Cloudflare supports natively. Placeholders and
+ * splats count against a limit of 100 dynamic rules (2000 static); this build
+ * writes well under twenty.
+ */
+const emitted = rules.filter(([from, to]) => from !== to);
+const selfReferencing = rules.length - emitted.length;
+const text = emitted.map(([from, to]) => `${from.padEnd(70)} ${to}  301`).join(NL) + NL;
 
-// No marker property is added here: the Build Output API validates route objects
-// against a strict schema and rejects unknown fields at deploy time, after a
-// successful build. The adapter rewrites config.json on every build anyway, so
-// there is nothing to de-duplicate against.
-const routes = routable.map(([from, to]) => ({
-	// `/post/*` is a prefix match; everything else is exact.
-	src: from.endsWith('/*') ? `^${from.slice(0, -2)}/.*$` : `^${from}$`,
-	status: 301,
-	headers: { Location: to }
-}));
+mkdirSync(OUTPUT_DIR, { recursive: true });
+writeFileSync(`${OUTPUT_DIR}/_redirects`, text, 'utf8');
 
-config.routes = [...routes, ...(config.routes ?? [])];
-
-writeFileSync(CONFIG, JSON.stringify(config, null, 1), 'utf8');
-
-// ── portable record of the same rules ───────────────────────────────────────
-const text = rules.map(([from, to]) => `${from.padEnd(70)} ${to}  301`).join('\n') + '\n';
-writeFileSync(`${STATIC}/_redirects`, text, 'utf8');
-
-const skipped = rules.length - routable.length;
+const dynamic = emitted.filter(([from]) => from.includes('*')).length;
 console.log(
-	`Injected ${routes.length} redirect routes ` +
+	`Wrote ${emitted.length} redirect rules to ${OUTPUT_DIR}/_redirects ` +
 		`(${RENAMED.length} renamed, ${STATIC_RULES.length} static, ` +
-		`${rules.length - STATIC_RULES.length - RENAMED.length} legacy post URLs` +
-		(skipped ? `, ${skipped} self-referencing rule skipped` : '') +
-		`); wrote ${rules.length} rules to _redirects.`
+		`${rules.length - STATIC_RULES.length - RENAMED.length} legacy post URLs, ` +
+		`${dynamic} dynamic` +
+		(selfReferencing ? `; dropped ${selfReferencing} self-referencing rule` : '') +
+		`).`
 );

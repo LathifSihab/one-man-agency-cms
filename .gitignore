@@ -42,3 +42,7 @@ static/assets/media/
 
 # stray output from a mistyped curl -w
 -w
+deployment
+
+# wrangler dev local state
+.wrangler/

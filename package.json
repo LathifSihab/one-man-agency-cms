@@ -8,7 +8,7 @@
     "build": "node tools/fetch-media.mjs && node tools/image-sizes.mjs && node tools/build.mjs && node tools/apply-media-overrides.mjs && node tools/redirects.mjs && node tools/mark-build-live.mjs",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-    "verify": "python tools/verify.py --candidate .vercel/output/static --skip-diff",
+    "verify": "python tools/verify.py --candidate .svelte-kit/cloudflare --skip-diff",
     "parity": "python tools/parity.py",
     "postinstall": "svelte-kit sync",
     "seed:account": "python tools/seed_account.py",
@@ -25,6 +25,7 @@
     "test:quote-form": "node tools/quote-form-test.mjs"
   },
   "devDependencies": {
+    "@sveltejs/adapter-cloudflare": "^7.2.9",
     "@sveltejs/adapter-vercel": "^5.10.2",
     "@sveltejs/kit": "^2.46.4",
     "@sveltejs/vite-plugin-svelte": "^6.2.1",

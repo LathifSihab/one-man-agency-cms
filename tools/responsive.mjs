@@ -14,10 +14,10 @@
  *
  *   node tools/responsive.mjs [--base http://localhost:4173] [--all]
  *
- * With no --base it serves .vercel/output/static itself. That matters: a generic
+ * With no --base it serves the build output itself. That matters: a generic
  * static server in SPA mode rewrites every extensionless URL to index.html, so
  * the audit silently measures the home page once per route and reports a clean
- * sweep. The built-in server maps /prijzen to prijzen.html the way Vercel does,
+ * sweep. The built-in server maps /prijzen to prijzen.html the way the host does,
  * and 404s anything missing so a bad route is visible.
  *
  * Pass --all to sweep every page rather than the representative set.
@@ -36,7 +36,7 @@ const TYPES = {
 	'.txt': 'text/plain; charset=utf-8'
 };
 
-/** Serves the build with Vercel's clean-URL mapping. Returns [origin, close]. */
+/** Serves the build with the host's clean-URL mapping. Returns [origin, close]. */
 async function serveBuild(root) {
 	const server = createServer((req, res) => {
 		const path = decodeURIComponent(new URL(req.url, 'http://x').pathname);
@@ -65,6 +65,7 @@ import { chromium } from 'playwright';
 import { createServer } from 'node:http';
 import { readdirSync, statSync, readFileSync, existsSync } from 'node:fs';
 import { join, extname } from 'node:path';
+import { OUTPUT_DIR } from './output.mjs';
 
 const args = process.argv.slice(2);
 const flag = (name, fallback) => {
@@ -74,7 +75,7 @@ const flag = (name, fallback) => {
 
 const EXPLICIT_BASE = flag('--base', null);
 const ALL = args.includes('--all');
-const ROOT = '.vercel/output/static';
+const ROOT = OUTPUT_DIR;
 
 const [BASE, stopServer] = EXPLICIT_BASE
 	? [EXPLICIT_BASE.replace(/\/$/, ''), async () => {}]

@@ -19,6 +19,10 @@ export const prerender = false;
  * The deploy hook URL is a secret — anyone holding it can start builds — so it
  * is only ever called from here, never from the browser. Requires a logged-in
  * admin, and collapses rapid repeat clicks into a single build.
+ *
+ * Cloudflare also skips redundant builds when a hook fires repeatedly before
+ * the first one starts. The cooldown below stays regardless: it is what makes
+ * the CMS report one build to the editor rather than five.
  */
 
 const COOLDOWN_MS = 60_000;
@@ -31,15 +35,15 @@ export const POST: RequestHandler = async ({ locals }) => {
 	const hook = env.DEPLOY_HOOK_URL;
 	if (!hook) throw error(500, 'DEPLOY_HOOK_URL is niet ingesteld.');
 
-	// A deploy hook is an api.vercel.com integration URL. Pointing this at, say,
-	// a deployment URL would answer 200 and we would report a build that never
-	// runs — the one thing the publish flow must never do. Check the shape.
-	if (!/^https:\/\/api\.vercel\.com\/v1\/integrations\/deploy\//.test(hook)) {
+	// A deploy hook is a Cloudflare Workers Builds hook URL. Pointing this at,
+	// say, a deployment URL would answer 200 and we would report a build that
+	// never runs — the one thing the publish flow must never do. Check the shape.
+	if (!/^https:\/\/api\.cloudflare\.com\/client\/v4\/workers\/builds\/deploy_hooks\//.test(hook)) {
 		throw error(
 			500,
-			'DEPLOY_HOOK_URL is geen geldige Vercel deploy hook. Verwacht een adres dat ' +
-				'begint met https://api.vercel.com/v1/integrations/deploy/ — maak er een aan ' +
-				'bij Settings > Git > Deploy Hooks.'
+			'DEPLOY_HOOK_URL is geen geldige Cloudflare deploy hook. Verwacht een adres ' +
+				'dat begint met https://api.cloudflare.com/client/v4/workers/builds/deploy_hooks/ — ' +
+				'maak er een aan bij Workers & Pages > deze Worker > Settings > Builds > Deploy Hooks.'
 		);
 	}
 

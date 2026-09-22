@@ -8,7 +8,7 @@
  *
  * Honest about what it proves: the build completed and read Supabase. It does
  * not prove the deploy was served. If a deploy fails after a successful build,
- * Vercel keeps the previous version and the banner will have said "live" a
+ * Cloudflare keeps the previous version and the banner will have said "live" a
  * little early. A deployment webhook would close that gap; this is the useful
  * 90% without extra infrastructure.
  *
@@ -18,8 +18,8 @@ import { createClient } from '@supabase/supabase-js';
 
 // Only a real deployment publishes anything. A local `npm run build` with
 // credentials in the shell must never tell the CMS the site went live.
-if (!process.env.VERCEL) {
-	console.log('[builds] Not a Vercel build — leaving build records untouched.');
+if (!process.env.WORKERS_CI) {
+	console.log('[builds] Not a Workers Builds run — leaving build records untouched.');
 	process.exit(0);
 }
 
@@ -42,7 +42,7 @@ const finishedAt = new Date().toISOString();
  * this file runs at the end of a build and build-info.json is stamped during
  * prerendering, several seconds earlier.
  */
-const deploymentId = process.env.VERCEL_DEPLOYMENT_ID ?? null;
+const deploymentId = process.env.WORKERS_CI_BUILD_UUID ?? null;
 
 const { data, error } = await db
 	.from('builds')
