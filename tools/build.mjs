@@ -33,5 +33,31 @@ if (process.platform === 'win32') {
 	};
 }
 
+/*
+ * Which commit this build is. build-info.json publishes it.
+ *
+ * WORKERS_CI_COMMIT_SHA is not reliable on its own: builds started by the
+ * deploy hook (the CMS Publish button) or by Retry are tied to a branch, not a
+ * commit, and there the variable holds the branch name — the live site
+ * reported `"commit":"main"`. The build container always has the clone, so ask
+ * git instead whenever the variable does not look like a SHA.
+ *
+ * Set here rather than in the route because this runs as plain Node before the
+ * build, and the prerender process inherits the environment it is given.
+ */
+const SHA = /^[0-9a-f]{7,40}$/i;
+const fromCi = process.env.WORKERS_CI_COMMIT_SHA;
+if (fromCi && SHA.test(fromCi)) {
+	process.env.BUILD_COMMIT = fromCi;
+} else {
+	try {
+		const { execFileSync } = await import('node:child_process');
+		const head = execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim();
+		if (SHA.test(head)) process.env.BUILD_COMMIT = head;
+	} catch {
+		// No git, no clone: build-info.json says null, as it always did.
+	}
+}
+
 const { build } = await import('vite');
 await build();

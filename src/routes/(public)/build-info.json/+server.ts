@@ -23,8 +23,9 @@ export const prerender = true;
 export const GET: RequestHandler = async () => {
 	const body = {
 		builtAt: new Date().toISOString(),
-		// Injected by Workers Builds, absent locally. Neither is secret.
-		commit: env.WORKERS_CI_COMMIT_SHA?.slice(0, 7) ?? null,
+		// Resolved by tools/build.mjs — from Workers Builds when it gives a real
+		// SHA, otherwise from the clone. Neither value is secret.
+		commit: env.BUILD_COMMIT?.slice(0, 7) ?? null,
 		deployment: env.WORKERS_CI_BUILD_UUID ?? null
 	};
 
