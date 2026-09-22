@@ -21,7 +21,7 @@ import type { Logo, Page, Post, Settings, SiteContent } from '$lib/types';
 
 let cache: SiteContent | null = null;
 
-function fromSeed(): SiteContent {
+function fromSeed(url: string | undefined, key: string | undefined): SiteContent {
 	// The seed file lives in the repo, not in a deployed function bundle. Falling
 	// back to it at request time would fail with a confusing ENOENT, so refuse
 	// clearly instead: at runtime, missing credentials are a misconfiguration.
@@ -30,6 +30,34 @@ function fromSeed(): SiteContent {
 			'Supabase is not configured. PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY ' +
 				'must be set for this environment. The supabase/seed.json fallback is ' +
 				'build-time only and is not deployed.'
+		);
+	}
+
+	/*
+	 * In CI the fallback is a trap rather than a convenience. The seed is a
+	 * snapshot from launch and the content has moved on since — it no longer
+	 * holds the `offerte` page, while FamilyPage.svelte links to /offerte
+	 * unconditionally, so prerendering dies twenty seconds later on
+	 * `404 /offerte (linked from /diensten/ai-voor-kmo)`. That error says
+	 * nothing about the actual cause, which is always the same one: the build
+	 * cannot see the credentials.
+	 *
+	 * On Cloudflare this is its own trap, because runtime secrets and build
+	 * variables are different screens. Secrets set with `wrangler secret put`,
+	 * or under Settings > Variables & Secrets, are invisible here: build
+	 * variables live under Settings > Build.
+	 */
+	if (env.WORKERS_CI || env.CI) {
+		const missing = [
+			url ? null : 'PUBLIC_SUPABASE_URL',
+			key ? null : 'SUPABASE_SERVICE_ROLE_KEY'
+		].filter(Boolean);
+		throw new Error(
+			`Supabase credentials are missing from the BUILD environment: ${missing.join(', ')}. ` +
+				'On Cloudflare, set these under Settings > Build > Variables and Secrets — ' +
+				'NOT Settings > Variables & Secrets, which is runtime only and invisible to ' +
+				'the build. The supabase/seed.json fallback is for local builds; it can no ' +
+				'longer produce a valid site (it predates the /prijzen -> /offerte rename).'
 		);
 	}
 
@@ -96,7 +124,7 @@ export async function getContent(): Promise<SiteContent> {
 	const url = publicEnv.PUBLIC_SUPABASE_URL;
 	const key = env.SUPABASE_SERVICE_ROLE_KEY;
 
-	cache = url && key ? await fromSupabase(url, key) : fromSeed();
+	cache = url && key ? await fromSupabase(url, key) : fromSeed(url, key);
 	return cache;
 }
 
