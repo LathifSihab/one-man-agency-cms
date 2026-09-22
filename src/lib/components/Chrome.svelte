@@ -39,7 +39,7 @@
 			<li><a class="navlink" href={item.link}
 			       aria-current={active(item.link) ? 'page' : undefined}>{item.label}</a></li>
 		{/each}
-		<li><a class="btn" href={settings.header_cta.link}>{settings.header_cta.label}</a></li>
+		<li><a class="btn btn-green" href={settings.header_cta.link}>{settings.header_cta.label}</a></li>
 	</ul>
 </div></nav>
 
@@ -48,7 +48,7 @@
 <section class="cta-band"><div class="wrap">
 	<h2>Eén gesprek van 30 minuten. Daarna weet je waar je staat.</h2>
 	<p>Gratis, vrijblijvend en zonder verkooppraat. Ik luister, jij vertelt wat er scheelt, en ik zeg eerlijk of ik kan helpen.</p>
-	<div class="btns"><a class="btn btn-light" href="/afspraak">Maak een afspraak</a>
+	<div class="btns"><a class="btn btn-green" href="/afspraak">Maak een afspraak</a>
 	<a class="btn btn-ghost wit" href="tel:{b.telefoon_link}">Bel {b.telefoon}</a></div>
 </div></section>
 

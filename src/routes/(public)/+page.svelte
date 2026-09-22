@@ -34,7 +34,7 @@
 			<h1>{p.title}</h1>
 			<p class="lead">{p.intro}</p>
 			<div class="btns">
-				{#if p.cta_primary}<a class="btn" href={p.cta_primary.link}>{p.cta_primary.label}</a>{/if}
+				{#if p.cta_primary}<a class="btn btn-green" href={p.cta_primary.link}>{p.cta_primary.label}</a>{/if}
 				{#if p.cta_secondary}<a class="btn btn-ghost" href={p.cta_secondary.link}>{p.cta_secondary.label}</a>{/if}
 			</div>
 		</div>

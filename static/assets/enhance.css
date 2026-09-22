@@ -938,3 +938,31 @@ footer.site ul a,
 		grid-template-columns: 1fr;
 	}
 }
+
+/* ── the brand green on the main calls to action ─────────────────────────────
+ *
+ * Green is the brand, so the primary button is green wherever it appears: the
+ * header, the hero, the free scan, the service and article pages, and the
+ * thirty-minute band. btn-green is the delivered design system's own class in
+ * style.css — this is not a new colour, only a wider use of it.
+ *
+ * Two contexts need help. The photo hero repaints .btn white so it reads
+ * against the scrim, and `.herohead .btn` is more specific than `.btn-green`,
+ * so it would win. And on a dark background the stock hover to ink leaves a
+ * black button on a black band: it reads as the button disappearing. Lifting to
+ * white instead keeps the shape and says "pressed".
+ */
+
+.herohead .btn-green,
+.cta-band .btn-green {
+	background: var(--signal);
+	border-color: var(--signal);
+	color: var(--ink);
+}
+
+.herohead .btn-green:hover,
+.cta-band .btn-green:hover {
+	background: #fff;
+	border-color: #fff;
+	color: var(--ink);
+}

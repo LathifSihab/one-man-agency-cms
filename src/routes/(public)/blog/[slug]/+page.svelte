@@ -38,7 +38,7 @@
 	{/if}
 	<article class="post prose">{@html renderMarkdown(p.body)}</article>
 	<div class="btns">
-		<a class="btn" href="/afspraak">Maak een afspraak</a>
+		<a class="btn btn-green" href="/afspraak">Maak een afspraak</a>
 		<a class="btn btn-ghost" href="/blog">Alle artikels</a>
 	</div>
 </div></section>
