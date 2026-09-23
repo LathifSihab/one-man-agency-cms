@@ -109,12 +109,13 @@ def seo_artefacts(candidate):
     redirects = os.path.join(candidate, '_redirects')
     if os.path.exists(redirects):
         rules = [l for l in open(redirects, encoding='utf-8').read().splitlines() if l.strip()]
-        # 10 legacy Zyro paths + 6 post oude_url rules = the reference's 16,
-        # plus one per slug renamed since launch (tools/redirects.mjs RENAMED),
-        # minus the self-referencing /referenties rule. The reference emitted it;
-        # on Cloudflare it is an infinite redirect loop on a real page, verified
-        # with `wrangler dev`, so the build drops it. 17 - 1 = 16.
-        check('16 redirect rules', len(rules) == 16, f'got {len(rules)}')
+        # The reference's 16 (10 Zyro paths + 6 post oude_url rules), minus the
+        # self-referencing /referenties rule — on Cloudflare it is an infinite
+        # redirect loop on a real page, verified with `wrangler dev` — plus one
+        # per slug renamed since launch. September 2026 added what Search Console
+        # reported as 404: 12 Wix pages and posts, a /post/ twin for each of the
+        # 6 legacy post URLs, and 2 more catch-alls. 16 - 1 + 1 + 12 + 6 + 2 = 36.
+        check('36 redirect rules', len(rules) == 36, f'got {len(rules)}')
 
     # googleXXXX.html is the Search Console ownership token: a bare text file
     # that happens to carry an .html extension, with no head and nothing to

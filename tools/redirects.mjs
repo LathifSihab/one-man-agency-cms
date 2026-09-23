@@ -29,9 +29,9 @@ const NL = String.fromCharCode(10);
 const RENAMED = [['/prijzen', '/offerte']];
 
 /**
- * The ten legacy paths from the old Zyro site. Order matters: /post/* is last.
- * Two of them pointed at /prijzen and follow the rename above — a redirect to a
- * redirect would cost a hop and lose a little link equity.
+ * The legacy paths from the old Zyro site. Two of them pointed at /prijzen and
+ * follow the rename above — a redirect to a redirect would cost a hop and lose
+ * a little link equity.
  */
 const STATIC_RULES = [
 	['/diensten-one-man-agency', '/diensten'],
@@ -42,8 +42,65 @@ const STATIC_RULES = [
 	['/vragen', '/veelgestelde-vragen'],
 	['/offerte-or-contact', '/contact'],
 	['/gratis-marketing-scan', '/gratis-marketingscan'],
-	['/webdesign', '/diensten/webdesign'],
-	['/post/*', '/blog']
+	['/webdesign', '/diensten/webdesign']
+];
+
+/**
+ * Pages from the older Wix site that Search Console still reported as 404 in
+ * September 2026 (deployment/Tabel.csv), each sent to the page that replaced
+ * it. The rest of that report is left to 404 on purpose: /fullscreen-page/*
+ * gallery viewers, /test, /leadinfo, /marketingcalculator and /nieuwsbrief have
+ * no counterpart, and redirecting them to something unrelated would only be
+ * reported back as a soft 404.
+ */
+const WIX_PAGES = [
+	['/projecten', '/referenties'],
+	['/contacteer-one-man-agency', '/contact'],
+	['/generativeengineoptimization', '/diensten/seo-en-geo'],
+	['/geoscore', '/gratis-marketingscan'],
+	['/nieuws-one-man-agency', '/blog']
+];
+
+/**
+ * Wix posts whose article was rewritten under a new title, so no `legacy_url`
+ * points at them. Wix truncated long slugs and kept accents (`én`), so these
+ * are the paths exactly as Search Console reported them.
+ */
+const WIX_POSTS = [
+	[
+		'/post/een-consistente-huisstijl-verhoogt-herkenbaarheid-én-vertrouwen-leer-hoe-je-met-kleuren-fonts-en-b',
+		'/blog/consistente-huisstijl-bouwen'
+	],
+	[
+		'/post/verlaag-niet-je-prijs-maar-verhoog-de-waarde-van-jouw-product-of-dienst',
+		'/blog/verhoog-de-waarde-van-je-dienst-of-product'
+	],
+	['/post/conversieoptimalisatie-hoe-je-website-meer-klanten-oplevert', '/blog/website-conversie-verhogen'],
+	[
+		'/post/e-mailmarketing-voor-kmo-s-hoe-je-nieuwsbrieven-effectief-inzet',
+		'/blog/emailmarketing-voor-lokale-ondernemers'
+	],
+	[
+		'/post/marketing-op-90-minuten-per-week-zo-bouwt-elke-kmo-een-mini-systeem',
+		'/blog/marketing-basics-voor-ondernemers-met-weinig-tijd'
+	],
+	['/post/hoe-adverteren-op-facebook', '/blog/social-media-adverteren-voor-lokale-ondernemers'],
+	[
+		'/post/lokale-seo-hoe-je-bovenaan-in-google-komt-als-lokale-ondernemer',
+		'/blog/lokale-seo-zonder-dure-advertenties'
+	]
+];
+
+/**
+ * Catch-alls, emitted LAST. Cloudflare applies the first rule that matches, in
+ * file order — verified with `wrangler dev` — so a splat above a specific rule
+ * silently wins. That is how every legacy post once landed on /blog instead of
+ * its own article.
+ */
+const SPLAT_RULES = [
+	['/post/*', '/blog'],
+	['/blog/page/*', '/blog'],
+	['/blog/hashtags/*', '/blog']
 ];
 
 async function legacyPostRules() {
@@ -69,10 +126,26 @@ async function legacyPostRules() {
 		.sort((a, b) =>
 			a.published_on === b.published_on ? 0 : a.published_on < b.published_on ? 1 : -1
 		)
-		.map((p) => [p.legacy_url, `/blog/${p.slug}`]);
+		.flatMap((p) => {
+			const to = `/blog/${p.slug}`;
+			// The Zyro site served posts at the root and the Wix site before it under
+			// /post/, and Google still has both. A legacy_url is stored root-level.
+			if (p.legacy_url.startsWith('/post/')) return [[p.legacy_url, to]];
+			return [
+				[p.legacy_url, to],
+				[`/post${p.legacy_url}`, to]
+			];
+		});
 }
 
-const rules = [...RENAMED, ...STATIC_RULES, ...(await legacyPostRules())];
+const rules = [
+	...RENAMED,
+	...STATIC_RULES,
+	...WIX_PAGES,
+	...WIX_POSTS,
+	...(await legacyPostRules()),
+	...SPLAT_RULES
+];
 
 // ── write the file ───────────────────────────────────────────────
 if (!existsSync(OUTPUT_DIR)) {
@@ -107,7 +180,8 @@ const dynamic = emitted.filter(([from]) => from.includes('*')).length;
 console.log(
 	`Wrote ${emitted.length} redirect rules to ${OUTPUT_DIR}/_redirects ` +
 		`(${RENAMED.length} renamed, ${STATIC_RULES.length} static, ` +
-		`${rules.length - STATIC_RULES.length - RENAMED.length} legacy post URLs, ` +
+		`${WIX_PAGES.length + WIX_POSTS.length} Wix, ` +
+		`${rules.length - STATIC_RULES.length - RENAMED.length - WIX_PAGES.length - WIX_POSTS.length - SPLAT_RULES.length} legacy post URLs, ` +
 		`${dynamic} dynamic` +
 		(selfReferencing ? `; dropped ${selfReferencing} self-referencing rule` : '') +
 		`).`
