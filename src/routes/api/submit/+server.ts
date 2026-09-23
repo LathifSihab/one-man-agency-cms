@@ -1,5 +1,8 @@
 import { redirect } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
+import { env as publicEnv } from '$env/dynamic/public';
 import { adminDb } from '$lib/server/admin';
+import { sendMail, submissionMail } from '$lib/server/mail';
 import { FIELDS, MULTI_FIELDS } from '$lib/server/submissions';
 import type { RequestHandler } from './$types';
 
@@ -64,12 +67,47 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		throw redirect(303, '/formulier-fout');
 	}
 
-	const { error: dbError } = await adminDb().from('submissions').insert({ variant, payload });
+	const db = adminDb();
+	const { error: dbError } = await db.from('submissions').insert({ variant, payload });
 
 	if (dbError) {
 		console.error('[submit] could not store submission:', dbError.message);
 		throw redirect(303, '/formulier-fout');
 	}
 
+	await notify(db, variant, payload);
+
 	throw redirect(303, '/bedankt');
 };
+
+/**
+ * Mail the agency that a form came in.
+ *
+ * Stored first, mailed second, and a failed mail never fails the visitor: the
+ * submission is already safe in the admin inbox, and telling someone their
+ * request went wrong when it did not would only get it sent twice. Failures go
+ * to the Worker log instead.
+ *
+ * Sent to the company address in the site settings, so the client can change
+ * where it lands without a deploy.
+ */
+async function notify(
+	db: ReturnType<typeof adminDb>,
+	variant: string,
+	payload: Record<string, string | string[]>
+) {
+	const { data: settings } = await db.from('settings').select('company').limit(1).maybeSingle();
+	const to = settings?.company?.email;
+	if (!to) {
+		console.error('[submit] not mailed: no company email in settings');
+		return;
+	}
+
+	const base = env.ADMIN_URL ?? publicEnv.PUBLIC_SITE_URL;
+	const sent = await sendMail({
+		to,
+		...submissionMail(variant, payload, base ? `${base.replace(/\/$/, '')}/admin/submissions` : undefined),
+		replyTo: { email: String(payload.email), name: String(payload.naam) }
+	});
+	if (!sent.ok) console.error('[submit] stored but not mailed:', sent.detail);
+}

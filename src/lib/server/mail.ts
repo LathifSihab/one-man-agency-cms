@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { FIELD_LABELS, VARIANT_LABELS, showValue } from '$lib/submission-labels';
 
 /**
  * Sending mail from the CMS.
@@ -55,6 +56,8 @@ async function sendViaSmtp(options: {
 	subject: string;
 	text: string;
 	html: string;
+	/** Where "Reply" goes, e.g. the visitor who filled in a form. */
+	replyTo?: { email: string; name?: string };
 }): Promise<MailResult> {
 	try {
 		// Imported here rather than at module scope so the public build never
@@ -78,7 +81,10 @@ async function sendViaSmtp(options: {
 			to: options.to,
 			subject: options.subject,
 			text: options.text,
-			html: options.html
+			html: options.html,
+			replyTo: options.replyTo
+				? { address: options.replyTo.email, name: options.replyTo.name ?? '' }
+				: undefined
 		});
 
 		return { ok: true };
@@ -92,6 +98,8 @@ export async function sendMail(options: {
 	subject: string;
 	text: string;
 	html: string;
+	/** Where "Reply" goes, e.g. the visitor who filled in a form. */
+	replyTo?: { email: string; name?: string };
 }): Promise<MailResult> {
 	const transport = mailTransport();
 	if (!transport) {
@@ -115,7 +123,8 @@ export async function sendMail(options: {
 				to: [{ email: options.to }],
 				subject: options.subject,
 				textContent: options.text,
-				htmlContent: options.html
+				htmlContent: options.html,
+				...(options.replyTo ? { replyTo: options.replyTo } : {})
 			})
 		});
 
@@ -151,6 +160,63 @@ export function recoveryMail(code: string): { subject: string; text: string; htm
   </p>
   <p>Vul deze code in op het scherm waar je hem hebt aangevraagd. Ze werkt een keer en vervalt binnen het uur.</p>
   <p style="color:#6E6E6E">Heb je dit niet zelf gedaan, dan hoef je niets te doen. Je wachtwoord blijft ongewijzigd zolang de code niet gebruikt wordt.</p>
+</div>`;
+
+	return { subject, text, html };
+}
+
+const escapeHtml = (value: string) =>
+	value.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+/**
+ * The mail that tells the agency a form came in.
+ *
+ * Every answer is in it, so it can be dealt with from the mailbox alone; the
+ * admin inbox stays the record. Everything in the payload was typed by a
+ * visitor, hence the escaping.
+ */
+export function submissionMail(
+	variant: string,
+	payload: Record<string, string | string[]>,
+	adminUrl?: string
+): { subject: string; text: string; html: string } {
+	const kind = VARIANT_LABELS[variant] ?? variant;
+	const who = [payload.naam, payload.bedrijf].filter(Boolean).map(showValue).join(', ');
+	const subject = `${kind}: ${who}`;
+
+	const rows = Object.entries(payload).map(
+		([key, value]) => [FIELD_LABELS[key] ?? key, showValue(value)] as const
+	);
+
+	const replyNote = 'Antwoord je op deze mail, dan gaat je antwoord rechtstreeks naar de afzender.';
+
+	const text = [
+		`Nieuw ingevuld formulier: ${kind}`,
+		'',
+		...rows.map(([label, value]) => `${label}: ${value}`),
+		'',
+		replyNote,
+		...(adminUrl ? [`Alle berichten: ${adminUrl}`] : [])
+	].join('\n');
+
+	const table = rows
+		.map(
+			([label, value]) =>
+				`<tr><td style="padding:6px 12px 6px 0;vertical-align:top;color:#6E6E6E;white-space:nowrap">${escapeHtml(label)}</td>` +
+				`<td style="padding:6px 0;vertical-align:top;white-space:pre-wrap">${escapeHtml(value)}</td></tr>`
+		)
+		.join('\n');
+
+	const link = adminUrl
+		? ` <a href="${escapeHtml(adminUrl)}">Alle berichten in het beheer</a>.`
+		: '';
+
+	const html = `<div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;font-size:15px;line-height:1.5;color:#0A0A0A;max-width:620px">
+  <p style="margin:0 0 16px"><strong>Nieuw ingevuld formulier: ${escapeHtml(kind)}</strong></p>
+  <table cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%">
+${table}
+  </table>
+  <p style="margin:20px 0 0;color:#6E6E6E">${replyNote}${link}</p>
 </div>`;
 
 	return { subject, text, html };
