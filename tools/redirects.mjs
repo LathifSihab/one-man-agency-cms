@@ -168,8 +168,15 @@ if (!existsSync(OUTPUT_DIR)) {
  * `/post/*` is a splat, which Cloudflare supports natively. Placeholders and
  * splats count against a limit of 100 dynamic rules (2000 static); this build
  * writes well under twenty.
+ *
+ * Sources are written percent-encoded. Production Cloudflare matches the
+ * request path as sent (`%C3%A9`), so a literal `é` never matches there —
+ * although `wrangler dev` decodes first and accepts both, which is how the
+ * first version of the Wix `én` rule passed locally and failed live.
  */
-const emitted = rules.filter(([from, to]) => from !== to);
+const emitted = rules
+	.filter(([from, to]) => from !== to)
+	.map(([from, to]) => [encodeURI(from), to]);
 const selfReferencing = rules.length - emitted.length;
 const text = emitted.map(([from, to]) => `${from.padEnd(70)} ${to}  301`).join(NL) + NL;
 
