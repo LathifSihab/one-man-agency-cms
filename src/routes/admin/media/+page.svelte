@@ -47,9 +47,11 @@
 		}
 	}
 
-	const deleteQuestion = (name: string) => ({
+	const deleteQuestion = (name: string, path: string) => ({
 		title: `${name} verwijderen?`,
-		body: 'De afbeelding verdwijnt uit de mediabibliotheek. Pagina’s die er nog naar verwijzen, tonen daarna niets.',
+		body: path.startsWith('logos/')
+			? 'Het logo verdwijnt uit de mediabibliotheek én van de logomuur op de site.'
+			: 'De afbeelding verdwijnt uit de mediabibliotheek. Pagina’s die er nog naar verwijzen, tonen daarna niets.',
 		confirmLabel: 'Verwijderen',
 		workingLabel: 'Bezig met verwijderen…'
 	});
@@ -120,7 +122,7 @@
 							      success: 'De afbeelding is verwijderd.',
 							      failure: 'Verwijderen is niet gelukt.'
 						      })}
-						      onsubmit={(e) => confirmSubmit(e, confirmer, deleteQuestion(file.name))}>
+						      onsubmit={(e) => confirmSubmit(e, confirmer, deleteQuestion(file.name, file.path))}>
 							<input type="hidden" name="path" value={file.path} />
 							<button class="cms-btn cms-btn-danger cms-btn-small" type="submit">Wis</button>
 						</form>

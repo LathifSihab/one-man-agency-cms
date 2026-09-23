@@ -70,6 +70,14 @@ export async function confirmSubmit(
 	}
 
 	event.preventDefault();
+	/* preventDefault alone does not hold use:enhance back: its own submit
+	   listener never checks defaultPrevented, so it posted the moment the
+	   button was pressed, before anything was answered. The server refused it
+	   for want of the confirmation, and the dialog flipped straight to that
+	   error — no delete in the admin could get through. This listener is on the
+	   element before enhance's (event attributes are bound before actions run),
+	   so stopping here keeps the first pass away from it. */
+	event.stopImmediatePropagation();
 
 	// Without a dialog mounted, refuse rather than silently deleting.
 	if (!confirmer) return;

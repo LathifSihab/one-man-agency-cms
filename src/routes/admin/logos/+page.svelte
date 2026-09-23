@@ -21,7 +21,6 @@
 	let query = $state('');
 	let busy = $state(false);
 	let confirmer: ConfirmDialog | undefined = $state();
-	let toDelete = $state('');
 	let newName = $state('');
 
 	const unnamed = $derived(logos.filter((l) => l.name === 'Klant').length);
@@ -302,6 +301,17 @@
 				{#if logo.name === 'Klant'}
 					<p class="cms-hint" style="margin:.3rem 0 0">Naam ontbreekt</p>
 				{/if}
+				<div class="cms-actions" style="justify-content:center;margin-top:.4rem">
+					<!-- Belongs to the delete form below, not to this one: forms cannot
+					     nest, and a delete must not also save every name on the page. -->
+					<button
+						type="submit"
+						form="logo-delete"
+						name="id"
+						value={logo.id}
+						class="cms-btn cms-btn-danger cms-btn-small">Wis</button
+					>
+				</div>
 				{#if canReorder}
 					<div class="cms-actions" style="justify-content:center;margin-top:.4rem">
 						<button
@@ -325,30 +335,29 @@
 	</div>
 </form>
 
-<h2>Logo verwijderen</h2>
-<p class="cms-hint">Nieuwe logo's upload je bij <a href="/admin/media">Afbeeldingen</a>.</p>
 <form
+	id="logo-delete"
 	method="POST"
 	action="?/delete"
+	hidden
 	use:enhance={() => async ({ result, update }) => {
 		await update();
 		reseed();
 		const okay = result.type === 'success' || result.type === 'redirect';
-		confirmer?.finish(okay, okay ? 'Het logo is verwijderd.' : 'Verwijderen is niet gelukt.');
+		const message = result.type === 'failure' ? result.data?.message : undefined;
+		confirmer?.finish(
+			okay,
+			okay ? 'Het logo is verwijderd.' : String(message ?? 'Verwijderen is niet gelukt.')
+		);
 	}}
-	onsubmit={(e) =>
-		confirmSubmit(e, confirmer, {
-			title: 'Dit logo verwijderen?',
-			body: `${logos.find((l) => l.id === toDelete)?.name ?? 'Het logo'} verdwijnt van de referentiepagina en uit de logostrook op de startpagina.`,
+	onsubmit={(e) => {
+		const logo = logos.find((l) => l.id === (e.submitter as HTMLButtonElement | null)?.value);
+		const name = logo && logo.name !== 'Klant' ? logo.name : 'Dit logo';
+		return confirmSubmit(e, confirmer, {
+			title: `${name} verwijderen?`,
+			body: `Het logo verdwijnt van de referentiepagina en uit de logostrook op de startpagina, en het bestand${logo ? ` (${logo.file_path.split('/').pop()})` : ''} wordt uit de mediabibliotheek gewist.`,
 			confirmLabel: 'Verwijderen',
 			workingLabel: 'Bezig met verwijderen…'
-		})}
->
-	<div class="cms-field" style="max-width:420px">
-		<label for="del">Kies een logo</label>
-		<select id="del" name="id" bind:value={toDelete}>
-			{#each logos as l (l.id)}<option value={l.id}>{l.name} — {l.file_path}</option>{/each}
-		</select>
-	</div>
-	<button class="cms-btn cms-btn-danger cms-btn-small" type="submit">Verwijderen</button>
-</form>
+		});
+	}}
+></form>

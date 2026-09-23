@@ -91,6 +91,27 @@ try {
 	await page.getByRole('button', { name: 'Toon enkel deze' }).click();
 	await page.waitForTimeout(250);
 	check('searching again drops the one now named', (await cards().count()) === 2);
+
+	/* Each card carries its own delete, which belongs to a separate form so it
+	   cannot also save the names. The question has to name the card that was
+	   clicked, not whichever logo a dropdown last held. Cancelled, never sent. */
+	let posted = false;
+	page.on('request', (r) => {
+		if (r.method() === 'POST') posted = true;
+	});
+	await page.getByRole('button', { name: 'Wissen' }).click();
+	await page.waitForTimeout(250);
+	const neo = page.locator('.cms-logo', { has: page.getByAltText('Logo van NeoKraft', { exact: true }) });
+	await neo.getByRole('button', { name: 'Wis', exact: true }).click();
+	const title = page.locator('#cms-confirm-title');
+	await title.waitFor({ timeout: 3000 }).catch(() => {});
+	check(
+		'a card\'s own delete asks about that logo',
+		(await title.textContent().catch(() => null)) === 'NeoKraft verwijderen?'
+	);
+	await page.getByRole('button', { name: 'Annuleren' }).click();
+	await page.waitForTimeout(250);
+	check('cancelling sends nothing', !posted);
 } finally {
 	if (browser) await browser.close();
 	stop();

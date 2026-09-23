@@ -1,6 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import { adminDb } from '$lib/server/admin';
 import { requireConfirmation } from '$lib/server/confirm';
+import { ensureLogoRow, isLogoPath } from '$lib/server/logos';
 import type { Actions, PageServerLoad } from './$types';
 
 const BUCKET = 'media';
@@ -75,16 +76,26 @@ export const actions: Actions = {
 
 		// Keep the original filename: content already references these names.
 		const safeName = checked.file.name.replace(/[^a-zA-Z0-9._-]/g, '-');
-		const { error } = await adminDb()
-			.storage.from(BUCKET)
-			.upload(`${prefix}/${safeName}`, await checked.file.arrayBuffer(), {
+		const path = `${prefix}/${safeName}`;
+		const db = adminDb();
+		const { error } = await db.storage
+			.from(BUCKET)
+			.upload(path, await checked.file.arrayBuffer(), {
 				contentType: checked.file.type,
 				upsert: true,
 				cacheControl: '31536000'
 			});
 
 		if (error) return fail(500, { message: `Uploaden mislukt: ${error.message}` });
-		return { saved: true, path: `${prefix}/${safeName}` };
+
+		// A logo in the library is a logo on the wall; the name is filled in there.
+		if (isLogoPath(path)) {
+			const row = await ensureLogoRow(db, path, 'Klant');
+			if (row.error) {
+				return fail(500, { message: `Geüpload, maar niet op de logomuur gezet: ${row.error}` });
+			}
+		}
+		return { saved: true, path };
 	},
 
 	/* Replace: the same bytes-to-storage as an upload, but written to a path
@@ -117,7 +128,17 @@ export const actions: Actions = {
 
 		const path = String(form.get('path') ?? '');
 		if (!knownPath(path)) return fail(400, { message: 'Onbekend pad.' });
-		const { error } = await adminDb().storage.from(BUCKET).remove([path]);
+		const db = adminDb();
+
+		// The wall row goes first: a row left pointing at a deleted file would
+		// build as an empty card, where a file left without a row is merely
+		// offered again on the logos screen.
+		if (isLogoPath(path)) {
+			const { error } = await db.from('logos').delete().eq('file_path', path);
+			if (error) return fail(500, { message: `Verwijderen mislukt: ${error.message}` });
+		}
+
+		const { error } = await db.storage.from(BUCKET).remove([path]);
 		if (error) return fail(500, { message: `Verwijderen mislukt: ${error.message}` });
 		return { saved: true };
 	}

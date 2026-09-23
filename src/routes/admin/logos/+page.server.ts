@@ -1,6 +1,7 @@
 import { fail } from '@sveltejs/kit';
 import { adminDb } from '$lib/server/admin';
 import { requireConfirmation } from '$lib/server/confirm';
+import { ensureLogoRow, isLogoPath } from '$lib/server/logos';
 import type { Actions, PageServerLoad } from './$types';
 
 const MAX_BYTES = 8 * 1024 * 1024;
@@ -80,27 +81,9 @@ export const actions: Actions = {
 			return fail(400, { message: 'Onbekend bestand.' });
 		}
 
-		const db = adminDb();
-		const { data: existing } = await db
-			.from('logos')
-			.select('id')
-			.eq('file_path', filePath)
-			.maybeSingle();
-		if (existing) return fail(400, { message: 'Dit logo staat al op de muur.' });
-
-		// New logos go last; the editor can move them with the arrows.
-		const { data: last } = await db
-			.from('logos')
-			.select('sort_order')
-			.order('sort_order', { ascending: false })
-			.limit(1)
-			.maybeSingle();
-
-		const { error } = await db
-			.from('logos')
-			.insert({ name, file_path: filePath, sort_order: (last?.sort_order ?? -1) + 1 });
-
-		if (error) return fail(500, { message: `Toevoegen mislukt: ${error.message}` });
+		const row = await ensureLogoRow(adminDb(), filePath, name);
+		if (row.error) return fail(500, { message: `Toevoegen mislukt: ${row.error}` });
+		if (!row.added) return fail(400, { message: 'Dit logo staat al op de muur.' });
 		return { saved: true, added: name };
 	},
 
@@ -133,40 +116,35 @@ export const actions: Actions = {
 			});
 		if (uploadError) return fail(500, { message: `Uploaden mislukt: ${uploadError.message}` });
 
-		const { data: existing } = await db
-			.from('logos')
-			.select('id')
-			.eq('file_path', filePath)
-			.maybeSingle();
-
-		if (existing) {
-			// Same filename: the image is replaced, the row stays put.
-			return { saved: true, replaced: safeName };
-		}
-
-		const { data: last } = await db
-			.from('logos')
-			.select('sort_order')
-			.order('sort_order', { ascending: false })
-			.limit(1)
-			.maybeSingle();
-
-		const { error } = await db
-			.from('logos')
-			.insert({ name, file_path: filePath, sort_order: (last?.sort_order ?? -1) + 1 });
-		if (error) return fail(500, { message: `Toevoegen mislukt: ${error.message}` });
-
+		const row = await ensureLogoRow(db, filePath, name);
+		if (row.error) return fail(500, { message: `Toevoegen mislukt: ${row.error}` });
+		// Same filename: the image is replaced, the row stays put.
+		if (!row.added) return { saved: true, replaced: safeName };
 		return { saved: true, added: name };
 	},
 
+	/** Takes the file out of the media library too: the two are one list. */
 	delete: async ({ request }) => {
 		const form = await request.formData();
 		const stop = requireConfirmation(form);
 		if (stop) return stop;
 
 		const id = String(form.get('id') ?? '');
-		const { error } = await adminDb().from('logos').delete().eq('id', id);
+		const db = adminDb();
+		const { data: logo } = await db.from('logos').select('file_path').eq('id', id).maybeSingle();
+		if (!logo) return fail(404, { message: 'Dit logo bestaat niet meer.' });
+
+		const { error } = await db.from('logos').delete().eq('id', id);
 		if (error) return fail(500, { message: `Verwijderen mislukt: ${error.message}` });
+
+		if (isLogoPath(logo.file_path)) {
+			const { error: storageError } = await db.storage.from('media').remove([logo.file_path]);
+			if (storageError) {
+				return fail(500, {
+					message: `Van de muur gehaald, maar het bestand staat nog in de mediabibliotheek: ${storageError.message}`
+				});
+			}
+		}
 		return { saved: true };
 	}
 };
