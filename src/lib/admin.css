@@ -437,6 +437,23 @@ textarea.over {
 	font-size: 1.1rem;
 }
 
+/* The page editor's live preview: the real page in a frame (PagePreview.svelte). */
+.cms-livepreview {
+	border: 1px solid var(--line);
+	border-radius: var(--r);
+	background: var(--paper);
+	overflow: hidden;
+	margin-top: 0.5rem;
+}
+
+.cms-livepreview iframe {
+	display: block;
+	margin: 0 auto;
+	border: 0;
+	background: #fff;
+	transform-origin: top left;
+}
+
 .cms-shortcode {
 	display: block;
 	background: var(--signal-lt);

@@ -1,8 +1,21 @@
-import { error, fail } from '@sveltejs/kit';
+import { error, fail, redirect } from '@sveltejs/kit';
 import { adminDb } from '$lib/server/admin';
+import { requireConfirmation } from '$lib/server/confirm';
+import { linksBlockingDelete, linksTo, readContentForCheck, withoutMenuLinks } from '$lib/server/links';
+import { MENU_FOR, addToMenu } from '$lib/server/menus';
+import { readPagePatch } from '$lib/server/pageForm';
+import { pagePath } from '$lib/site';
+import type { Page } from '$lib/types';
 import type { Actions, PageServerLoad } from './$types';
 
 const TYPES = new Set(['page', 'service', 'sector', 'region']);
+
+/**
+ * Pages the site cannot do without. The home page is the site's own address and
+ * the 404 page is what every missing address renders; neither is linked from
+ * anywhere, so the link check below would let them go.
+ */
+const UNDELETABLE = new Set(['page/home', 'page/404']);
 
 export const load: PageServerLoad = async ({ params }) => {
 	if (!TYPES.has(params.type)) throw error(404, 'Onbekende soort pagina');
@@ -25,107 +38,29 @@ export const load: PageServerLoad = async ({ params }) => {
 		.not('menu_group', 'is', null);
 	const groups = [...new Set((grouped ?? []).map((g) => g.menu_group).filter(Boolean))].sort();
 
-	return { page: data, groups };
-};
+	// Where the page can be reached from, so a page nobody can find says so.
+	const content = await readContentForCheck(adminDb());
+	const linkedFrom = linksTo(content, data as Page);
+	const path = pagePath(data as Page);
+	const menuOptions = Object.entries(MENU_FOR[data.type as Page['type']] ?? {})
+		.filter(([, list]) => !(content.settings[list] ?? []).some((item) => item.link === path))
+		.map(([placement, list]) => ({
+			placement,
+			label:
+				list === 'navigation'
+					? 'Zet in het hoofdmenu'
+					: `Zet in de voettekst, kolom ${list === 'footer_sectors' ? 'Sectoren' : 'Regio'}`
+		}));
 
-/** Fields the editor may write. Anything else is ignored. */
-const JSON_FIELDS = [
-	'faq',
-	'prices',
-	'packages',
-	'projects',
-	'figures',
-	'testimonials',
-	'sector_list',
-	'cta_primary',
-	'cta_secondary'
-];
-
-const TEXT_FIELDS = [
-	'title',
-	'seo_title',
-	'meta_description',
-	'intro',
-	'body',
-	'todo_note',
-	'booking_url',
-	'portrait_url',
-	'portrait_alt',
-	'header_image_url',
-	'header_alt',
-	'menu_label',
-	'menu_summary',
-	'menu_group'
-];
-
-/** Checkboxes: absent means false, which is not the same as "leave alone". */
-const BOOLEAN_FIELDS = ['in_services', 'is_published'];
-
-/** Whole numbers. An empty box means "no position given", not zero. */
-const NUMBER_FIELDS = ['menu_order'];
-
-/**
- * Fields the database restricts to a fixed set of values.
- *
- * form_variant was readable and rendered but had no way in: it was set once
- * during the migration and never again. When a new page needed a form, there
- * was no switch to find — so the offerte page shipped asking visitors to fill
- * in a form that was not there. Empty means no form.
- */
-const ENUM_FIELDS: Record<string, string[]> = {
-	form_variant: ['contact', 'scan', 'offerte']
+	return { page: data, groups, linkedFrom, menuOptions };
 };
 
 export const actions: Actions = {
 	save: async ({ request, params }) => {
 		const form = await request.formData();
-		const patch: Record<string, unknown> = {};
-
-		for (const field of TEXT_FIELDS) {
-			if (form.has(field)) {
-				const value = String(form.get(field) ?? '');
-				patch[field] = value === '' && field !== 'body' && field !== 'title' ? null : value;
-			}
-		}
-
-		for (const field of JSON_FIELDS) {
-			if (form.has(field)) {
-				const raw = String(form.get(field) ?? '');
-				try {
-					const parsed = raw ? JSON.parse(raw) : null;
-					patch[field] = Array.isArray(parsed) && parsed.length === 0 ? null : parsed;
-				} catch {
-					return fail(400, { message: `Kon het veld "${field}" niet opslaan.` });
-				}
-			}
-		}
-
-		for (const field of BOOLEAN_FIELDS) {
-			if (form.has(field)) patch[field] = String(form.get(field) ?? '') === 'on';
-		}
-
-		for (const field of NUMBER_FIELDS) {
-			if (!form.has(field)) continue;
-			const raw = String(form.get(field) ?? '').trim();
-			if (!raw) {
-				patch[field] = null;
-				continue;
-			}
-			const value = Number(raw);
-			if (!Number.isInteger(value)) {
-				return fail(400, { message: `"${raw}" is geen geheel getal.` });
-			}
-			patch[field] = value;
-		}
-
-		for (const [field, allowed] of Object.entries(ENUM_FIELDS)) {
-			if (!form.has(field)) continue;
-			const value = String(form.get(field) ?? '');
-			if (value && !allowed.includes(value)) {
-				return fail(400, { message: `"${value}" is geen geldige keuze voor "${field}".` });
-			}
-			patch[field] = value || null;
-		}
+		const read = readPagePatch(form);
+		if ('message' in read) return fail(400, read);
+		const patch = read.patch;
 
 		// The site root cannot be taken off the site. The database refuses it too;
 		// this is so the refusal reads like a sentence.
@@ -184,5 +119,77 @@ export const actions: Actions = {
 		}
 
 		return { saved: true, slug: patch.slug ?? params.slug };
+	},
+
+	/** Link the page from the menu or its footer column, from the editor. */
+	placeInMenu: async ({ request, params }) => {
+		const placement = String((await request.formData()).get('placement') ?? '');
+		const db = adminDb();
+		const { data: page } = await db
+			.from('pages')
+			.select('type, slug, title')
+			.eq('type', params.type)
+			.eq('slug', params.slug)
+			.maybeSingle();
+		if (!page) return fail(404, { message: 'Pagina niet gevonden.' });
+
+		const menuError = await addToMenu(db, page as Page, placement);
+		if (menuError) return fail(500, { message: `Toevoegen mislukt: ${menuError}` });
+		return { placed: true };
+	},
+
+	/**
+	 * Delete a page for good.
+	 *
+	 * The public build refuses any link to a page that does not exist, so a
+	 * delete that left one behind would fail the next publish instead. Menu and
+	 * footer entries for the page are removed along with it; links anywhere else
+	 * stop the delete and are listed, so they can be fixed first.
+	 */
+	delete: async ({ request, params }) => {
+		const stop = requireConfirmation(await request.formData());
+		if (stop) return stop;
+
+		if (UNDELETABLE.has(`${params.type}/${params.slug}`)) {
+			return fail(400, { message: 'Deze pagina hoort bij de site zelf en kan niet verwijderd worden.' });
+		}
+
+		const db = adminDb();
+		const { data: page } = await db
+			.from('pages')
+			.select('*')
+			.eq('type', params.type)
+			.eq('slug', params.slug)
+			.maybeSingle();
+		if (!page) throw redirect(303, '/admin/pages');
+
+		const content = await readContentForCheck(db);
+		const blocking = linksBlockingDelete(content, page as Page);
+		if (blocking.length) {
+			const places = [...new Set(blocking.map((b) => b.where))];
+			return fail(400, {
+				message:
+					`Er wordt nog naar ${pagePath(page as Page)} gelinkt vanuit ${places.join(', ')}. ` +
+					'Haal die links eerst weg, of zet de pagina uit onder Zichtbaarheid in plaats van ' +
+					'ze te verwijderen. Er is niets verwijderd.'
+			});
+		}
+
+		// Menus first: if this fails the page is still there and nothing points
+		// at nothing. The other order could leave a menu link to a deleted page.
+		const { navigation, footer_sectors, footer_regions } = withoutMenuLinks(
+			content.settings,
+			pagePath(page as Page)
+		);
+		const { error: menuError } = await db
+			.from('settings')
+			.update({ navigation, footer_sectors, footer_regions })
+			.eq('id', true);
+		if (menuError) return fail(500, { message: `Verwijderen mislukt: ${menuError.message}` });
+
+		const { error: dbError } = await db.from('pages').delete().eq('id', page.id);
+		if (dbError) return fail(500, { message: `Verwijderen mislukt: ${dbError.message}` });
+
+		throw redirect(303, '/admin/pages');
 	}
 };

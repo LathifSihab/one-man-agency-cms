@@ -17,9 +17,14 @@
 		value: string;
 		/** Which blocks have backing data, so we can warn about empty ones. */
 		emptyBlocks?: string[];
+		/**
+		 * The labelled-frame preview. The page editor turns it off: it shows the
+		 * real page instead (PagePreview.svelte). The blog editor still uses it.
+		 */
+		example?: boolean;
 	}
 
-	let { value = $bindable(), emptyBlocks = [] }: Props = $props();
+	let { value = $bindable(), emptyBlocks = [], example = true }: Props = $props();
 
 	let textarea: HTMLTextAreaElement | null = $state(null);
 
@@ -180,6 +185,7 @@
 	</div>
 {/if}
 
+{#if example}
 <div class="cms-field">
 	<p class="cms-group-label">Voorbeeld</p>
 	<div class="cms-preview">
@@ -196,3 +202,4 @@
 		Blokken staan hier als gekleurd kader; op de site tonen ze de echte inhoud.
 	</p>
 </div>
+{/if}

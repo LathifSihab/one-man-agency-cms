@@ -40,6 +40,29 @@ const check = (name, ok, detail = '') => {
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
 const mod = await server.ssrLoadModule('/src/routes/admin/pages/+page.server.ts');
 const create = mod.actions.create;
+const editor = await server.ssrLoadModule('/src/routes/admin/pages/[type]/[slug]/+page.server.ts');
+
+/** Delete a page through the real action. `confirmed` is what the dialog adds. */
+const remove = async (type, slug, confirmed = true) => {
+	const body = new FormData();
+	if (confirmed) body.set('confirmed', 'yes');
+	try {
+		return await editor.actions.delete({
+			request: new Request('http://localhost/admin/pages?/delete', { method: 'POST', body }),
+			params: { type, slug }
+		});
+	} catch (e) {
+		if (isRedirect(e)) return e;
+		throw e;
+	}
+};
+
+// Placement writes to the live menus; they are put back exactly as found.
+const { data: settingsBefore } = await db
+	.from('settings')
+	.select('navigation, footer_sectors, footer_regions')
+	.eq('id', true)
+	.single();
 
 /** The action takes a request; nothing else about the event is touched. */
 const call = (fields) => {
@@ -110,8 +133,107 @@ try {
 		.eq('slug', pageSlug)
 		.maybeSingle();
 	check('a plain page does not join the services list', plain?.in_services === false);
+
+	const navNow = async () =>
+		(await db.from('settings').select('navigation, footer_sectors').eq('id', true).single()).data;
+	check('a page left unlinked stays out of the menu',
+		!(await navNow()).navigation.some((n) => n.link === `/${pageSlug}`));
+
+	// ── "gelinkt vanuit" ────────────────────────────────────────────────────
+	const load = (type, s) => editor.load({ params: { type, slug: s } });
+	const lonely = await load('page', pageSlug);
+	check('an unlinked page says it is linked from nowhere', lonely.linkedFrom.length === 0);
+	check('and offers the main menu', lonely.menuOptions.some((o) => o.placement === 'menu'));
+
+	const service = await load('service', slug);
+	check('a service is linked from the services overview',
+		service.linkedFrom.some((w) => w.startsWith('het dienstenoverzicht')), service.linkedFrom.join(' | '));
+	check('and is offered no menu', service.menuOptions.length === 0);
+
+	const placeBody = new FormData();
+	placeBody.set('placement', 'menu');
+	const placed = await editor.actions.placeInMenu({
+		request: new Request('http://localhost/?/placeInMenu', { method: 'POST', body: placeBody }),
+		params: { type: 'page', slug: pageSlug }
+	});
+	check('"zet in het hoofdmenu" reports success', placed?.placed === true);
+	const after = await load('page', pageSlug);
+	check('the page is now linked from the menu', after.linkedFrom.some((w) => w.startsWith('het menu')));
+	check('and the button is gone', after.menuOptions.length === 0);
+	await editor.actions.placeInMenu({
+		request: new Request('http://localhost/?/placeInMenu', { method: 'POST', body: placeBody }),
+		params: { type: 'page', slug: pageSlug }
+	});
+	check('placing it twice adds it once',
+		(await navNow()).navigation.filter((n) => n.link === `/${pageSlug}`).length === 1);
+
+	// ── live preview ────────────────────────────────────────────────────────
+	const previewMod = await server.ssrLoadModule('/src/routes/admin/preview/+server.ts');
+	const previewBody = new FormData();
+	previewBody.set('type', 'page');
+	previewBody.set('slug_saved', pageSlug);
+	previewBody.set('title', 'Voorbeeldtitel');
+	previewBody.set('body', 'Nog **niet** opgeslagen.\n\n{{stappen}}');
+	const html = await (
+		await previewMod.POST({
+			request: new Request('http://localhost/admin/preview', { method: 'POST', body: previewBody }),
+			url: new URL('http://localhost/admin/preview')
+		})
+	).text();
+	check('the preview shows what is typed', html.includes('Voorbeeldtitel') && html.includes('<strong>niet</strong>'));
+	check('with the real blocks, not placeholders', html.includes('Kennismaking van 30 minuten'));
+	check('inside the real site chrome', html.includes('Hoofdnavigatie'));
+	check('and without the analytics beacon', !html.includes('/api/track'));
+	const { data: untouched } = await db.from('pages').select('title').eq('type', 'page').eq('slug', pageSlug).single();
+	check('previewing saves nothing', untouched.title === 'Tijdelijke testpagina');
+
+	// ── placement ───────────────────────────────────────────────────────────
+	const menuSlug = `${slug}-m`;
+	try {
+		await call({ type: 'page', title: 'Testpagina in het menu', slug: menuSlug, placement: 'menu' });
+	} catch (e) {
+		if (!isRedirect(e)) throw e;
+	}
+	check('"in het hoofdmenu" adds it to the menu',
+		(await navNow()).navigation.some((n) => n.link === `/${menuSlug}` && n.label === 'Testpagina in het menu'));
+
+	const sectorSlug = `${slug}-s`;
+	try {
+		await call({ type: 'sector', title: 'Marketing voor bakkers', slug: sectorSlug, placement: 'footer' });
+	} catch (e) {
+		if (!isRedirect(e)) throw e;
+	}
+	check('a sector goes into the footer, without "Marketing voor"',
+		(await navNow()).footer_sectors.some((n) => n.link === `/sectoren/${sectorSlug}` && n.label === 'Bakkers'));
+
+	// ── delete ──────────────────────────────────────────────────────────────
+	const exists = async (type, s) =>
+		Boolean((await db.from('pages').select('id').eq('type', type).eq('slug', s).maybeSingle()).data);
+
+	check('delete without the confirmation is refused', (await remove('page', menuSlug, false)).status === 400);
+	check('and the page is still there', await exists('page', menuSlug));
+
+	check('the home page cannot be deleted', (await remove('page', 'home')).status === 400);
+	check('nor the 404 page', (await remove('page', '404')).status === 400);
+
+	// A link in another page's text blocks the delete.
+	await db.from('pages').update({ body: `Zie [hier](/sectoren/${sectorSlug}).` }).eq('type', 'page').eq('slug', pageSlug);
+	const blocked = await remove('sector', sectorSlug);
+	check('a page linked from another page’s text is not deleted',
+		blocked.status === 400 && (await exists('sector', sectorSlug)), blocked.data?.message ?? '');
+	await db.from('pages').update({ body: '' }).eq('type', 'page').eq('slug', pageSlug);
+
+	const gone = await remove('page', menuSlug);
+	check('a confirmed delete returns to the page list', gone?.location === '/admin/pages');
+	check('the page is gone', !(await exists('page', menuSlug)));
+	check('and so is its menu entry', !(await navNow()).navigation.some((n) => n.link === `/${menuSlug}`));
+
+	await remove('sector', sectorSlug);
+	check('a deleted sector leaves the footer too',
+		!(await navNow()).footer_sectors.some((n) => n.link === `/sectoren/${sectorSlug}`));
 } finally {
 	await server.close();
+	await db.from('settings').update(settingsBefore).eq('id', true);
 	const { data: leftovers } = await db.from('pages').select('id, slug').like('slug', `${PREFIX}%`);
 	for (const row of leftovers ?? []) await db.from('pages').delete().eq('id', row.id);
 	const { data: after } = await db.from('pages').select('id').like('slug', `${PREFIX}%`);

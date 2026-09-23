@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { pagePath } from '$lib/site';
+import { pagePath, serviceMenu } from '$lib/site';
 import { MEDIA_PREFIXES, imageValuesInMarkdown, isStorageKey } from '$lib/images';
 import type { Logo, Page, Post, Settings, SiteContent } from '$lib/types';
 
@@ -144,25 +144,14 @@ function postLabel(post: Post): string {
 }
 
 /**
- * Collect every internal link that has no page behind it.
+ * Call `visit` for every internal link the site carries, with where it is.
  *
- * Returned in the order a person would go looking: navigation first, then the
- * pages, then the blog, then the links baked into the design.
+ * In the order a person would go looking: navigation first, then the pages,
+ * then the blog, then the links baked into the design.
  */
-export function findBrokenLinks(content: SiteContent): BrokenLink[] {
-	const valid = validPaths(content);
-	const broken: BrokenLink[] = [];
-	const seen = new Set<string>();
-
+function eachLink(content: SiteContent, visit: (raw: string, where: string) => void): void {
 	const check = (raw: string | null | undefined, where: string) => {
-		if (!raw || !isInternal(raw)) return;
-		const link = normalise(raw);
-		if (valid.has(link)) return;
-		// One entry per place, so fixing the navigation does not hide the 404 page.
-		const key = `${link}\u0000${where}`;
-		if (seen.has(key)) return;
-		seen.add(key);
-		broken.push({ link, where });
+		if (raw && isInternal(raw)) visit(raw, where);
 	};
 
 	const { settings, pages, posts } = content;
@@ -200,8 +189,90 @@ export function findBrokenLinks(content: SiteContent): BrokenLink[] {
 	}
 
 	for (const [link, where] of CODE_PATHS) check(link, where);
+}
+
+/** Collect every internal link that has no page behind it. */
+export function findBrokenLinks(content: SiteContent): BrokenLink[] {
+	const valid = validPaths(content);
+	const broken: BrokenLink[] = [];
+	const seen = new Set<string>();
+
+	eachLink(content, (raw, where) => {
+		const link = normalise(raw);
+		if (valid.has(link)) return;
+		// One entry per place, so fixing the navigation does not hide the 404 page.
+		const key = `${link} ${where}`;
+		if (seen.has(key)) return;
+		seen.add(key);
+		broken.push({ link, where });
+	});
 
 	return broken;
+}
+
+/**
+ * Everywhere on the site that links to a page, phrased for the page editor.
+ *
+ * A page nothing links to can only be found by typing its address, and a new
+ * one starts that way. The editor shows this list so that is visible rather than
+ * discovered. Links the page makes to itself do not count, and neither do
+ * hidden pages, which are not on the site (readContentForCheck drops them).
+ */
+export function linksTo(content: SiteContent, page: Page): string[] {
+	const path = pagePath(page);
+	const own = pageLabel(page);
+	const places = new Set<string>();
+
+	// The services list is built from the pages rather than written as links.
+	const services = serviceMenu(content.pages);
+	const at = services.findIndex((s) => s.link === path);
+	if (at !== -1) {
+		places.add(
+			at < FOOTER_SERVICES
+				? 'het dienstenoverzicht en de voettekst, kolom Diensten'
+				: 'het dienstenoverzicht'
+		);
+	}
+
+	eachLink(content, (raw, where) => {
+		if (normalise(raw) === path && !where.startsWith(own)) places.add(where);
+	});
+
+	return [...places];
+}
+
+/** How many services the footer's Diensten column shows (Chrome.svelte). */
+const FOOTER_SERVICES = 8;
+
+/**
+ * What deleting a page would leave pointing at nothing.
+ *
+ * The menu and the two footer columns are not counted: deleting takes the
+ * page's own entries out of those, because a list of links is plainly about the
+ * page and nobody wants to be sent to Instellingen to finish a delete. Links
+ * inside other pages' text, buttons and the design are counted, since removing
+ * a sentence is a writing decision the CMS should not make for anyone.
+ */
+export function linksBlockingDelete(content: SiteContent, page: Page): BrokenLink[] {
+	const path = pagePath(page);
+	const without: SiteContent = {
+		...content,
+		pages: content.pages.filter((p) => !(p.type === page.type && p.slug === page.slug)),
+		settings: withoutMenuLinks(content.settings, path)
+	};
+	return findBrokenLinks(without).filter((b) => b.link === path);
+}
+
+/** The settings with every menu and footer entry for `path` taken out. */
+export function withoutMenuLinks(settings: Settings, path: string): Settings {
+	const keep = (items: Settings['navigation'] | null | undefined) =>
+		(items ?? []).filter((item) => !isInternal(item.link) || normalise(item.link) !== path);
+	return {
+		...settings,
+		navigation: keep(settings.navigation),
+		footer_sectors: keep(settings.footer_sectors),
+		footer_regions: keep(settings.footer_regions)
+	};
 }
 
 /** An image the content points at that is no longer in the media library. */

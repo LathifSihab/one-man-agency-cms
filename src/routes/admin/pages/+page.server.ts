@@ -1,5 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit';
 import { adminDb } from '$lib/server/admin';
+import { addToMenu } from '$lib/server/menus';
+import type { PageType } from '$lib/types';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async () => {
@@ -42,6 +44,7 @@ export const actions: Actions = {
 		const slug = String(form.get('slug') ?? '')
 			.trim()
 			.toLowerCase();
+		const placement = String(form.get('placement') ?? 'none');
 
 		if (!TYPES.includes(type as (typeof TYPES)[number])) {
 			return fail(400, { message: 'Kies eerst een soort pagina.' });
@@ -105,6 +108,17 @@ export const actions: Actions = {
 		});
 
 		if (dbError) return fail(500, { message: `Aanmaken mislukt: ${dbError.message}` });
+
+		// A new page that nothing links to cannot be found by anyone, so the form
+		// asks where it goes. Only after the insert: a menu link to a page that
+		// failed to be made would stop the next publish.
+		const menuError = await addToMenu(db, { type: type as PageType, slug, title }, placement);
+		// The page exists; say so rather than pretend nothing happened.
+		if (menuError) {
+			return fail(500, {
+				message: `De pagina is aangemaakt, maar niet aan het menu toegevoegd: ${menuError}`
+			});
+		}
 
 		throw redirect(303, `/admin/pages/${type}/${slug}`);
 	}

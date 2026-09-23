@@ -9,6 +9,11 @@
 	let slug = $state('');
 	let busy = $state(false);
 
+	/* Where the new page is linked from. A plain page stays out of the menu
+	   until it is written; a sector or region goes in its footer column. */
+	let placement = $state('none');
+	const defaultPlacement = (t: string) => (t === 'page' ? 'none' : 'footer');
+
 	/* Suggest an address from the title, until the address is typed in. */
 	let slugEdited = $state(false);
 	const suggestion = $derived(
@@ -71,7 +76,8 @@
 			<div class="cms-two">
 				<div class="cms-field">
 					<label for="n-type">Soort</label>
-					<select id="n-type" name="type" bind:value={type}>
+					<select id="n-type" name="type" bind:value={type}
+					        onchange={() => (placement = defaultPlacement(type))}>
 						<option value="service">Dienst</option>
 						<option value="page">Vaste pagina</option>
 						<option value="sector">Sector</option>
@@ -97,6 +103,36 @@
 					kan je later nog wijzigen, maar dan werken bestaande links naar de pagina niet meer.
 				</p>
 			</div>
+
+			<fieldset class="cms-field" style="border:0;padding:0;margin-inline:0">
+				<legend style="font-weight:600;padding:0;margin-bottom:.3rem">Waar komt de link naartoe?</legend>
+				{#if type === 'service'}
+					<p class="cms-hint" style="margin-top:0">
+						Een dienst verschijnt vanzelf in het dienstenoverzicht en in de voettekst.
+					</p>
+				{:else}
+					<label style="font-weight:400;display:flex;align-items:center;gap:.5rem">
+						<input type="radio" name="placement" style="width:auto" bind:group={placement}
+						       value={type === 'page' ? 'menu' : 'footer'} />
+						{type === 'page'
+							? 'In het hoofdmenu bovenaan'
+							: `In de voettekst, kolom ${type === 'sector' ? 'Sectoren' : 'Regio'}`}
+					</label>
+					<label style="font-weight:400;display:flex;align-items:center;gap:.5rem">
+						<input type="radio" name="placement" style="width:auto" bind:group={placement}
+						       value="none" />
+						Nog nergens, ik link er zelf naar
+					</label>
+					<p class="cms-hint">
+						{#if type === 'page'}
+							Het hoofdmenu is voor de belangrijkste pagina's; een lege pagina zet je er best pas
+							in als ze af is.
+						{/if}
+						Dit kan je later wijzigen onder Instellingen. Zonder link vindt een bezoeker de
+						pagina enkel via het adres.
+					</p>
+				{/if}
+			</fieldset>
 
 			<div class="cms-actions">
 				<button class="cms-btn" type="submit" disabled={busy || !address}>

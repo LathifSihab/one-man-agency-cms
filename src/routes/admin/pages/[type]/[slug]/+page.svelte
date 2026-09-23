@@ -1,8 +1,11 @@
 <script lang="ts">
 	import { untrack } from 'svelte';
 	import { enhance } from '$app/forms';
+	import ConfirmDialog from '$components/admin/ConfirmDialog.svelte';
+	import { confirmSubmit, reportTo } from '$components/admin/confirmSubmit';
 	import CountedField from '$components/admin/CountedField.svelte';
 	import MarkdownEditor from '$components/admin/MarkdownEditor.svelte';
+	import PagePreview from '$components/admin/PagePreview.svelte';
 	import RepeatRows from '$components/admin/RepeatRows.svelte';
 	import ImageField from '$components/admin/ImageField.svelte';
 	import SeoPanel from '$components/admin/SeoPanel.svelte';
@@ -49,10 +52,25 @@
 	);
 
 	let busy = $state(false);
+	let confirmer: ConfirmDialog | undefined = $state();
+	let editorForm: HTMLFormElement | undefined = $state();
+
+	/* Everything the preview shows, so a change anywhere refreshes it — rows
+	   edited in RepeatRows and picked images change no input the form hears. */
+	const previewWatch = $derived(
+		JSON.stringify([
+			title, intro, body, todoNote, portraitUrl, portraitAlt, headerImageUrl, headerAlt,
+			formVariant, faq, prices, packages, projects, figures, testimonials, sectorList,
+			inServices, menuLabel, menuSummary, menuGroup, menuOrder
+		])
+	);
 	const slugChanged = $derived(slug !== p.slug);
 
 	/** The site root. Hiding it would take the whole site down. */
 	const isHome = p.type === 'page' && p.slug === 'home';
+
+	/** Mirrors UNDELETABLE in the server action. */
+	const canDelete = !(p.type === 'page' && (p.slug === 'home' || p.slug === '404'));
 
 	/**
 	 * A form replaces the blocks rather than joining them: the public template
@@ -121,9 +139,47 @@
 </p>
 
 {#if form?.message}<div class="cms-error">{form.message}</div>{/if}
+{#if form?.placed}
+	<div class="cms-ok">
+		Toegevoegd. Het menu verandert op de live site bij de volgende publicatie.
+	</div>
+{/if}
 {#if form?.saved}
 	<div class="cms-ok">
 		Opgeslagen. Dit staat nog niet op de live site — publiceer via het overzicht.
+	</div>
+{/if}
+
+<!-- Where visitors can reach this page from. A new page starts with none, and
+     nothing else in the editor would tell you. The home page is the site's own
+     address and the 404 page is never linked to, so neither needs this. -->
+{#if canDelete && p.is_published !== false}
+	<div class="cms-card" style="margin-bottom:1.4rem">
+		<strong>Gelinkt vanuit</strong>
+		{#if data.linkedFrom.length}
+			<ul style="margin:.4rem 0 0;padding-left:1.2rem">
+				{#each data.linkedFrom as place (place)}<li>{place}</li>{/each}
+			</ul>
+		{:else}
+			<p class="cms-hint" style="margin:.4rem 0 0">
+				<strong>Nergens.</strong> Geen menu, knop of tekst op de site linkt naar deze pagina, dus
+				bezoekers vinden ze enkel als ze het adres kennen{p.noindex ? '' : ' of via Google'}.
+			</p>
+		{/if}
+		{#if data.menuOptions.length}
+			<div class="cms-actions" style="margin-top:.8rem">
+				{#each data.menuOptions as option (option.placement)}
+					<form method="POST" action="?/placeInMenu" use:enhance={() => async ({ update }) => update({ reset: false })}>
+						<input type="hidden" name="placement" value={option.placement} />
+						<button class="cms-btn cms-btn-ghost cms-btn-small" type="submit">{option.label}</button>
+					</form>
+				{/each}
+			</div>
+		{/if}
+		<p class="cms-hint">
+			Links in een tekst voeg je toe in die tekst; het menu en de voettekst pas je aan onder
+			Instellingen. Wat hier staat is de toestand na opslaan, niet noodzakelijk de live site.
+		</p>
 	</div>
 {/if}
 
@@ -137,6 +193,7 @@
 {/if}
 
 <form
+	bind:this={editorForm}
 	method="POST"
 	action="?/save"
 	use:enhance={() => {
@@ -178,8 +235,10 @@
 		<p class="cms-hint">De eerste alinea onder de titel.</p>
 	</div>
 
-	<MarkdownEditor bind:value={body} {emptyBlocks} />
+	<MarkdownEditor bind:value={body} {emptyBlocks} example={false} />
 	<input type="hidden" name="body" value={body} />
+
+	<PagePreview form={editorForm} type={p.type} slug={p.slug} watch={previewWatch} />
 
 	<div class="cms-field">
 		<label for="f-form">Formulier op deze pagina</label>
@@ -449,3 +508,31 @@
 		<span class="cms-hint">Opslaan wijzigt de live site nog niet.</span>
 	</div>
 </form>
+
+{#if canDelete}
+	<!-- Its own form, outside the editor: see the note in the blog editor on why
+	     a delete inside the save form skipped its confirmation. -->
+	<ConfirmDialog bind:this={confirmer} />
+	<form
+		method="POST"
+		action="?/delete"
+		style="margin-top:2.5rem"
+		use:enhance={reportTo(confirmer, {
+			success: 'De pagina is verwijderd.',
+			failure: 'Verwijderen is niet gelukt.'
+		})}
+		onsubmit={(e) =>
+			confirmSubmit(e, confirmer, {
+				title: 'Deze pagina verwijderen?',
+				body:
+					`“${p.title}” wordt definitief verwijderd, met alle tekst erop. Staat ze in het ` +
+					`menu of de voettekst, dan verdwijnt ze daar ook. Na de volgende publicatie is ` +
+					`${prefix[p.type]}/${p.slug} niet meer bereikbaar. Wil je ze liever bewaren, zet ` +
+					`ze dan uit onder Zichtbaarheid.`,
+				confirmLabel: 'Definitief verwijderen',
+				workingLabel: 'Bezig met verwijderen…'
+			})}
+	>
+		<button class="cms-btn cms-btn-danger cms-btn-small" type="submit">Pagina verwijderen</button>
+	</form>
+{/if}
