@@ -58,7 +58,6 @@
 				<option>Branding en huisstijl</option><option>SEO en Google Ads</option>
 				<option>Drukwerk</option><option>Foto en video</option>
 				<option>AI voor mijn zaak</option><option>Iets anders</option></select></div>
-		<div class="field"><label for="f-bud">Budgetvork <span class="opt">(optioneel)</span></label><input id="f-bud" name="budget" placeholder="bv. 2.000 – 4.000 euro"></div>
 		<div class="field"><label for="f-vraag">{copy.vraag}</label><textarea id="f-vraag" name="vraag" required></textarea></div>
 	{/if}
 

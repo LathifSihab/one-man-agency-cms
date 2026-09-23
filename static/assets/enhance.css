@@ -616,12 +616,27 @@ footer.site ul a,
 	box-shadow: 0 10px 30px rgba(10, 10, 10, 0.14);
 }
 
-/* A float this wide leaves slivers of text beside it; below that, stack. */
+/*
+ * A float this wide leaves slivers of text beside it; below that, stack.
+ *
+ * .prose-wide is repeated so this outranks the desktop width above — without
+ * it the 32% still applied and the portrait shrank to a thumbnail. The photo
+ * also carries a wide white margin under the shoulders, which with the shadow
+ * made it hover; cropping square to the subject puts the shirt on the bottom
+ * edge, and without the shadow the white background simply joins the page.
+ */
 @media (max-width: 720px) {
-	.prose-portret {
+	.prose-portret,
+	.prose-wide .prose-portret {
 		float: none;
-		width: min(240px, 60%);
-		margin: 0 0 1.4rem;
+		width: min(300px, 80%);
+		margin: 0 0 1.6rem;
+	}
+	.prose-portret img {
+		aspect-ratio: 1;
+		object-fit: cover;
+		object-position: 50% 20%;
+		box-shadow: none;
 	}
 }
 

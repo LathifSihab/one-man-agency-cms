@@ -8,7 +8,7 @@
  * never arrives.
  */
 export const FIELDS: Record<string, string[]> = {
-	contact: ['naam', 'bedrijf', 'email', 'telefoon', 'onderwerp', 'budget', 'vraag'],
+	contact: ['naam', 'bedrijf', 'email', 'telefoon', 'onderwerp', 'vraag'],
 	scan: ['naam', 'bedrijf', 'website', 'gemeente', 'email', 'telefoon', 'vraag', 'nieuwsbrief'],
 	// The quote form asks far more, and only the parts that apply to what was
 	// ticked, so most of these arrive empty on any given submission.
