@@ -1313,6 +1313,50 @@
         "naam": "YouTube",
         "url": "https://www.youtube.com/@onemanagencydendermonde"
       }
+    ],
+    "footer_sectors": [
+      {
+        "label": "Verzekeringsmakelaars",
+        "link": "/sectoren/verzekeringsmakelaars"
+      },
+      {
+        "label": "Garages & autobedrijven",
+        "link": "/sectoren/garages-en-autobedrijven"
+      },
+      {
+        "label": "Bouw & renovatie",
+        "link": "/sectoren/bouw-en-renovatie"
+      },
+      {
+        "label": "Horeca & retail",
+        "link": "/sectoren/horeca-en-retail"
+      }
+    ],
+    "footer_regions": [
+      {
+        "label": "Dendermonde",
+        "link": "/regio/marketingbureau-dendermonde"
+      },
+      {
+        "label": "Lebbeke",
+        "link": "/regio/marketingbureau-lebbeke"
+      },
+      {
+        "label": "Aalst",
+        "link": "/regio/marketingbureau-aalst"
+      },
+      {
+        "label": "Sint-Niklaas",
+        "link": "/regio/marketingbureau-sint-niklaas"
+      },
+      {
+        "label": "Wetteren",
+        "link": "/regio/marketingbureau-wetteren"
+      },
+      {
+        "label": "Zele",
+        "link": "/regio/marketingbureau-zele"
+      }
     ]
   }
 }

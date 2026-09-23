@@ -9,6 +9,8 @@
 
 	let navigation = $state([...(s?.navigation ?? [])]);
 	let socials = $state([...(s?.socials ?? [])]);
+	let footerSectors = $state([...(s?.footer_sectors ?? [])]);
+	let footerRegions = $state([...(s?.footer_regions ?? [])]);
 	let busy = $state(false);
 
 	const FIELDS = [
@@ -26,7 +28,7 @@
 </script>
 
 <h1>Instellingen</h1>
-<p class="cms-lead">Bedrijfsgegevens, navigatie en sociale media.</p>
+<p class="cms-lead">Bedrijfsgegevens, navigatie, voettekst en sociale media.</p>
 
 <div class="cms-banner pending">
 	<p>
@@ -36,7 +38,19 @@
 </div>
 
 {#if form?.message}<div class="cms-error">{form.message}</div>{/if}
-{#if form?.saved}<div class="cms-ok">Opgeslagen. Publiceer om het live te zetten.</div>{/if}
+{#if form?.saved && form.broken?.length}
+	<div class="cms-error">
+		<p style="margin:0 0 .4rem">
+			Opgeslagen, maar {form.broken.length === 1 ? 'deze link verwijst' : 'deze links verwijzen'}
+			naar een pagina die niet bestaat. Publiceren lukt pas als dat is aangepast:
+		</p>
+		<ul style="margin:0">
+			{#each form.broken as line (line)}<li><code>{line}</code></li>{/each}
+		</ul>
+	</div>
+{:else if form?.saved}
+	<div class="cms-ok">Opgeslagen. Publiceer om het live te zetten.</div>
+{/if}
 
 <form method="POST" action="?/save" use:enhance={() => {
 	busy = true;
@@ -69,6 +83,40 @@
 	            fields={[{ key: 'label', label: 'Tekst' }, { key: 'link', label: 'Link' }]}
 	            summary={(r) => String(r.label ?? '')} />
 	<input type="hidden" name="navigation" value={JSON.stringify(navigation)} />
+
+	<h2>Voettekst</h2>
+	<p class="cms-hint" style="margin-top:0">
+		De kolommen Sectoren en Regio onderaan elke pagina. Wijzig je het webadres van een
+		sector- of regiopagina, pas dan ook de link hier aan.
+	</p>
+
+	<h3>Sectoren</h3>
+	<RepeatRows label="Links" noun="sector" bind:rows={footerSectors}
+	            fields={[{ key: 'label', label: 'Tekst' }, { key: 'link', label: 'Link', placeholder: '/sectoren/…' }]}
+	            summary={(r) => String(r.label ?? '')} />
+	<input type="hidden" name="footer_sectors" value={JSON.stringify(footerSectors)} />
+	{#if data.sectorPages.length}
+		<details class="cms-hint" style="margin:.4rem 0 1.2rem">
+			<summary>Bestaande sectorpagina's ({data.sectorPages.length})</summary>
+			<ul>
+				{#each data.sectorPages as p (p.link)}<li>{p.title}: <code>{p.link}</code></li>{/each}
+			</ul>
+		</details>
+	{/if}
+
+	<h3>Regio</h3>
+	<RepeatRows label="Links" noun="regio" bind:rows={footerRegions}
+	            fields={[{ key: 'label', label: 'Tekst' }, { key: 'link', label: 'Link', placeholder: '/regio/…' }]}
+	            summary={(r) => String(r.label ?? '')} />
+	<input type="hidden" name="footer_regions" value={JSON.stringify(footerRegions)} />
+	{#if data.regionPages.length}
+		<details class="cms-hint" style="margin:.4rem 0 1.2rem">
+			<summary>Bestaande regiopagina's ({data.regionPages.length})</summary>
+			<ul>
+				{#each data.regionPages as p (p.link)}<li>{p.title}: <code>{p.link}</code></li>{/each}
+			</ul>
+		</details>
+	{/if}
 
 	<h2>Sociale media</h2>
 	<RepeatRows label="Profielen" noun="profiel" bind:rows={socials}

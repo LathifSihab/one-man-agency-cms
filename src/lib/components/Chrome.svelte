@@ -63,20 +63,20 @@
 			<li><a href={s.link}>{s.label}</a></li>
 		{/each}
 	</ul></div>
-	<div><h4>Regio</h4><ul>
-		<li><a href="/regio/marketingbureau-dendermonde">Dendermonde</a></li>
-		<li><a href="/regio/marketingbureau-lebbeke">Lebbeke</a></li>
-		<li><a href="/regio/marketingbureau-aalst">Aalst</a></li>
-		<li><a href="/regio/marketingbureau-sint-niklaas">Sint-Niklaas</a></li>
-		<li><a href="/regio/marketingbureau-wetteren">Wetteren</a></li>
-		<li><a href="/regio/marketingbureau-zele">Zele</a></li>
-	</ul></div>
-	<div><h4>Sectoren</h4><ul>
-		<li><a href="/sectoren/verzekeringsmakelaars">Verzekeringsmakelaars</a></li>
-		<li><a href="/sectoren/garages-en-autobedrijven">Garages &amp; autobedrijven</a></li>
-		<li><a href="/sectoren/bouw-en-renovatie">Bouw &amp; renovatie</a></li>
-		<li><a href="/sectoren/horeca-en-retail">Horeca &amp; retail</a></li>
-	</ul><h4 style="margin-top:1.4rem">Volg mee</h4><ul>
+	<!-- Both columns are edited in Instellingen, not here: a sector or region
+	     page renamed in the CMS has to be fixable in the CMS. -->
+	{#if settings.footer_regions?.length}
+		<div><h4>Regio</h4><ul>
+			{#each settings.footer_regions as r}
+				<li><a href={r.link}>{r.label}</a></li>
+			{/each}
+		</ul></div>
+	{/if}
+	<div>{#if settings.footer_sectors?.length}<h4>Sectoren</h4><ul>
+		{#each settings.footer_sectors as s}
+			<li><a href={s.link}>{s.label}</a></li>
+		{/each}
+	</ul>{/if}<h4 style="margin-top:1.4rem">Volg mee</h4><ul>
 		{#each settings.socials as s (s.url)}
 			<li><a href={s.url} rel="me noopener">{s.naam}</a></li>
 		{/each}

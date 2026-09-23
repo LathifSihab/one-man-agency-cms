@@ -54,7 +54,9 @@ const base = () => ({
 	settings: {
 		navigation: [{ label: 'Prijzen', link: '/offerte' }],
 		header_cta: { label: 'Maak een afspraak', link: '/afspraak' },
-		company: {}, formspree_id: null, socials: []
+		company: {}, formspree_id: null, socials: [],
+		footer_sectors: [{ label: 'Horeca & retail', link: '/sectoren/horeca-en-retail' }],
+		footer_regions: [{ label: 'Zele', link: '/regio/marketingbureau-zele' }]
 	}
 });
 
@@ -94,6 +96,19 @@ check('healthy content has no broken links', findBrokenLinks(base()).map((b) => 
 	c.pages = c.pages.filter((p) => p.slug !== 'contact');
 	c.settings.navigation = [];
 	check('hardcoded component link is caught', findBrokenLinks(c).map((b) => b.link), ['/contact']);
+}
+
+// 4b. What the client hit: a sector page renamed while the footer still points
+// at the old address. It used to be a code path reported as "het menu", which
+// nothing in the CMS could change; it is a setting now, named for its column.
+{
+	const c = base();
+	c.pages = c.pages.map((p) => (p.slug === 'horeca-en-retail' ? { ...p, slug: 'horeca' } : p));
+	const broken = findBrokenLinks(c);
+	check('renamed sector in the footer is caught', broken.map((b) => b.link), ['/sectoren/horeca-en-retail']);
+	check('and named by its footer column', broken[0]?.where, 'de voettekst, kolom Sectoren ("Horeca & retail")');
+	c.settings.footer_sectors = [{ label: 'Horeca', link: '/sectoren/horeca' }];
+	check('and fixed by editing the footer list', findBrokenLinks(c).map((b) => b.link), []);
 }
 
 // 5. An unpublished post has no /blog/<slug>, so linking to one is broken.

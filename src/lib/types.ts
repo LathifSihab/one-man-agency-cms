@@ -128,6 +128,9 @@ export interface Settings {
 	header_cta: Cta;
 	formspree_id: string | null;
 	socials: Social[];
+	/** The footer's Sectoren and Regio columns, edited in Instellingen. */
+	footer_sectors: NavItem[];
+	footer_regions: NavItem[];
 }
 
 /** One entry in the services navigation, built from a page. */

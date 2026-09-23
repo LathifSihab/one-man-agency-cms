@@ -126,6 +126,8 @@ create table if not exists settings (
   header_cta   jsonb not null,   -- {label, link}
   formspree_id text,             -- retained: legacy fallback, unused now forms post to Supabase
   socials      jsonb not null,   -- [{naam, url}]
+  footer_sectors jsonb not null default '[]',  -- [{label, link}], footer's Sectoren column
+  footer_regions jsonb not null default '[]',  -- [{label, link}], footer's Regio column
   updated_at   timestamptz not null default now()
 );
 

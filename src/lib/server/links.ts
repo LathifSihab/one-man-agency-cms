@@ -94,18 +94,7 @@ const CODE_PATHS: ReadonlyArray<readonly [string, string]> = [
 	['/veelgestelde-vragen', 'de voettekst'],
 	['/privacybeleid', 'de voettekst'],
 	['/cookiebeleid', 'de voettekst'],
-	['/algemene-voorwaarden', 'de voettekst'],
-	// The menu lists these six regions and four sectors by name.
-	['/regio/marketingbureau-dendermonde', 'het menu'],
-	['/regio/marketingbureau-lebbeke', 'het menu'],
-	['/regio/marketingbureau-aalst', 'het menu'],
-	['/regio/marketingbureau-sint-niklaas', 'het menu'],
-	['/regio/marketingbureau-wetteren', 'het menu'],
-	['/regio/marketingbureau-zele', 'het menu'],
-	['/sectoren/verzekeringsmakelaars', 'het menu'],
-	['/sectoren/garages-en-autobedrijven', 'het menu'],
-	['/sectoren/bouw-en-renovatie', 'het menu'],
-	['/sectoren/horeca-en-retail', 'het menu']
+	['/algemene-voorwaarden', 'de voettekst']
 ];
 
 /** Trailing slashes and anchors do not make a different page. */
@@ -182,6 +171,16 @@ export function findBrokenLinks(content: SiteContent): BrokenLink[] {
 		check(item.link, `het menu ("${item.label}")`);
 	}
 	check(settings.header_cta?.link, `de knop bovenaan ("${settings.header_cta?.label}")`);
+	// The footer columns were once code paths below, which the CMS could not
+	// change: a renamed sector page then blocked publishing "in het menu" with
+	// nothing the client could do about it. They are settings now, and named
+	// for where they actually appear.
+	for (const item of settings.footer_sectors ?? []) {
+		check(item.link, `de voettekst, kolom Sectoren ("${item.label}")`);
+	}
+	for (const item of settings.footer_regions ?? []) {
+		check(item.link, `de voettekst, kolom Regio ("${item.label}")`);
+	}
 
 	for (const page of pages) {
 		const where = pageLabel(page);
