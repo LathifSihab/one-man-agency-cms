@@ -139,6 +139,63 @@ export const actions: Actions = {
 	},
 
 	/**
+	 * Copy the page, as last saved, to a new address, and open the copy.
+	 *
+	 * Sector and region pages are mostly the same page with a different name, and
+	 * each new one used to start from an empty form. The copy starts off the site
+	 * and out of the services list, so it cannot show up half-edited or next to
+	 * its original in a menu; it goes live when it is switched on under
+	 * Zichtbaarheid, like any other hidden page.
+	 */
+	duplicate: async ({ params }) => {
+		const db = adminDb();
+		const { data: page } = await db
+			.from('pages')
+			.select('*')
+			.eq('type', params.type)
+			.eq('slug', params.slug)
+			.maybeSingle();
+		if (!page) return fail(404, { message: 'Pagina niet gevonden.' });
+
+		// services-kopie, then services-kopie-2, and so on.
+		const base = `${page.slug}-kopie`;
+		const { data: taken } = await db
+			.from('pages')
+			.select('slug')
+			.eq('type', page.type)
+			.like('slug', `${base}%`);
+		const used = new Set((taken ?? []).map((t) => t.slug));
+		let slug = base;
+		for (let n = 2; used.has(slug); n++) slug = `${base}-${n}`;
+
+		const { data: last } = await db
+			.from('pages')
+			.select('sort_order')
+			.eq('type', page.type)
+			.order('sort_order', { ascending: false })
+			.limit(1)
+			.maybeSingle();
+
+		const { id: _id, created_at: _created, updated_at: _updated, ...rest } = page;
+		const title = `${page.title} (kopie)`;
+		const { error: dbError } = await db.from('pages').insert({
+			...rest,
+			slug,
+			title,
+			sort_order: (last?.sort_order ?? -1) + 1,
+			is_published: false,
+			in_services: false,
+			menu_label: page.menu_label ? `${page.menu_label} (kopie)`.slice(0, 40) : null,
+			todo_note:
+				`Kopie van “${page.title}” (${pagePath(page as Page)}). Pas het adres, de titel en de ` +
+				'SEO-teksten aan en zet de pagina daarna aan onder Zichtbaarheid.'
+		});
+		if (dbError) return fail(500, { message: `Dupliceren mislukt: ${dbError.message}` });
+
+		throw redirect(303, `/admin/pages/${page.type}/${slug}`);
+	},
+
+	/**
 	 * Delete a page for good.
 	 *
 	 * The public build refuses any link to a page that does not exist, so a

@@ -509,6 +509,17 @@
 	</div>
 </form>
 
+<!-- Its own form, outside the editor, for the same reason as the delete below.
+     Not enhanced: the copy opens in this same editor, which reads its page once,
+     so it needs a full load or it would keep showing the original's fields. -->
+<form method="POST" action="?/duplicate" style="margin-top:2.5rem">
+	<button class="cms-btn cms-btn-ghost cms-btn-small" type="submit">Pagina dupliceren</button>
+	<span class="cms-hint">
+		Maakt een kopie van de opgeslagen versie, die nog niet op de site staat. Sla eerst op als
+		je wijzigingen wil meenemen.
+	</span>
+</form>
+
 {#if canDelete}
 	<!-- Its own form, outside the editor: see the note in the blog editor on why
 	     a delete inside the save form skipped its confirmation. -->
@@ -516,7 +527,7 @@
 	<form
 		method="POST"
 		action="?/delete"
-		style="margin-top:2.5rem"
+		style="margin-top:1.2rem"
 		use:enhance={reportTo(confirmer, {
 			success: 'De pagina is verwijderd.',
 			failure: 'Verwijderen is niet gelukt.'
