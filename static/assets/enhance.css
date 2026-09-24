@@ -981,3 +981,44 @@ footer.site ul a,
 	border-color: #fff;
 	color: var(--ink);
 }
+
+/* ── social buttons in the footer ────────────────────────────────────────────
+ *
+ * The socials were a plain text list at the bottom of the Sectoren column: easy
+ * to miss, and they made that column the longest. They now sit under the address
+ * as round icon buttons in the brand green, which fill on hover. At 40px they
+ * clear the touch-target minimum without the padding rule above.
+ */
+
+footer.site ul.socials {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.6rem;
+	margin-top: 1.2rem;
+}
+
+footer.site ul.socials li { margin: 0; }
+
+footer.site ul.socials a {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 40px;
+	height: 40px;
+	padding: 0 0.7rem;
+	border: 2px solid var(--signal);
+	border-radius: 999px;
+	color: var(--signal);
+	transition: background-color 0.15s, color 0.15s;
+}
+
+footer.site ul.socials a:has(svg) { width: 40px; padding: 0; }
+footer.site ul.socials svg { fill: currentColor; }
+
+footer.site ul.socials a:hover,
+footer.site ul.socials a:focus-visible {
+	background: var(--signal);
+	color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) { footer.site ul.socials a { transition: none; } }
