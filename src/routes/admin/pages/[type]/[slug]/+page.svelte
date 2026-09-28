@@ -32,6 +32,7 @@
 	let formVariant = $state(p.form_variant ?? '');
 	let isPublished = $state(p.is_published !== false);
 	let inServices = $state(Boolean(p.in_services));
+	let inGoogle = $state(!p.noindex);
 	let menuLabel = $state(p.menu_label ?? '');
 	let menuSummary = $state(p.menu_summary ?? '');
 	let menuGroup = $state(p.menu_group ?? '');
@@ -424,6 +425,27 @@
 		{/if}
 	</div>
 
+	{#if canDelete}
+		<div class="cms-field">
+			<label style="font-weight:500;display:flex;align-items:center;gap:.5rem">
+				<input type="checkbox" bind:checked={inGoogle} style="width:auto" />
+				Toon deze pagina in Google
+			</label>
+			<input type="hidden" name="noindex" value={inGoogle ? '' : 'on'} />
+			<p class="cms-hint">
+				Een nieuwe pagina staat eerst uit Google, zodat een half afgewerkte versie niet in de
+				zoekresultaten belandt. Zet dit aan zodra ze klaar is: ze komt dan in de sitemap na de
+				volgende publicatie. Google heeft daarna meestal enkele dagen tot een paar weken nodig.
+			</p>
+			{#if inGoogle && todoNote.trim()}
+				<p class="cms-hint">
+					Let op: deze pagina heeft nog een notitie "nog aan te vullen" (onder Geavanceerd).
+					Die staat zichtbaar op de pagina, dus ook voor wie via Google komt.
+				</p>
+			{/if}
+		</div>
+	{/if}
+
 	<h2>Plaats bij de diensten</h2>
 
 	<div class="cms-field">
@@ -499,7 +521,7 @@
 		{/if}
 	</div>
 
-	<SeoPanel subject={seoSubject} noindex={p.noindex} />
+	<SeoPanel subject={seoSubject} noindex={!inGoogle} />
 
 	<div class="cms-actions" style="margin-top:1.5rem">
 		<button class="cms-btn" type="submit" disabled={busy}>

@@ -35,8 +35,13 @@ const TEXT_FIELDS = [
 	'menu_group'
 ];
 
-/** Checkboxes: absent means false, which is not the same as "leave alone". */
-const BOOLEAN_FIELDS = ['in_services', 'is_published'];
+/**
+ * Checkboxes: absent means false, which is not the same as "leave alone".
+ *
+ * noindex had no way back: a new page starts out of Google, and nothing in the
+ * editor could put it in, so every page made in the CMS stayed invisible there.
+ */
+const BOOLEAN_FIELDS = ['in_services', 'is_published', 'noindex'];
 
 /** Whole numbers. An empty box means "no position given", not zero. */
 const NUMBER_FIELDS = ['menu_order'];

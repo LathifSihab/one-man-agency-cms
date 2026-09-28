@@ -45,7 +45,7 @@
 </script>
 
 <Seo seoTitle={page.seo_title} metaDescription={page.meta_description} {path} {schemas}
-     {crumbs} image={page.header_image_url} />
+     {crumbs} image={page.header_image_url} noindex={page.noindex} />
 
 <PageHead title={page.title} intro={page.intro}>
 	{#snippet crumbs()}

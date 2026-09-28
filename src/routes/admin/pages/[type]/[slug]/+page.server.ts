@@ -71,6 +71,9 @@ export const actions: Actions = {
 			});
 		}
 
+		// The 404 page is what a wrong address shows; it never belongs in Google.
+		if (params.type === 'page' && params.slug === '404') delete patch.noindex;
+
 		// Mirror the database constraints so the editor reports the problem
 		// rather than surfacing a raw Postgres error.
 		const title = String(patch.title ?? '').trim();
