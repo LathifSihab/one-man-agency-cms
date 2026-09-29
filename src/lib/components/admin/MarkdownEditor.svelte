@@ -22,9 +22,13 @@
 		 * real page instead (PagePreview.svelte). The blog editor still uses it.
 		 */
 		example?: boolean;
+		/** Only these blocks are offered; the blog editor limits it to what a post renders. */
+		blocks?: Set<string>;
 	}
 
-	let { value = $bindable(), emptyBlocks = [], example = true }: Props = $props();
+	let { value = $bindable(), emptyBlocks = [], example = true, blocks }: Props = $props();
+
+	const offered = $derived(blocks ? SHORTCODES.filter((s) => blocks.has(s.token)) : SHORTCODES);
 
 	let textarea: HTMLTextAreaElement | null = $state(null);
 
@@ -112,6 +116,9 @@
 
 	const parts = $derived(splitBody(value));
 	const unknown = $derived(unknownTokens(value));
+	const unsupported = $derived(
+		blocks ? [...new Set(parts.filter((p) => p.kind === 'block' && !blocks.has(p.value)).map((p) => p.value))] : []
+	);
 	const usedEmpty = $derived(
 		parts.filter((p) => p.kind === 'block' && emptyBlocks.includes(p.value)).map((p) => p.value)
 	);
@@ -160,7 +167,7 @@
 		dienstenlijst of de prijstabel.
 	</p>
 	<div class="cms-actions">
-		{#each SHORTCODES as s (s.token)}
+		{#each offered as s (s.token)}
 			<button type="button" class="cms-btn cms-btn-ghost cms-btn-small"
 			        title={s.description} onclick={() => insertBlock(s.token)}>
 				+ {s.label}
@@ -172,6 +179,12 @@
 {#if unknown.length}
 	<div class="cms-banner failed">
 		<p>Onbekend blok: {unknown.join(', ')} — dit toont niets op de site.</p>
+	</div>
+{/if}
+
+{#if unsupported.length}
+	<div class="cms-banner failed">
+		<p>{unsupported.map(label).join(', ')} — dit blok werkt hier niet en toont niets op de site.</p>
 	</div>
 {/if}
 

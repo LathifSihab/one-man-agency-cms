@@ -36,6 +36,12 @@ export const SHORTCODES = [
  */
 export const NOOP_TOKENS = new Set(['{{intro-blok}}', '{{einde-blok}}']);
 
+/**
+ * Blocks a blog post can render. A post has no testimonials, FAQ, packages or
+ * portrait of its own, so only blocks that need no page data are offered.
+ */
+export const POST_SHORTCODES = new Set<string>(['{{scan-blok}}', '{{stappen}}']);
+
 const KNOWN = new Set<string>(SHORTCODES.map((s) => s.token));
 
 export type BodyPart = { kind: 'prose' | 'block' | 'portretprose'; value: string };

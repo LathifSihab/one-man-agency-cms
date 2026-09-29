@@ -4,6 +4,7 @@
 	import CountedField from '$components/admin/CountedField.svelte';
 	import MarkdownEditor from '$components/admin/MarkdownEditor.svelte';
 	import { CATEGORIES } from '$lib/categories';
+	import { POST_SHORTCODES } from '$lib/shortcodes';
 	import ConfirmDialog from '$lib/components/admin/ConfirmDialog.svelte';
 	import { confirmSubmit, reportTo } from '$lib/components/admin/confirmSubmit';
 	import ImageField from '$lib/components/admin/ImageField.svelte';
@@ -77,7 +78,7 @@
 		<textarea id="f-intro" name="intro" bind:value={intro} rows="3" required></textarea>
 	</div>
 
-	<MarkdownEditor bind:value={body} />
+	<MarkdownEditor bind:value={body} blocks={POST_SHORTCODES} />
 	<input type="hidden" name="body" value={body} />
 
 	<div class="cms-two">
