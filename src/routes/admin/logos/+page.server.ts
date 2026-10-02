@@ -12,7 +12,7 @@ export const load: PageServerLoad = async () => {
 
 	const [{ data: logos }, storage] = await Promise.all([
 		db.from('logos').select('*').order('sort_order'),
-		db.storage.from('media').list('logos', { limit: 500, sortBy: { column: 'name', order: 'asc' } })
+		db.storage.from('media').list('logos', { limit: 500, sortBy: { column: 'created_at', order: 'desc' } })
 	]);
 
 	/*

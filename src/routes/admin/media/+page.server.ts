@@ -16,7 +16,7 @@ export const load: PageServerLoad = async () => {
 		PREFIXES.map(async (prefix) => {
 			const { data } = await db.storage
 				.from(BUCKET)
-				.list(prefix, { limit: 500, sortBy: { column: 'name', order: 'asc' } });
+				.list(prefix, { limit: 500, sortBy: { column: 'created_at', order: 'desc' } });
 			return {
 				prefix,
 				files: (data ?? [])

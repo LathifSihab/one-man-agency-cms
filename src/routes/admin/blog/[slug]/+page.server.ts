@@ -1,6 +1,7 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { adminDb } from '$lib/server/admin';
 import { requireConfirmation } from '$lib/server/confirm';
+import { fixOutsideLinks } from '$lib/server/links';
 import type { Actions, PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ params }) => {
@@ -35,8 +36,8 @@ export const actions: Actions = {
 			title,
 			seo_title: seo,
 			meta_description: meta,
-			intro: String(form.get('intro') ?? ''),
-			body: String(form.get('body') ?? ''),
+			intro: fixOutsideLinks(String(form.get('intro') ?? '')),
+			body: fixOutsideLinks(String(form.get('body') ?? '')),
 			published_on: String(form.get('published_on') ?? ''),
 			category: String(form.get('category') ?? '') || null,
 			image_url: String(form.get('image_url') ?? '') || null,

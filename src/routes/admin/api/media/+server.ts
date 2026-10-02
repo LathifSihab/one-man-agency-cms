@@ -18,7 +18,7 @@ export const GET: RequestHandler = async () => {
 		MEDIA_PREFIXES.map(async (prefix) => {
 			const { data } = await db.storage
 				.from('media')
-				.list(prefix, { limit: 500, sortBy: { column: 'name', order: 'asc' } });
+				.list(prefix, { limit: 500, sortBy: { column: 'created_at', order: 'desc' } });
 
 			return {
 				prefix,

@@ -371,3 +371,18 @@ export function explainBrokenLinks(broken: BrokenLink[]): string {
 		'Je wijzigingen blijven bewaard.'
 	);
 }
+
+/**
+ * Drop the stray slash in front of an outside address in a Markdown link.
+ *
+ * The editor's Link button inserts `(/pagina)`, and someone linking to another
+ * site replaces `pagina` with the address and keeps the slash:
+ * `(/https://www.energco.be)`. That reads as a path on this site, so the
+ * publish guard refuses it as a broken link. Nobody means that, so it is fixed
+ * on save. A bare `www.` gets `https://` too, or it would be a relative link.
+ */
+export function fixOutsideLinks(markdown: string): string {
+	return markdown
+		.replace(/\]\(\s*\/+(https?:\/\/)/gi, ']($1')
+		.replace(/\]\(\s*\/*(www\.)/gi, '](https://$1');
+}

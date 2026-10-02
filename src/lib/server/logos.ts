@@ -21,7 +21,7 @@ export const LOGO_FOLDER = 'logos';
 export const isLogoPath = (path: string) => path.startsWith(`${LOGO_FOLDER}/`);
 
 /**
- * Put a file on the wall, last, unless it is already there.
+ * Put a file on the wall, first, unless it is already there.
  * Returns whether a row was added.
  */
 export async function ensureLogoRow(
@@ -36,16 +36,17 @@ export async function ensureLogoRow(
 		.maybeSingle();
 	if (existing) return { added: false };
 
-	// New logos go last; the editor can move them with the arrows.
-	const { data: last } = await db
+	// New logos go first, so the client sees what they just added without
+	// clicking it up the whole wall with the arrows.
+	const { data: first } = await db
 		.from('logos')
 		.select('sort_order')
-		.order('sort_order', { ascending: false })
+		.order('sort_order', { ascending: true })
 		.limit(1)
 		.maybeSingle();
 
 	const { error } = await db
 		.from('logos')
-		.insert({ name, file_path: filePath, sort_order: (last?.sort_order ?? -1) + 1 });
+		.insert({ name, file_path: filePath, sort_order: (first?.sort_order ?? 1) - 1 });
 	return error ? { added: false, error: error.message } : { added: true };
 }

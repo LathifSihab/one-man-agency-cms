@@ -1,7 +1,7 @@
 import { error, fail, redirect } from '@sveltejs/kit';
 import { adminDb } from '$lib/server/admin';
 import { requireConfirmation } from '$lib/server/confirm';
-import { linksBlockingDelete, linksTo, readContentForCheck, withoutMenuLinks } from '$lib/server/links';
+import { fixOutsideLinks, linksBlockingDelete, linksTo, readContentForCheck, withoutMenuLinks } from '$lib/server/links';
 import { MENU_FOR, addToMenu } from '$lib/server/menus';
 import { readPagePatch } from '$lib/server/pageForm';
 import { pagePath } from '$lib/site';
@@ -61,6 +61,9 @@ export const actions: Actions = {
 		const read = readPagePatch(form);
 		if ('message' in read) return fail(400, read);
 		const patch = read.patch;
+		for (const key of ['intro', 'body'] as const) {
+			if (typeof patch[key] === 'string') patch[key] = fixOutsideLinks(patch[key]);
+		}
 
 		// The site root cannot be taken off the site. The database refuses it too;
 		// this is so the refusal reads like a sentence.
